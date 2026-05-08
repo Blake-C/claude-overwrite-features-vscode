@@ -5,12 +5,14 @@ import * as path from 'path'
 const CLAUDE_CODE_EXTENSION_ID = 'anthropic.claude-code'
 const STATE_KEY_PATCHED_VERSION = 'patchedClaudeCodeVersion'
 const WEBVIEW_FILE = path.join('webview', 'index.js')
+const EXTENSION_FILE = 'extension.js'
 const BACKUP_SUFFIX = '.backup'
 
 interface Patch {
 	name: string
 	from: string
 	to: string
+	targetFile?: 'webview' | 'extension'
 }
 
 const PATCHES: Patch[] = [
@@ -26,8 +28,14 @@ const PATCHES: Patch[] = [
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',
-		from: 'click to compact`,onClick:J,',
-		to: 'click to compact`,onClick:()=>{window.confirm("Compact conversation now?\\n\\nThis will summarize your context window. This cannot be undone.")&&J()},',
+		from: 'click to compact`,onClick:()=>{const d=document.createElement("dialog");d.innerHTML=\'<form method="dialog" style="padding:16px;font-family:inherit"><p style="margin:0 0 12px">Compact conversation now?<br>This cannot be undone.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel">Cancel</button><button value="ok" autofocus>Compact</button></div></form>\';document.body.appendChild(d);d.showModal();d.addEventListener("close",()=>{if(d.returnValue==="ok")J();d.remove()})},',
+		to: 'click to compact`,onClick:()=>{const d=document.createElement("dialog");d.style.cssText="background:var(--vscode-editor-background);color:var(--vscode-editor-foreground);border:1px solid var(--vscode-widget-border,#454545);border-radius:6px;padding:20px;min-width:260px;box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:var(--vscode-font-family);font-size:var(--vscode-font-size,13px)";d.innerHTML=\'<form method="dialog" style="margin:0"><p style="margin:0 0 16px;line-height:1.5">Compact conversation now?<br>This cannot be undone.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel" style="padding:4px 14px;background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground);border:none;border-radius:3px;cursor:pointer;font:inherit">Cancel</button><button value="ok" autofocus style="padding:4px 14px;background:var(--vscode-button-background);color:var(--vscode-button-foreground);border:none;border-radius:3px;cursor:pointer;font:inherit">Compact</button></div></form>\';document.body.appendChild(d);d.showModal();d.addEventListener("close",()=>{if(d.returnValue==="ok")J();d.remove()})},',
+	},
+	{
+		name: 'Feature 4: Respect ~/.claude/settings.json permissions in plan mode',
+		targetFile: 'extension',
+		from: 'return{behavior:"allow",updatedInput:B};let q=await this.sendRequest(V,{type:"tool_permission_request",toolName:K,inputs:B,suggestions:x},G);',
+		to: 'return{behavior:"allow",updatedInput:B};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const r=p.match(/^(\\w+)\\((.+)\\)$/);if(!r)return p===K;if(r[1]!==K)return!1;const c=typeof B==="object"&&B!==null?B.command??B.cmd??B.input??JSON.stringify(B):"";return new RegExp("^"+r[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:B}}catch(_e){}let q=await this.sendRequest(V,{type:"tool_permission_request",toolName:K,inputs:B,suggestions:x},G);',
 	},
 ]
 
@@ -52,30 +60,28 @@ function revertPatch(content: string, patch: Patch): { content: string; reverted
 	return { content: content.replace(patch.to, patch.from), reverted: true }
 }
 
-async function patchWebview(
-	context: vscode.ExtensionContext,
-	extensionPath: string,
-	silent = false
-): Promise<void> {
-	const webviewPath = path.join(extensionPath, WEBVIEW_FILE)
-	const backupPath = webviewPath + BACKUP_SUFFIX
+function applyPatchesToFile(
+	filePath: string,
+	patches: Patch[]
+): { results: string[]; anyApplied: boolean } {
+	const results: string[] = []
+	let anyApplied = false
 
-	if (!fs.existsSync(webviewPath)) {
-		vscode.window.showErrorMessage(`Claude Code Patches: webview file not found at ${webviewPath}`)
-		return
+	if (!fs.existsSync(filePath)) {
+		for (const patch of patches) {
+			results.push(`✗ ${patch.name} (file not found)`)
+		}
+		return { results, anyApplied }
 	}
 
-	let content = fs.readFileSync(webviewPath, 'utf8')
+	let content = fs.readFileSync(filePath, 'utf8')
+	const backupPath = filePath + BACKUP_SUFFIX
 
-	// Create backup only if one doesn't already exist for this file
 	if (!fs.existsSync(backupPath)) {
 		fs.writeFileSync(backupPath, content, 'utf8')
 	}
 
-	const results: string[] = []
-	let anyApplied = false
-
-	for (const patch of PATCHES) {
+	for (const patch of patches) {
 		const result = applyPatch(content, patch)
 		if (result.applied) {
 			content = result.content
@@ -89,15 +95,35 @@ async function patchWebview(
 	}
 
 	if (anyApplied) {
-		fs.writeFileSync(webviewPath, content, 'utf8')
+		fs.writeFileSync(filePath, content, 'utf8')
 	}
+
+	return { results, anyApplied }
+}
+
+async function patchWebview(
+	context: vscode.ExtensionContext,
+	extensionPath: string,
+	silent = false
+): Promise<void> {
+	const webviewPatches = PATCHES.filter(p => !p.targetFile || p.targetFile === 'webview')
+	const extensionPatches = PATCHES.filter(p => p.targetFile === 'extension')
+
+	const webviewPath = path.join(extensionPath, WEBVIEW_FILE)
+	const { results: webviewResults, anyApplied: webviewApplied } = applyPatchesToFile(webviewPath, webviewPatches)
+
+	const extensionJsPath = path.join(extensionPath, EXTENSION_FILE)
+	const { results: extensionResults, anyApplied: extensionApplied } = applyPatchesToFile(extensionJsPath, extensionPatches)
+
+	const anyApplied = webviewApplied || extensionApplied
+	const allResults = [...webviewResults, ...extensionResults]
 
 	const claudeExt = findClaudeCodeExtension()
 	const version = claudeExt?.packageJSON?.version ?? 'unknown'
 	await context.globalState.update(STATE_KEY_PATCHED_VERSION, version)
 
 	if (!silent || anyApplied) {
-		const summary = results.join('\n')
+		const summary = allResults.join('\n')
 		if (anyApplied) {
 			vscode.window.showInformationMessage(
 				`Claude Code Patches applied. Reload VS Code to take effect.\n\n${summary}`,
@@ -113,44 +139,52 @@ async function patchWebview(
 	}
 }
 
-async function revertWebview(extensionPath: string): Promise<void> {
-	const webviewPath = path.join(extensionPath, WEBVIEW_FILE)
-	const backupPath = webviewPath + BACKUP_SUFFIX
-
-	if (fs.existsSync(backupPath)) {
-		const backup = fs.readFileSync(backupPath, 'utf8')
-		fs.writeFileSync(webviewPath, backup, 'utf8')
-		fs.unlinkSync(backupPath)
-		vscode.window.showInformationMessage(
-			'Claude Code Patches reverted. Reload VS Code to take effect.',
-			'Reload Window'
-		).then(action => {
-			if (action === 'Reload Window') {
-				vscode.commands.executeCommand('workbench.action.reloadWindow')
-			}
-		})
-		return
-	}
-
-	// No backup — try reverting in-place using patch definitions
-	if (!fs.existsSync(webviewPath)) {
-		vscode.window.showErrorMessage(`Claude Code Patches: webview file not found at ${webviewPath}`)
-		return
-	}
-
-	let content = fs.readFileSync(webviewPath, 'utf8')
-	let anyReverted = false
-
-	for (const patch of PATCHES) {
+function revertFile(filePath: string, patches: Patch[]): boolean {
+	if (!fs.existsSync(filePath)) return false
+	let content = fs.readFileSync(filePath, 'utf8')
+	let reverted = false
+	for (const patch of patches) {
 		const result = revertPatch(content, patch)
 		if (result.reverted) {
 			content = result.content
-			anyReverted = true
+			reverted = true
 		}
+	}
+	if (reverted) {
+		fs.writeFileSync(filePath, content, 'utf8')
+	}
+	return reverted
+}
+
+async function revertWebview(extensionPath: string): Promise<void> {
+	const webviewPath = path.join(extensionPath, WEBVIEW_FILE)
+	const extensionJsPath = path.join(extensionPath, EXTENSION_FILE)
+	const webviewBackup = webviewPath + BACKUP_SUFFIX
+	const extensionBackup = extensionJsPath + BACKUP_SUFFIX
+
+	let anyReverted = false
+
+	if (fs.existsSync(webviewBackup)) {
+		fs.writeFileSync(webviewPath, fs.readFileSync(webviewBackup, 'utf8'), 'utf8')
+		fs.unlinkSync(webviewBackup)
+		anyReverted = true
+	}
+	if (fs.existsSync(extensionBackup)) {
+		fs.writeFileSync(extensionJsPath, fs.readFileSync(extensionBackup, 'utf8'), 'utf8')
+		fs.unlinkSync(extensionBackup)
+		anyReverted = true
+	}
+
+	if (!anyReverted) {
+		// No backups — try reverting in-place using patch definitions
+		const webviewPatches = PATCHES.filter(p => !p.targetFile || p.targetFile === 'webview')
+		const extensionPatches = PATCHES.filter(p => p.targetFile === 'extension')
+		const wReverted = revertFile(webviewPath, webviewPatches)
+		const eReverted = revertFile(extensionJsPath, extensionPatches)
+		anyReverted = wReverted || eReverted
 	}
 
 	if (anyReverted) {
-		fs.writeFileSync(webviewPath, content, 'utf8')
 		vscode.window.showInformationMessage(
 			'Claude Code Patches reverted. Reload VS Code to take effect.',
 			'Reload Window'
@@ -195,6 +229,28 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	registerCommands(context, claudeExt.extensionPath)
 }
 
+function buildPreviewHtml(): string {
+	return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8">
+<style>
+  body { margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--vscode-editor-background); }
+  dialog[open] { background: var(--vscode-editor-background); color: var(--vscode-editor-foreground); border: 1px solid var(--vscode-widget-border, #454545); border-radius: 6px; padding: 20px; min-width: 260px; box-shadow: 0 4px 16px rgba(0,0,0,.4); font-family: var(--vscode-font-family); font-size: var(--vscode-font-size, 13px); }
+</style>
+</head>
+<body>
+<dialog id="d" open>
+  <form method="dialog" style="margin:0">
+    <p style="margin:0 0 16px;line-height:1.5">Compact conversation now?<br>This cannot be undone.</p>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button value="cancel" style="padding:4px 14px;background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground);border:none;border-radius:3px;cursor:pointer;font:inherit">Cancel</button>
+      <button value="ok" style="padding:4px 14px;background:var(--vscode-button-background);color:var(--vscode-button-foreground);border:none;border-radius:3px;cursor:pointer;font:inherit">Compact</button>
+    </div>
+  </form>
+</dialog>
+</body></html>`
+}
+
 function registerCommands(context: vscode.ExtensionContext, extensionPath: string | undefined): void {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('claudeOverwrite.applyPatches', async () => {
@@ -213,6 +269,16 @@ function registerCommands(context: vscode.ExtensionContext, extensionPath: strin
 				return
 			}
 			await revertWebview(claudeExt.extensionPath)
+		}),
+
+		vscode.commands.registerCommand('claudeOverwrite.previewDialog', () => {
+			const panel = vscode.window.createWebviewPanel(
+				'claudeOverwritePreview',
+				'Compact Dialog Preview',
+				vscode.ViewColumn.One,
+				{}
+			)
+			panel.webview.html = buildPreviewHtml()
 		})
 	)
 }

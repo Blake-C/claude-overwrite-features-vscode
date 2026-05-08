@@ -23,6 +23,10 @@
 			{
 				"command": "claudeOverwrite.revertPatches",
 				"title": "Claude Code: Revert Feature Patches"
+			},
+			{
+				"command": "claudeOverwrite.previewDialog",
+				"title": "Claude Code: Preview Compact Confirm Dialog"
 			}
 		]
 	},
