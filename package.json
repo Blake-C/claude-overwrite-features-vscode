@@ -1,0 +1,43 @@
+{
+	"name": "claude-overwrite-features",
+	"displayName": "Claude Code — Overwrite Features",
+	"description": "Patches the Claude Code extension to fix auto-include file, compact attachments, and compact confirmation behaviors.",
+	"version": "0.1.0",
+	"publisher": "bcerecero",
+	"engines": {
+		"vscode": "^1.94.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "claudeOverwrite.applyPatches",
+				"title": "Claude Code: Re-apply Feature Patches"
+			},
+			{
+				"command": "claudeOverwrite.revertPatches",
+				"title": "Claude Code: Revert Feature Patches"
+			}
+		]
+	},
+	"scripts": {
+		"compile": "webpack --mode development",
+		"watch": "webpack --mode development --watch",
+		"package": "webpack --mode production",
+		"lint": "eslint src"
+	},
+	"devDependencies": {
+		"@types/node": "^20.0.0",
+		"@types/vscode": "^1.94.0",
+		"ts-loader": "^9.5.0",
+		"typescript": "^5.4.0",
+		"webpack": "^5.91.0",
+		"webpack-cli": "^5.1.4"
+	}
+}
