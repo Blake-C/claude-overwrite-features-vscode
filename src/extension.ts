@@ -6,13 +6,14 @@ const CLAUDE_CODE_EXTENSION_ID = 'anthropic.claude-code'
 const STATE_KEY_PATCHED_VERSION = 'patchedClaudeCodeVersion'
 const WEBVIEW_FILE = path.join('webview', 'index.js')
 const EXTENSION_FILE = 'extension.js'
+const PACKAGE_JSON_FILE = 'package.json'
 const BACKUP_SUFFIX = '.backup'
 
 interface Patch {
 	name: string
 	from: string
 	to: string
-	targetFile?: 'webview' | 'extension'
+	targetFile?: 'webview' | 'extension' | 'packageJson'
 }
 
 const PATCHES: Patch[] = [
@@ -36,6 +37,36 @@ const PATCHES: Patch[] = [
 		targetFile: 'extension',
 		from: 'return{behavior:"allow",updatedInput:B};let q=await this.sendRequest(V,{type:"tool_permission_request",toolName:K,inputs:B,suggestions:x},G);',
 		to: 'return{behavior:"allow",updatedInput:B};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const r=p.match(/^(\\w+)\\((.+)\\)$/);if(!r)return p===K;if(r[1]!==K)return!1;const c=typeof B==="object"&&B!==null?B.command??B.cmd??B.input??JSON.stringify(B):"";return new RegExp("^"+r[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:B}}catch(_e){}let q=await this.sendRequest(V,{type:"tool_permission_request",toolName:K,inputs:B,suggestions:x},G);',
+	},
+	{
+		name: 'Feature 5: Label panel as patched (activitybar container)',
+		targetFile: 'packageJson',
+		from: '"id": "claude-sidebar",\n\t\t\t\t\t"title": "Claude Code"',
+		to: '"id": "claude-sidebar",\n\t\t\t\t\t"title": "Claude Code - Patched"',
+	},
+	{
+		name: 'Feature 5: Label panel as patched (sessions container)',
+		targetFile: 'packageJson',
+		from: '"id": "claude-sessions-sidebar",\n\t\t\t\t\t"title": "Claude Code"',
+		to: '"id": "claude-sessions-sidebar",\n\t\t\t\t\t"title": "Claude Code - Patched"',
+	},
+	{
+		name: 'Feature 5: Label panel as patched (secondary sidebar container)',
+		targetFile: 'packageJson',
+		from: '"id": "claude-sidebar-secondary",\n\t\t\t\t\t"title": "Claude Code"',
+		to: '"id": "claude-sidebar-secondary",\n\t\t\t\t\t"title": "Claude Code - Patched"',
+	},
+	{
+		name: 'Feature 5: Label panel as patched (view name)',
+		targetFile: 'packageJson',
+		from: '"id": "claudeVSCodeSidebar",\n\t\t\t\t\t"name": "Claude Code"',
+		to: '"id": "claudeVSCodeSidebar",\n\t\t\t\t\t"name": "Claude Code - Patched"',
+	},
+	{
+		name: 'Feature 5: Label panel as patched (secondary view name)',
+		targetFile: 'packageJson',
+		from: '"id": "claudeVSCodeSidebarSecondary",\n\t\t\t\t\t"name": "Claude Code"',
+		to: '"id": "claudeVSCodeSidebarSecondary",\n\t\t\t\t\t"name": "Claude Code - Patched"',
 	},
 ]
 
@@ -108,6 +139,7 @@ async function patchWebview(
 ): Promise<void> {
 	const webviewPatches = PATCHES.filter(p => !p.targetFile || p.targetFile === 'webview')
 	const extensionPatches = PATCHES.filter(p => p.targetFile === 'extension')
+	const packageJsonPatches = PATCHES.filter(p => p.targetFile === 'packageJson')
 
 	const webviewPath = path.join(extensionPath, WEBVIEW_FILE)
 	const { results: webviewResults, anyApplied: webviewApplied } = applyPatchesToFile(webviewPath, webviewPatches)
@@ -115,8 +147,11 @@ async function patchWebview(
 	const extensionJsPath = path.join(extensionPath, EXTENSION_FILE)
 	const { results: extensionResults, anyApplied: extensionApplied } = applyPatchesToFile(extensionJsPath, extensionPatches)
 
-	const anyApplied = webviewApplied || extensionApplied
-	const allResults = [...webviewResults, ...extensionResults]
+	const packageJsonPath = path.join(extensionPath, PACKAGE_JSON_FILE)
+	const { results: pkgResults, anyApplied: pkgApplied } = applyPatchesToFile(packageJsonPath, packageJsonPatches)
+
+	const anyApplied = webviewApplied || extensionApplied || pkgApplied
+	const allResults = [...webviewResults, ...extensionResults, ...pkgResults]
 
 	const claudeExt = findClaudeCodeExtension()
 	const version = claudeExt?.packageJSON?.version ?? 'unknown'
@@ -159,8 +194,10 @@ function revertFile(filePath: string, patches: Patch[]): boolean {
 async function revertWebview(extensionPath: string): Promise<void> {
 	const webviewPath = path.join(extensionPath, WEBVIEW_FILE)
 	const extensionJsPath = path.join(extensionPath, EXTENSION_FILE)
+	const packageJsonPath = path.join(extensionPath, PACKAGE_JSON_FILE)
 	const webviewBackup = webviewPath + BACKUP_SUFFIX
 	const extensionBackup = extensionJsPath + BACKUP_SUFFIX
+	const packageJsonBackup = packageJsonPath + BACKUP_SUFFIX
 
 	let anyReverted = false
 
@@ -174,14 +211,21 @@ async function revertWebview(extensionPath: string): Promise<void> {
 		fs.unlinkSync(extensionBackup)
 		anyReverted = true
 	}
+	if (fs.existsSync(packageJsonBackup)) {
+		fs.writeFileSync(packageJsonPath, fs.readFileSync(packageJsonBackup, 'utf8'), 'utf8')
+		fs.unlinkSync(packageJsonBackup)
+		anyReverted = true
+	}
 
 	if (!anyReverted) {
 		// No backups — try reverting in-place using patch definitions
 		const webviewPatches = PATCHES.filter(p => !p.targetFile || p.targetFile === 'webview')
 		const extensionPatches = PATCHES.filter(p => p.targetFile === 'extension')
+		const packageJsonPatches = PATCHES.filter(p => p.targetFile === 'packageJson')
 		const wReverted = revertFile(webviewPath, webviewPatches)
 		const eReverted = revertFile(extensionJsPath, extensionPatches)
-		anyReverted = wReverted || eReverted
+		const pjReverted = revertFile(packageJsonPath, packageJsonPatches)
+		anyReverted = wReverted || eReverted || pjReverted
 	}
 
 	if (anyReverted) {
