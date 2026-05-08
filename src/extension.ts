@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
 
-const EXTENSION_ID_PREFIX = 'anthropic.claude-code'
+const CLAUDE_CODE_EXTENSION_ID = 'anthropic.claude-code'
 const STATE_KEY_PATCHED_VERSION = 'patchedClaudeCodeVersion'
 const WEBVIEW_FILE = path.join('webview', 'index.js')
 const BACKUP_SUFFIX = '.backup'
@@ -32,7 +32,7 @@ const PATCHES: Patch[] = [
 ]
 
 function findClaudeCodeExtension(): vscode.Extension<unknown> | undefined {
-	return vscode.extensions.all.find(ext => ext.id.startsWith(EXTENSION_ID_PREFIX))
+	return vscode.extensions.getExtension(CLAUDE_CODE_EXTENSION_ID)
 }
 
 function applyPatch(content: string, patch: Patch): { content: string; applied: boolean; alreadyPatched: boolean } {
