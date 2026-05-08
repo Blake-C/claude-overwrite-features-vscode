@@ -9,6 +9,8 @@ const EXTENSION_FILE = 'extension.js'
 const PACKAGE_JSON_FILE = 'package.json'
 const BACKUP_SUFFIX = '.backup'
 
+let outputChannel: vscode.OutputChannel | undefined
+
 interface Patch {
 	name: string
 	from: string
@@ -158,18 +160,35 @@ async function patchWebview(
 	await context.globalState.update(STATE_KEY_PATCHED_VERSION, version)
 
 	if (!silent || anyApplied) {
-		const summary = allResults.join('\n')
+		outputChannel!.clear()
+		outputChannel!.appendLine(`Claude Code Patches — Claude Code v${version}`)
+		outputChannel!.appendLine('')
+		for (const line of allResults) {
+			outputChannel!.appendLine(line)
+		}
+
+		const applied = allResults.filter(r => r.startsWith('✓')).length
+		const total = allResults.length
+
 		if (anyApplied) {
 			vscode.window.showInformationMessage(
-				`Claude Code Patches applied. Reload VS Code to take effect.\n\n${summary}`,
-				'Reload Window'
+				`Claude Code Patches: ${applied}/${total} applied. Reload VS Code to take effect.`,
+				'Reload Window',
+				'Show Log'
 			).then(action => {
 				if (action === 'Reload Window') {
 					vscode.commands.executeCommand('workbench.action.reloadWindow')
+				} else if (action === 'Show Log') {
+					outputChannel!.show()
 				}
 			})
 		} else if (!silent) {
-			vscode.window.showInformationMessage(`Claude Code Patches:\n\n${summary}`)
+			vscode.window.showInformationMessage(
+				`Claude Code Patches: all ${total} already applied.`,
+				'Show Log'
+			).then(action => {
+				if (action === 'Show Log') outputChannel!.show()
+			})
 		}
 	}
 }
@@ -243,6 +262,9 @@ async function revertWebview(extensionPath: string): Promise<void> {
 }
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
+	outputChannel = vscode.window.createOutputChannel('Claude Code Patches')
+	context.subscriptions.push(outputChannel)
+
 	const claudeExt = findClaudeCodeExtension()
 
 	if (!claudeExt) {
