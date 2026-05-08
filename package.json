@@ -18,15 +18,15 @@
 		"commands": [
 			{
 				"command": "claudeOverwrite.applyPatches",
-				"title": "Claude Code: Re-apply Feature Patches"
+				"title": "Claude Code Patch: Re-apply Feature Patches"
 			},
 			{
 				"command": "claudeOverwrite.revertPatches",
-				"title": "Claude Code: Revert Feature Patches"
+				"title": "Claude Code Patch: Revert Feature Patches"
 			},
 			{
 				"command": "claudeOverwrite.previewDialog",
-				"title": "Claude Code: Preview Compact Confirm Dialog"
+				"title": "Claude Code Patch: Preview Compact Confirm Dialog"
 			}
 		]
 	},
