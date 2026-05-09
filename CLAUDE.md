@@ -23,28 +23,31 @@ There are no tests.
 
 ## Architecture
 
-This is a single-file VS Code extension (`src/extension.ts`) whose sole job is to patch the installed Claude Code extension's webview on startup.
+This is a single-file VS Code extension (`src/extension.ts`) whose sole job is to patch the installed Claude Code extension's files on startup.
 
 **How patching works:**
 
 On `activate()`, the extension:
 1. Locates Claude Code via `vscode.extensions.getExtension('anthropic.claude-code')`
-2. Reads `<claudeCodePath>/webview/index.js` (a ~4.8 MB minified React bundle)
-3. Applies three targeted string replacements (defined in the `PATCHES` array)
-4. Writes the file back and creates `index.js.backup` on first run
+2. Reads three files from the Claude Code install directory: `webview/index.js`, `extension.js`, and `package.json`
+3. Applies targeted string replacements defined in the `PATCHES` array — each patch has an optional `targetFile` field (`'webview'` | `'extension'` | `'packageJson'`) that routes it to the right file
+4. Writes each modified file back and creates a `.backup` alongside it on first run
 5. Stores the patched Claude Code version in `globalState` to detect future updates
+6. Logs per-patch results (`✓` applied, `—` already applied, `✗` pattern not found) to the **Claude Code Patches** output channel
 
-**The three patches** (all patterns verified unique in the minified file):
+**The patches** (all patterns verified unique in the minified files):
 
-| # | What | `from` → `to` |
-|---|---|---|
-| 1 | Default include-file toggle to OFF | `n1.useState(!0)` → `n1.useState(!1)` (in `De1` component's `[P,_]` state) |
-| 2 | Strip attachments from slash commands | `$.send(x1,B,k5)` → `$.send(x1,e1?[]:B,k5)` (`e1` is already `true` for slash commands) |
-| 3 | Confirm before compact | Wraps `onClick:J` on the compact button with `window.confirm(...)&&J()` |
+| # | What | Target file | Notes |
+|---|---|---|---|
+| 1 | Default include-file toggle to OFF | `webview/index.js` | `n1.useState(!0)` → `n1.useState(!1)` in `De1` component's `[P,_]` state |
+| 2 | Strip attachments from slash commands | `webview/index.js` | `$.send(x1,B,k5),W([])` → `$.send(x1,e1?[]:B,k5),W([])` — `e1` is `true` for slash commands |
+| 3 | Confirm before compact | `webview/index.js` | Replaces the compact `onClick` with an inline `<dialog>` styled with VS Code CSS variables |
+| 4 | Respect `~/.claude/settings.json` in plan mode | `extension.js` | Injects allow/deny list check before the tool-permission request is sent to the UI |
+| 5 | Label panel as "Claude Code - Patched" | `package.json` | Renames all five `"title"/"name": "Claude Code"` entries in `viewsContainers`/`views` contributions |
 
 **Version change detection:** If `claudeExt.packageJSON.version` differs from the stored `patchedClaudeCodeVersion` in `globalState`, patches are re-applied automatically and the user is warned.
 
-**Revert path:** `index.js.backup` is restored via `claudeOverwrite.revertPatches`. If no backup exists, patches are reversed in-place using the `revertPatch()` helper (swaps `to` → `from`).
+**Revert path:** `.backup` files are restored via `claudeOverwrite.revertPatches`. If no backups exist, patches are reversed in-place using the `revertPatch()` helper (swaps `to` → `from`).
 
 ## Key constraint
 
@@ -96,7 +99,7 @@ User types → ot1 input → k1() (on Enter) → J(text) → C(text) in De1
 ### Compact flow
 
 ```
-User clicks compact button (ft1) → onClick → window.confirm [Patch 3] → J() (onCompact in ft1)
+User clicks compact button (ft1) → onClick → <dialog> modal [Patch 3] → user confirms → J() (onCompact in ft1)
   → onCompact:z in ht1 → onCompact:Y0 in ot1 → Y0() → J("/compact") (onSubmit)
   → C("/compact") in De1 → e1=true → k5=false, B replaced with [] [Patch 2] → $.send("/compact",[],false)
 ```
@@ -105,8 +108,10 @@ User clicks compact button (ft1) → onClick → window.confirm [Patch 3] → J(
 
 Search for stable string literals near the patch site rather than variable names (which change):
 
-| Patch | Stable anchor to search for |
-|---|---|
-| 1 (includeSelection default) | `"selectionLabel"` CSS class string nearby, or search for the `De1` component signature `function De1({session:` |
-| 2 (attachments + slash) | `"remote-control"` or `"/rc"` string in the same `if` block |
-| 3 (compact confirm) | `"Click to compact now."` text string — the button is within a few hundred chars |
+| Patch | File | Stable anchor to search for |
+|---|---|---|
+| 1 (includeSelection default) | `webview/index.js` | `"selectionLabel"` CSS class string nearby, or the `De1` component signature `function De1({session:` |
+| 2 (attachments + slash) | `webview/index.js` | `"remote-control"` or `"/rc"` string in the same `if` block |
+| 3 (compact confirm) | `webview/index.js` | `"Click to compact now."` text string — the button is within a few hundred chars |
+| 4 (plan-mode permissions) | `extension.js` | `tool_permission_request` string — the injection site is immediately after the first early-return `behavior:"allow"` before that string |
+| 5 (panel label) | `package.json` | `"id": "claude-sidebar"` and `"id": "claudeVSCodeSidebar"` — each followed by a `"title"` or `"name"` key |
