@@ -53,6 +53,10 @@ On `activate()`, the extension:
 
 Patches are string literals matched against minified code. If Claude Code updates and renames internal variables, a patch will silently report "pattern not found" rather than corrupt the file. Always verify patch strings against the actual installed file when the Claude Code version changes.
 
+If it appears that Anthropic has fixed a patch internally within the plugin, report it to the code author.
+
+Update CLAUDE.md file when new findings are made to keep knowledge up to date.
+
 ## Navigating the Claude Code webview
 
 `webview/index.js` is ~4.8 MB of minified React on ~2045 long lines. `grep` produces unmanageably large output. Use Python for all searches:
@@ -68,14 +72,14 @@ print(idx, repr(content[max(0,idx-300):idx+300]))
 
 For regex searches use `re.finditer`. Always anchor searches to unique surrounding context, not just the target string.
 
-### Component map (minified names, v2.1.133)
+### Component map (minified names, v2.1.138)
 
 | Minified name | Role |
 |---|---|
 | `De1` | Main chat view — owns `[B,W]` (attachedFiles) and `[P,_]` (includeSelection) state |
 | `ot1` | Input/compose area (`forwardRef`) — receives `attachedFiles:Q`, `includeSelection:z`, `onSubmit:J` as props |
-| `ft1` | Compact/context-usage button — receives `onCompact:J`, renders the circle percentage button |
-| `ht1` | Input footer — assembles `ft1`, the attach/mention buttons, and the send button |
+| `xt1` | Compact/context-usage button — receives `onCompact:J`, renders the circle percentage button. As of v2.1.138 the button is `onClick:J` directly — no internal dialog. Patch 3 intercepts this to add the confirmation dialog. |
+| `ht1` | Input footer — assembles `xt1`, the attach/mention buttons, and the send button |
 | `DL0` | Include-selection toggle button in the footer |
 
 ### Key functions
@@ -99,10 +103,13 @@ User types → ot1 input → k1() (on Enter) → J(text) → C(text) in De1
 ### Compact flow
 
 ```
-User clicks compact button (ft1) → onClick → <dialog> modal [Patch 3] → user confirms → J() (onCompact in ft1)
+User clicks compact button (xt1) → onClick:J [unpatched: direct call]
+  [Patch 3 intercepts onClick] → <dialog> modal → user confirms → J() (onCompact in xt1)
   → onCompact:z in ht1 → onCompact:Y0 in ot1 → Y0() → J("/compact") (onSubmit)
   → C("/compact") in De1 → e1=true → k5=false, B replaced with [] [Patch 2] → $.send("/compact",[],false)
 ```
+
+Note: Prior to v2.1.138, Claude Code itself rendered a `<dialog>` on compact with no VS Code styling. As of v2.1.138 that dialog was removed — Patch 3 now builds the entire dialog from scratch.
 
 ### Finding patches after a version update
 
@@ -112,6 +119,6 @@ Search for stable string literals near the patch site rather than variable names
 |---|---|---|
 | 1 (includeSelection default) | `webview/index.js` | `"selectionLabel"` CSS class string nearby, or the `De1` component signature `function De1({session:` |
 | 2 (attachments + slash) | `webview/index.js` | `"remote-control"` or `"/rc"` string in the same `if` block |
-| 3 (compact confirm) | `webview/index.js` | `"Click to compact now."` text string — the button is within a few hundred chars |
-| 4 (plan-mode permissions) | `extension.js` | `tool_permission_request` string — the injection site is immediately after the first early-return `behavior:"allow"` before that string |
+| 3 (compact confirm) | `webview/index.js` | `click to compact\`` in the button's `title` attribute — patch site is `onClick:J,onMouseEnter:` (replace `onClick:J` with the dialog). If Claude Code re-adds its own dialog, the `from` will need to capture whatever onClick code precedes `,onMouseEnter:`. |
+| 4 (plan-mode permissions) | `extension.js` | `tool_permission_request` string — the injection site is immediately after the first early-return `{behavior:"allow",updatedInput:...}` before that string. Variable names change each release; check `inputs`, `channelId`, `suggestions`, `abortSignal`, and `result` vars. v2.1.138 map: `V`=inputs, `z`=channelId, `N`=suggestions, `x`=abortSignal, `O`=result, `K`=toolName. |
 | 5 (panel label) | `package.json` | `"id": "claude-sidebar"` and `"id": "claudeVSCodeSidebar"` — each followed by a `"title"` or `"name"` key |
