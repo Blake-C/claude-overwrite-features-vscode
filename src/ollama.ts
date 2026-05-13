@@ -137,13 +137,12 @@ export async function configureOllama(): Promise<void> {
 	settings.env = env
 	writeClaudeSettings(settings)
 
-	const action = await vscode.window.showInformationMessage(
+	vscode.window.showInformationMessage(
 		`Claude Code configured to use local Ollama model "${modelName}". Restart Claude Code to apply.`,
 		'Revert to Anthropic API'
-	)
-	if (action === 'Revert to Anthropic API') {
-		await revertOllama()
-	}
+	).then(action => {
+		if (action === 'Revert to Anthropic API') revertOllama()
+	})
 }
 
 export async function ollamaStatus(outputChannel: vscode.OutputChannel): Promise<void> {
