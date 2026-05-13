@@ -27,6 +27,26 @@
 			{
 				"command": "claudeOverwrite.previewDialog",
 				"title": "Claude Code Patch: Preview Compact Confirm Dialog"
+			},
+			{
+				"command": "claudeOverwrite.ollamaStatus",
+				"title": "Claude Code Patch: Check Ollama Status"
+			},
+			{
+				"command": "claudeOverwrite.ollamaRecommend",
+				"title": "Claude Code Patch: Recommend Ollama Model"
+			},
+			{
+				"command": "claudeOverwrite.ollamaTestCurrent",
+				"title": "Claude Code Patch: Test Current Ollama Model Compatibility"
+			},
+			{
+				"command": "claudeOverwrite.configureOllama",
+				"title": "Claude Code Patch: Use Local Ollama Model"
+			},
+			{
+				"command": "claudeOverwrite.revertOllama",
+				"title": "Claude Code Patch: Revert to Anthropic API (Ollama)"
 			}
 		]
 	},
