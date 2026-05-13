@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { patchWebview, revertWebview, STATE_KEY_PATCHED_VERSION } from './patches'
-import { configureOllama, ollamaStatus, ollamaRecommend, ollamaTestCurrent, revertOllama } from './ollama'
+import { configureOllama, ollamaStatus, ollamaRecommend, revertOllama } from './ollama'
 
 const CLAUDE_CODE_EXTENSION_ID = 'anthropic.claude-code'
 
@@ -89,9 +89,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
 
 		vscode.commands.registerCommand('claudeOverwrite.ollamaRecommend', () => ollamaRecommend(outputChannel!)),
 
-		vscode.commands.registerCommand('claudeOverwrite.ollamaTestCurrent', () => ollamaTestCurrent(outputChannel!)),
-
-		vscode.commands.registerCommand('claudeOverwrite.configureOllama', () => configureOllama()),
+vscode.commands.registerCommand('claudeOverwrite.configureOllama', () => configureOllama()),
 
 		vscode.commands.registerCommand('claudeOverwrite.revertOllama', () => revertOllama()),
 

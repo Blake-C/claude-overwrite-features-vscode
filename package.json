@@ -36,11 +36,7 @@
 				"command": "claudeOverwrite.ollamaRecommend",
 				"title": "Claude Code Patch: Recommend Ollama Model"
 			},
-			{
-				"command": "claudeOverwrite.ollamaTestCurrent",
-				"title": "Claude Code Patch: Test Current Ollama Model Compatibility"
-			},
-			{
+{
 				"command": "claudeOverwrite.configureOllama",
 				"title": "Claude Code Patch: Use Local Ollama Model"
 			},

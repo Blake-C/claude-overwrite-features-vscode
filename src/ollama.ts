@@ -94,42 +94,10 @@ function isStaticallyIncompatible(name: string): string | null {
 	return null
 }
 
-function probeLoadedModel(name: string): Promise<'compatible' | 'incompatible'> {
-	return new Promise(resolve => {
-		const body = JSON.stringify({
-			model: name,
-			max_tokens: 5,
-			messages: [{ role: 'user', content: 'hi' }],
-			tools: [{ name: 'ping', description: 'test', input_schema: { type: 'object', properties: {} } }],
-		})
-		const req = http.request(
-			{ hostname: 'localhost', port: 11434, path: '/v1/messages', method: 'POST',
-			  headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } },
-			res => {
-				let data = ''
-				res.on('data', chunk => { data += chunk })
-				res.on('end', () => {
-					try {
-						const parsed = JSON.parse(data) as Record<string, unknown>
-						resolve(res.statusCode === 200 && !parsed['error'] ? 'compatible' : 'incompatible')
-					} catch { resolve('incompatible') }
-				})
-			}
-		)
-		req.on('error', () => resolve('incompatible'))
-		req.setTimeout(5000, () => { req.destroy(); resolve('incompatible') })
-		req.write(body)
-		req.end()
-	})
-}
-
 export async function configureOllama(): Promise<void> {
 	let models: string[]
-	let loadedNames: string[] = []
 	try {
 		models = await fetchOllamaModels()
-		const ps = await ollamaGet('/api/ps').catch(() => ({ models: [] })) as { models?: { name: string }[] }
-		loadedNames = (ps.models ?? []).map(m => m.name)
 	} catch (err) {
 		vscode.window.showErrorMessage(
 			`Could not connect to Ollama at http://localhost:11434. Make sure Ollama is running. (${err instanceof Error ? err.message : err})`
@@ -142,25 +110,13 @@ export async function configureOllama(): Promise<void> {
 		return
 	}
 
-	const probeResults = new Map<string, 'compatible' | 'incompatible'>()
-	await Promise.all(loadedNames.map(async name => {
-		probeResults.set(name, await probeLoadedModel(name))
-	}))
-
 	const items: vscode.QuickPickItem[] = models.map(name => {
 		const staticReason = isStaticallyIncompatible(name)
-		const probeResult = probeResults.get(name)
 		const scores = scoreModel(name)
 		const scoreStr = `Speed:${scores.speed}  Coding:${scores.coding}  Planning:${scores.planning}`
 
 		if (staticReason) {
 			return { label: `⚠ ${name}`, description: `incompatible — ${staticReason}`, detail: '(selectable, but likely broken with Claude Code)' }
-		}
-		if (probeResult === 'incompatible') {
-			return { label: `⚠ ${name}`, description: 'tested — tool use not supported', detail: scoreStr }
-		}
-		if (probeResult === 'compatible') {
-			return { label: `✓ ${name} (tested)`, description: scoreStr }
 		}
 		return { label: name, description: scoreStr }
 	})
@@ -250,11 +206,8 @@ export async function ollamaStatus(outputChannel: vscode.OutputChannel): Promise
 
 export async function ollamaRecommend(outputChannel: vscode.OutputChannel): Promise<void> {
 	let models: string[]
-	let loadedNames: string[] = []
 	try {
-		[models] = await Promise.all([fetchOllamaModels()])
-		const ps = await ollamaGet('/api/ps').catch(() => ({ models: [] })) as { models?: { name: string }[] }
-		loadedNames = (ps.models ?? []).map(m => m.name)
+		models = await fetchOllamaModels()
 	} catch (err) {
 		vscode.window.showErrorMessage(
 			`Could not connect to Ollama at http://localhost:11434. Make sure Ollama is running. (${err instanceof Error ? err.message : err})`
@@ -267,25 +220,15 @@ export async function ollamaRecommend(outputChannel: vscode.OutputChannel): Prom
 		return
 	}
 
-	const probeResults = new Map<string, 'compatible' | 'incompatible'>()
-	await Promise.all(loadedNames.map(async name => {
-		probeResults.set(name, await probeLoadedModel(name))
-	}))
-
 	const incompatible: Array<{ name: string; reason: string }> = []
 	const compatible: string[] = []
 	for (const name of models) {
 		const staticReason = isStaticallyIncompatible(name)
 		if (staticReason) {
 			incompatible.push({ name, reason: staticReason })
-			continue
+		} else {
+			compatible.push(name)
 		}
-		const probeResult = probeResults.get(name)
-		if (probeResult === 'incompatible') {
-			incompatible.push({ name, reason: 'tool use probe failed (model loaded)' })
-			continue
-		}
-		compatible.push(name)
 	}
 
 	const scored = compatible.map(name => ({ name, ...scoreModel(name) }))
@@ -327,41 +270,6 @@ export async function ollamaRecommend(outputChannel: vscode.OutputChannel): Prom
 		outputChannel.appendLine(lines.join('\n'))
 		outputChannel.show()
 		vscode.window.showWarningMessage('No compatible Ollama models found. See output for details.')
-	}
-}
-
-export async function ollamaTestCurrent(outputChannel: vscode.OutputChannel): Promise<void> {
-	let loadedNames: string[] = []
-	try {
-		const ps = await ollamaGet('/api/ps') as { models?: { name: string }[] }
-		loadedNames = (ps.models ?? []).map(m => m.name)
-	} catch {
-		vscode.window.showErrorMessage('Could not reach Ollama at http://localhost:11434. Make sure Ollama is running.')
-		return
-	}
-
-	if (loadedNames.length === 0) {
-		vscode.window.showWarningMessage('No model is currently loaded in Ollama. Send a message to Claude Code first to load one, then run this test.')
-		return
-	}
-
-	const name = loadedNames[0]
-	const result = await vscode.window.withProgress(
-		{ location: vscode.ProgressLocation.Notification, title: `Testing ${name} for Claude Code compatibility…` },
-		() => probeLoadedModel(name)
-	)
-
-	const line = result === 'compatible'
-		? `✓ ${name} — compatible (tool use works)`
-		: `⚠ ${name} — incompatible (tool use probe failed)`
-
-	outputChannel.appendLine(`\nCompatibility test: ${line}`)
-	outputChannel.show()
-
-	if (result === 'compatible') {
-		vscode.window.showInformationMessage(`${name} is compatible with Claude Code.`)
-	} else {
-		vscode.window.showWarningMessage(`${name} failed the tool-use probe. Claude Code may not work correctly with this model.`)
 	}
 }
 
