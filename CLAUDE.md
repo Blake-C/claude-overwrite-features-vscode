@@ -21,6 +21,16 @@ source ~/.nvm/nvm.sh && nvm use --lts
 
 There are no tests.
 
+## Versioning
+
+After any substantial change (new patch, bug fix, behavior change), bump the version in `package.json` and repackage:
+
+1. Increment the `"version"` field in `package.json` (e.g. `0.1.0` → `0.2.0`)
+2. Run `npx @vscode/vsce package` to produce the new `.vsix`
+3. Run `code --install-extension claude-overwrite-features-<version>.vsix` to install it
+
+Use semantic versioning: patch bump (0.1.x) for fixes and minor tweaks, minor bump (0.x.0) for new features.
+
 ## Architecture
 
 This is a single-file VS Code extension (`src/extension.ts`) whose sole job is to patch the installed Claude Code extension's files on startup.
@@ -40,10 +50,11 @@ On `activate()`, the extension:
 | # | What | Target file | Notes |
 |---|---|---|---|
 | 1 | Default include-file toggle to OFF | `webview/index.js` | `n1.useState(!0)` → `n1.useState(!1)` in `De1` component's `[P,_]` state |
-| 2 | Strip attachments from slash commands | `webview/index.js` | `$.send(x1,B,k5),W([])` → `$.send(x1,e1?[]:B,k5),W([])` — `e1` is `true` for slash commands |
+| 2 | Strip attachments from slash commands + reset toggle | `webview/index.js` | `$.send(x1,B,k5),W([])` → `$.send(x1,e1?[]:B,k5),W([]),_(!1)` — skips attachments for slash commands and resets `P` (includeSelection) to off after every send |
 | 3 | Confirm before compact | `webview/index.js` | Replaces the compact `onClick` with an inline `<dialog>` styled with VS Code CSS variables |
 | 4 | Respect `~/.claude/settings.json` in plan mode | `extension.js` | Injects allow/deny list check before the tool-permission request is sent to the UI |
 | 5 | Label panel as "Claude Code - Patched" | `package.json` | Renames all five `"title"/"name": "Claude Code"` entries in `viewsContainers`/`views` contributions |
+| 6 | Auto-reset include-file toggle after send (migration) | `webview/index.js` | Migration patch for existing installs with old Patch 2 already applied — adds `_(!1)` to reset `P` without requiring a full revert |
 
 **Version change detection:** If `claudeExt.packageJSON.version` differs from the stored `patchedClaudeCodeVersion` in `globalState`, patches are re-applied automatically and the user is warned.
 
@@ -97,7 +108,7 @@ For regex searches use `re.finditer`. Always anchor searches to unique surroundi
 User types → ot1 input → k1() (on Enter) → J(text) → C(text) in De1
   C builds: e1 (slash?), k5 (includeSelection), then calls $.send(text, B, k5)
   $.send → VB1 adds ide_opened_file/selection context + file attachments → sends to Claude CLI
-  After send: W([]) clears attached files
+  After send: W([]) clears attached files, _(!1) resets includeSelection toggle [Patch 2/6]
 ```
 
 ### Compact flow
