@@ -34,8 +34,8 @@ export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 4: Respect ~/.claude/settings.json permissions in plan mode',
 		targetFile: 'extension',
-		from: 'return{behavior:"allow",updatedInput:V};let O=await this.sendRequest(z,{type:"tool_permission_request",toolName:K,inputs:V,suggestions:N},x);',
-		to: 'return{behavior:"allow",updatedInput:V};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const r=p.match(/^(\\w+)\\((.+)\\)$/);if(!r)return p===K;if(r[1]!==K)return!1;const c=typeof V==="object"&&V!==null?V.command??V.cmd??V.input??JSON.stringify(V):"";return new RegExp("^"+r[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:V}}catch(_e){}let O=await this.sendRequest(z,{type:"tool_permission_request",toolName:K,inputs:V,suggestions:N},x);',
+		from: 'return{behavior:"allow",updatedInput:V};let O=await this.sendRequest(z,{type:"tool_permission_request",toolName:K,inputs:V,suggestions:x},N);return U80(K,O),O.result}',
+		to: 'return{behavior:"allow",updatedInput:V};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const r=p.match(/^(\\w+)\\((.+)\\)$/);if(!r)return p===K;if(r[1]!==K)return!1;const c=typeof V==="object"&&V!==null?V.command??V.cmd??V.input??JSON.stringify(V):"";return new RegExp("^"+r[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:V}}catch(_e){}let O=await this.sendRequest(z,{type:"tool_permission_request",toolName:K,inputs:V,suggestions:x},N);return U80(K,O),O.result}',
 	},
 	{
 		name: 'Feature 5: Label panel as patched (activitybar container)',
