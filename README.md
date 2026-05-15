@@ -2,13 +2,15 @@
 
 > **Use at your own risk.** This extension works by directly modifying the installed Claude Code extension's minified files. It is inherently fragile — any Claude Code update can rename internal variables, restructure the bundle, or move patch sites, silently breaking one or more features. Rapid or back-to-back Claude Code updates are especially likely to leave patches in a partial or failed state. Always check the Claude Code Patches output channel after VS Code restarts and be prepared to revert if something looks wrong.
 
-A companion VS Code extension that patches five UX behaviors in the [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) extension and adds commands for running Claude Code against a local [Ollama](https://ollama.com) model.
+A companion VS Code extension that patches six UX behaviors in the [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) extension and adds commands for running Claude Code against a local [Ollama](https://ollama.com) model.
 
 ## What it changes
 
 1. **Include-file toggle defaults to OFF** — The "include current file/selection" button in the chat footer starts disabled. You can still toggle it on manually per message.
 
 2. **Attachments are not sent with slash commands** — When you have files attached and trigger `/compact` (or any slash command), those attachments are withheld from the command. Files remain attached and are sent with your next regular message.
+
+   The include-file toggle also resets to OFF automatically after every sent message, so it never carries over to the next one.
 
 3. **Compact button requires confirmation** — Clicking the context-usage button now shows a styled VS Code dialog before compacting, preventing accidental context loss.
 
@@ -77,7 +79,7 @@ npm run package
 npx @vscode/vsce package
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.1.0.vsix
+code --install-extension claude-overwrite-features-0.2.0.vsix
 ```
 
 Then **reload VS Code** — the extension activates on startup and applies patches automatically.
