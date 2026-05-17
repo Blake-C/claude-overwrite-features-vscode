@@ -54,7 +54,6 @@ On `activate()`, the extension:
 | 3 | Confirm before compact | `webview/index.js` | Replaces the compact `onClick` with an inline `<dialog>` styled with VS Code CSS variables |
 | 4 | Respect `~/.claude/settings.json` in plan mode | `extension.js` | Injects allow/deny list check before the tool-permission request is sent to the UI |
 | 5 | Label panel as "Claude Code - Patched" | `package.json` | Renames all five `"title"/"name": "Claude Code"` entries in `viewsContainers`/`views` contributions |
-| 6 | Auto-reset include-file toggle after send (migration) | `webview/index.js` | Migration patch for existing installs with old Patch 2 already applied — adds `_(!1)` to reset `P` without requiring a full revert |
 
 **Version change detection:** If `claudeExt.packageJSON.version` differs from the stored `patchedClaudeCodeVersion` in `globalState`, patches are re-applied automatically and the user is warned.
 

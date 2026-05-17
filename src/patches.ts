@@ -67,11 +67,6 @@ export const PATCHES: Patch[] = [
 		from: '"id": "claudeVSCodeSidebarSecondary",\n\t\t\t\t\t"name": "Claude Code"',
 		to: '"id": "claudeVSCodeSidebarSecondary",\n\t\t\t\t\t"name": "Claude Code - Patched"',
 	},
-	{
-		name: 'Feature 6: Auto-reset include-file toggle after send',
-		from: 'await $.send(x1,e1?[]:B,k5),W([])',
-		to: 'await $.send(x1,e1?[]:B,k5),W([]),_(!1)',
-	},
 ]
 
 export function applyPatch(content: string, patch: Patch): { content: string; applied: boolean; alreadyPatched: boolean } {
@@ -91,15 +86,15 @@ export function revertPatch(content: string, patch: Patch): { content: string; r
 	return { content: content.replace(patch.to, patch.from), reverted: true }
 }
 
-export function applyPatchesToFile(filePath: string, patches: Patch[]): { results: string[]; anyApplied: boolean } {
-	const results: string[] = []
+export function applyPatchesToFile(filePath: string, patches: Patch[]): { resultMap: Map<string, string>; anyApplied: boolean } {
+	const resultMap = new Map<string, string>()
 	let anyApplied = false
 
 	if (!fs.existsSync(filePath)) {
 		for (const patch of patches) {
-			results.push(`✗ ${patch.name} (file not found)`)
+			resultMap.set(patch.name, `✗ ${patch.name} (file not found)`)
 		}
-		return { results, anyApplied }
+		return { resultMap, anyApplied }
 	}
 
 	let content = fs.readFileSync(filePath, 'utf8')
@@ -114,11 +109,11 @@ export function applyPatchesToFile(filePath: string, patches: Patch[]): { result
 		if (result.applied) {
 			content = result.content
 			anyApplied = true
-			results.push(`✓ ${patch.name}`)
+			resultMap.set(patch.name, `✓ ${patch.name}`)
 		} else if (result.alreadyPatched) {
-			results.push(`— ${patch.name} (already applied)`)
+			resultMap.set(patch.name, `— ${patch.name} (already applied)`)
 		} else {
-			results.push(`✗ ${patch.name} (pattern not found — extension may have updated)`)
+			resultMap.set(patch.name, `✗ ${patch.name} (pattern not found — extension may have updated)`)
 		}
 	}
 
@@ -126,7 +121,43 @@ export function applyPatchesToFile(filePath: string, patches: Patch[]): { result
 		fs.writeFileSync(filePath, content, 'utf8')
 	}
 
-	return { results, anyApplied }
+	return { resultMap, anyApplied }
+}
+
+function getPatchesByTarget(target: Patch['targetFile'] | 'webview'): Patch[] {
+	if (target === 'webview') return PATCHES.filter(p => !p.targetFile || p.targetFile === 'webview')
+	return PATCHES.filter(p => p.targetFile === target)
+}
+
+function worstSymbol(lines: string[]): '✓' | '—' | '✗' {
+	if (lines.some(l => l.startsWith('✗'))) return '✗'
+	if (lines.some(l => l.startsWith('✓'))) return '✓'
+	return '—'
+}
+
+function symbolSuffix(symbol: '✓' | '—' | '✗'): string {
+	if (symbol === '—') return ' (already applied)'
+	if (symbol === '✗') return ' (pattern not found — extension may have updated)'
+	return ''
+}
+
+function buildOrderedResults(resultMap: Map<string, string>): string[] {
+	const orderedResults: string[] = []
+	let feature5Emitted = false
+	for (const patch of PATCHES) {
+		if (patch.name.startsWith('Feature 5:')) {
+			if (!feature5Emitted) {
+				feature5Emitted = true
+				const f5Lines = PATCHES.filter(p => p.name.startsWith('Feature 5:')).map(p => resultMap.get(p.name) ?? '')
+				const symbol = worstSymbol(f5Lines)
+				orderedResults.push(`${symbol} Feature 5: Label panel as patched${symbolSuffix(symbol)}`)
+			}
+		} else {
+			const line = resultMap.get(patch.name)
+			if (line) orderedResults.push(line)
+		}
+	}
+	return orderedResults
 }
 
 export async function patchWebview(
@@ -136,45 +167,24 @@ export async function patchWebview(
 	outputChannel: vscode.OutputChannel,
 	version: string
 ): Promise<void> {
-	const webviewPatches = PATCHES.filter(p => !p.targetFile || p.targetFile === 'webview')
-	const extensionPatches = PATCHES.filter(p => p.targetFile === 'extension')
-	const packageJsonPatches = PATCHES.filter(p => p.targetFile === 'packageJson')
+	const webviewPatches = getPatchesByTarget('webview')
+	const extensionPatches = getPatchesByTarget('extension')
+	const packageJsonPatches = getPatchesByTarget('packageJson')
 
 	const webviewPath = path.join(extensionPath, WEBVIEW_FILE)
-	const { results: webviewResults, anyApplied: webviewApplied } = applyPatchesToFile(webviewPath, webviewPatches)
+	const { resultMap: webviewMap, anyApplied: webviewApplied } = applyPatchesToFile(webviewPath, webviewPatches)
 
 	const extensionJsPath = path.join(extensionPath, EXTENSION_FILE)
-	const { results: extensionResults, anyApplied: extensionApplied } = applyPatchesToFile(extensionJsPath, extensionPatches)
+	const { resultMap: extensionMap, anyApplied: extensionApplied } = applyPatchesToFile(extensionJsPath, extensionPatches)
 
 	const packageJsonPath = path.join(extensionPath, PACKAGE_JSON_FILE)
-	const { results: pkgResults, anyApplied: pkgApplied } = applyPatchesToFile(packageJsonPath, packageJsonPatches)
+	const { resultMap: pkgMap, anyApplied: pkgApplied } = applyPatchesToFile(packageJsonPath, packageJsonPatches)
 
 	const anyApplied = webviewApplied || extensionApplied || pkgApplied
 
-	// Build name→result map so we can display in PATCHES order
-	const resultMap = new Map<string, string>()
-	for (const line of [...webviewResults, ...extensionResults, ...pkgResults]) {
-		const name = line.replace(/^[✓—✗] /, '').replace(/ \(.*\)$/, '')
-		resultMap.set(name, line)
-	}
+	const resultMap = new Map<string, string>([...webviewMap, ...extensionMap, ...pkgMap])
 
-	// Build ordered display list, collapsing all Feature 5 sub-patches into one line
-	const orderedResults: string[] = []
-	let feature5Emitted = false
-	for (const patch of PATCHES) {
-		if (patch.name.startsWith('Feature 5:')) {
-			if (!feature5Emitted) {
-				feature5Emitted = true
-				const f5Lines = PATCHES.filter(p => p.name.startsWith('Feature 5:')).map(p => resultMap.get(p.name) ?? '')
-				const symbol = f5Lines.some(l => l.startsWith('✗')) ? '✗' : f5Lines.some(l => l.startsWith('✓')) ? '✓' : '—'
-				const suffix = symbol === '✓' ? '' : symbol === '—' ? ' (already applied)' : ' (pattern not found — extension may have updated)'
-				orderedResults.push(`${symbol} Feature 5: Label panel as patched${suffix}`)
-			}
-		} else {
-			const line = resultMap.get(patch.name)
-			if (line) orderedResults.push(line)
-		}
-	}
+	const orderedResults = buildOrderedResults(resultMap)
 
 	await context.globalState.update(STATE_KEY_PATCHED_VERSION, version)
 
@@ -229,7 +239,7 @@ function revertFile(filePath: string, patches: Patch[]): boolean {
 	return reverted
 }
 
-export async function revertWebview(extensionPath: string): Promise<void> {
+export async function revertWebview(extensionPath: string, outputChannel: vscode.OutputChannel): Promise<void> {
 	const webviewPath = path.join(extensionPath, WEBVIEW_FILE)
 	const extensionJsPath = path.join(extensionPath, EXTENSION_FILE)
 	const packageJsonPath = path.join(extensionPath, PACKAGE_JSON_FILE)
@@ -237,44 +247,64 @@ export async function revertWebview(extensionPath: string): Promise<void> {
 	const extensionBackup = extensionJsPath + BACKUP_SUFFIX
 	const packageJsonBackup = packageJsonPath + BACKUP_SUFFIX
 
+	const log: string[] = []
 	let anyReverted = false
 
 	if (fs.existsSync(webviewBackup)) {
 		fs.writeFileSync(webviewPath, fs.readFileSync(webviewBackup, 'utf8'), 'utf8')
 		fs.unlinkSync(webviewBackup)
+		log.push('✓ webview/index.js — restored from backup')
 		anyReverted = true
+	} else {
+		const reverted = revertFile(webviewPath, getPatchesByTarget('webview'))
+		log.push(reverted ? '✓ webview/index.js — reverted in-place' : '— webview/index.js — nothing to revert')
+		if (reverted) anyReverted = true
 	}
+
 	if (fs.existsSync(extensionBackup)) {
 		fs.writeFileSync(extensionJsPath, fs.readFileSync(extensionBackup, 'utf8'), 'utf8')
 		fs.unlinkSync(extensionBackup)
+		log.push('✓ extension.js — restored from backup')
 		anyReverted = true
+	} else {
+		const reverted = revertFile(extensionJsPath, getPatchesByTarget('extension'))
+		log.push(reverted ? '✓ extension.js — reverted in-place' : '— extension.js — nothing to revert')
+		if (reverted) anyReverted = true
 	}
+
 	if (fs.existsSync(packageJsonBackup)) {
 		fs.writeFileSync(packageJsonPath, fs.readFileSync(packageJsonBackup, 'utf8'), 'utf8')
 		fs.unlinkSync(packageJsonBackup)
+		log.push('✓ package.json — restored from backup')
 		anyReverted = true
+	} else {
+		const reverted = revertFile(packageJsonPath, getPatchesByTarget('packageJson'))
+		log.push(reverted ? '✓ package.json — reverted in-place' : '— package.json — nothing to revert')
+		if (reverted) anyReverted = true
 	}
 
-	if (!anyReverted) {
-		const webviewPatches = PATCHES.filter(p => !p.targetFile || p.targetFile === 'webview')
-		const extensionPatches = PATCHES.filter(p => p.targetFile === 'extension')
-		const packageJsonPatches = PATCHES.filter(p => p.targetFile === 'packageJson')
-		const wReverted = revertFile(webviewPath, webviewPatches)
-		const eReverted = revertFile(extensionJsPath, extensionPatches)
-		const pjReverted = revertFile(packageJsonPath, packageJsonPatches)
-		anyReverted = wReverted || eReverted || pjReverted
+	outputChannel.clear()
+	outputChannel.appendLine('Claude Code Patches — Revert')
+	outputChannel.appendLine('')
+	for (const line of log) {
+		outputChannel.appendLine(line)
 	}
 
 	if (anyReverted) {
 		vscode.window.showInformationMessage(
 			'Claude Code Patches reverted. Reload VS Code to take effect.',
-			'Reload Window'
+			'Reload Window',
+			'Show Log'
 		).then(action => {
 			if (action === 'Reload Window') {
 				vscode.commands.executeCommand('workbench.action.reloadWindow')
+			} else if (action === 'Show Log') {
+				outputChannel.show()
 			}
 		})
 	} else {
-		vscode.window.showInformationMessage('Claude Code Patches: no patches to revert.')
+		vscode.window.showInformationMessage('Claude Code Patches: no patches to revert.', 'Show Log').then(action => {
+			if (action === 'Show Log') outputChannel.show()
+		})
 	}
 }

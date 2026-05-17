@@ -10,6 +10,12 @@ function findClaudeCodeExtension(): vscode.Extension<unknown> | undefined {
 	return vscode.extensions.getExtension(CLAUDE_CODE_EXTENSION_ID)
 }
 
+function requireClaudeCodeExtension(): vscode.Extension<unknown> | undefined {
+	const ext = findClaudeCodeExtension()
+	if (!ext) vscode.window.showErrorMessage('Claude Code extension not found.')
+	return ext
+}
+
 function buildPreviewHtml(): string {
 	return `<!DOCTYPE html>
 <html lang="en">
@@ -55,11 +61,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		)
 	}
 
-	if (neverPatched || versionChanged) {
-		await patchWebview(context, claudeExt.extensionPath, false, outputChannel, currentVersion)
-	} else {
-		await patchWebview(context, claudeExt.extensionPath, true, outputChannel, currentVersion)
-	}
+	const silent = !neverPatched && !versionChanged
+	await patchWebview(context, claudeExt.extensionPath, silent, outputChannel, currentVersion)
 
 	registerCommands(context)
 }
@@ -67,29 +70,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 function registerCommands(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('claudeOverwrite.applyPatches', async () => {
-			const claudeExt = findClaudeCodeExtension()
-			if (!claudeExt) {
-				vscode.window.showErrorMessage('Claude Code extension not found.')
-				return
-			}
+			const claudeExt = requireClaudeCodeExtension()
+			if (!claudeExt) return
 			const version: string = claudeExt.packageJSON?.version ?? 'unknown'
 			await patchWebview(context, claudeExt.extensionPath, false, outputChannel!, version)
 		}),
 
 		vscode.commands.registerCommand('claudeOverwrite.revertPatches', async () => {
-			const claudeExt = findClaudeCodeExtension()
-			if (!claudeExt) {
-				vscode.window.showErrorMessage('Claude Code extension not found.')
-				return
-			}
-			await revertWebview(claudeExt.extensionPath)
+			const claudeExt = requireClaudeCodeExtension()
+			if (!claudeExt) return
+			await revertWebview(claudeExt.extensionPath, outputChannel!)
 		}),
 
 		vscode.commands.registerCommand('claudeOverwrite.ollamaStatus', () => ollamaStatus(outputChannel!)),
 
 		vscode.commands.registerCommand('claudeOverwrite.ollamaRecommend', () => ollamaRecommend(outputChannel!)),
 
-vscode.commands.registerCommand('claudeOverwrite.configureOllama', () => configureOllama()),
+		vscode.commands.registerCommand('claudeOverwrite.configureOllama', () => configureOllama()),
 
 		vscode.commands.registerCommand('claudeOverwrite.revertOllama', () => revertOllama()),
 
