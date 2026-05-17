@@ -22,7 +22,7 @@ export const PATCHES: Patch[] = [
 		to: 'n1.useRef(!0),[P,_]=n1.useState(!1),[M,w]=n1.useState(!1)',
 	},
 	{
-		name: 'Feature 2: Skip attachments on slash commands (compact)',
+		name: 'Feature 2: Skip attachments + reset toggle on slash commands',
 		from: 'await $.send(x1,B,k5),W([])',
 		to: 'await $.send(x1,e1?[]:B,k5),W([]),_(!1)',
 	},
@@ -124,7 +124,7 @@ export function applyPatchesToFile(filePath: string, patches: Patch[]): { result
 	return { resultMap, anyApplied }
 }
 
-function getPatchesByTarget(target: Patch['targetFile'] | 'webview'): Patch[] {
+function getPatchesByTarget(target: 'webview' | 'extension' | 'packageJson'): Patch[] {
 	if (target === 'webview') return PATCHES.filter(p => !p.targetFile || p.targetFile === 'webview')
 	return PATCHES.filter(p => p.targetFile === target)
 }
@@ -145,10 +145,11 @@ function buildOrderedResults(resultMap: Map<string, string>): string[] {
 	const orderedResults: string[] = []
 	let feature5Emitted = false
 	for (const patch of PATCHES) {
+		// Fragile: 'Feature 5:' prefix is the grouping key — rename any Feature 5 patch and update this check
 		if (patch.name.startsWith('Feature 5:')) {
 			if (!feature5Emitted) {
 				feature5Emitted = true
-				const f5Lines = PATCHES.filter(p => p.name.startsWith('Feature 5:')).map(p => resultMap.get(p.name) ?? '')
+				const f5Lines = PATCHES.filter(p => p.name.startsWith('Feature 5:')).map(p => resultMap.get(p.name) ?? `✗ ${p.name} (result missing)`)
 				const symbol = worstSymbol(f5Lines)
 				orderedResults.push(`${symbol} Feature 5: Label panel as patched${symbolSuffix(symbol)}`)
 			}
