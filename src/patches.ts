@@ -38,11 +38,6 @@ export const PATCHES: Patch[] = [
 		to: 'return{behavior:"allow",updatedInput:V};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const r=p.match(/^(\\w+)\\((.+)\\)$/);if(!r)return p===K;if(r[1]!==K)return!1;const c=typeof V==="object"&&V!==null?V.command??V.cmd??V.input??JSON.stringify(V):"";return new RegExp("^"+r[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:V}}catch(_e){}let Z=await this.sendRequest(z,{type:"tool_permission_request",toolName:K,inputs:V,suggestions:x},N);return G80(K,Z),Z.result}',
 	},
 	{
-		name: 'Feature 6: Auto-reset include-file toggle after send',
-		from: 'await $.send(x1,e1?[]:B,k5),W([])',
-		to: 'await $.send(x1,e1?[]:B,k5),W([]),_(!1)',
-	},
-	{
 		name: 'Feature 5: Label panel as patched (activitybar container)',
 		targetFile: 'packageJson',
 		from: '"id": "claude-sidebar",\n\t\t\t\t\t"title": "Claude Code"',
@@ -73,14 +68,9 @@ export const PATCHES: Patch[] = [
 		to: '"id": "claudeVSCodeSidebarSecondary",\n\t\t\t\t\t"name": "Claude Code - Patched"',
 	},
 	{
-		name: 'Feature 7: Collapse skill invocation args with show more/less',
-		from: 'Z.args&&gX.default.createElement("div",{className:q5.permissionRequestDescription},"Arguments: ",Z.args)',
-		to: 'Z.args&&gX.default.createElement((function(){function A({a}){let[e,s]=gX.useState(!1);return gX.default.createElement("div",null,gX.default.createElement("div",{style:{maxHeight:e?"none":"80px",overflow:e?"visible":"hidden",position:"relative"}},"Arguments: ",a,!e&&gX.default.createElement("div",{style:{position:"absolute",bottom:0,left:0,right:0,height:"20px",background:"linear-gradient(transparent,var(--vscode-sideBar-background))"}})),gX.default.createElement("button",{onClick:()=>s(!e),style:{background:"none",border:"none",color:"var(--vscode-textLink-foreground)",cursor:"pointer",fontSize:"11px",padding:"2px 0"}},e?"Show less":"Show more"))}return A})(),{a:Z.args})',
-	},
-	{
-		name: 'Feature 8: Collapse skill description in permission card',
-		from: 'Q&&gX.default.createElement("div",{className:q5.permissionRequestDescription},Q)',
-		to: 'Q&&gX.default.createElement((function(){function A({a}){let[e,s]=gX.useState(!1);return gX.default.createElement("div",null,gX.default.createElement("div",{style:{maxHeight:e?"none":"80px",overflow:e?"visible":"hidden",position:"relative"}},a,!e&&gX.default.createElement("div",{style:{position:"absolute",bottom:0,left:0,right:0,height:"20px",background:"linear-gradient(transparent,var(--vscode-sideBar-background))"}})),gX.default.createElement("button",{onClick:()=>s(!e),style:{background:"none",border:"none",color:"var(--vscode-textLink-foreground)",cursor:"pointer",fontSize:"11px",padding:"2px 0"}},e?"Show less":"Show more"))}return A})(),{a:Q})',
+		name: 'Feature 6: Auto-reset include-file toggle after send',
+		from: 'await $.send(x1,e1?[]:B,k5),W([])',
+		to: 'await $.send(x1,e1?[]:B,k5),W([]),_(!1)',
 	},
 ]
 
@@ -160,7 +150,31 @@ export async function patchWebview(
 	const { results: pkgResults, anyApplied: pkgApplied } = applyPatchesToFile(packageJsonPath, packageJsonPatches)
 
 	const anyApplied = webviewApplied || extensionApplied || pkgApplied
-	const allResults = [...webviewResults, ...extensionResults, ...pkgResults]
+
+	// Build name→result map so we can display in PATCHES order
+	const resultMap = new Map<string, string>()
+	for (const line of [...webviewResults, ...extensionResults, ...pkgResults]) {
+		const name = line.replace(/^[✓—✗] /, '').replace(/ \(.*\)$/, '')
+		resultMap.set(name, line)
+	}
+
+	// Build ordered display list, collapsing all Feature 5 sub-patches into one line
+	const orderedResults: string[] = []
+	let feature5Emitted = false
+	for (const patch of PATCHES) {
+		if (patch.name.startsWith('Feature 5:')) {
+			if (!feature5Emitted) {
+				feature5Emitted = true
+				const f5Lines = PATCHES.filter(p => p.name.startsWith('Feature 5:')).map(p => resultMap.get(p.name) ?? '')
+				const symbol = f5Lines.some(l => l.startsWith('✗')) ? '✗' : f5Lines.some(l => l.startsWith('✓')) ? '✓' : '—'
+				const suffix = symbol === '✓' ? '' : symbol === '—' ? ' (already applied)' : ' (pattern not found — extension may have updated)'
+				orderedResults.push(`${symbol} Feature 5: Label panel as patched${suffix}`)
+			}
+		} else {
+			const line = resultMap.get(patch.name)
+			if (line) orderedResults.push(line)
+		}
+	}
 
 	await context.globalState.update(STATE_KEY_PATCHED_VERSION, version)
 
@@ -168,12 +182,12 @@ export async function patchWebview(
 		outputChannel.clear()
 		outputChannel.appendLine(`Claude Code Patches — Claude Code v${version}`)
 		outputChannel.appendLine('')
-		for (const line of allResults) {
+		for (const line of orderedResults) {
 			outputChannel.appendLine(line)
 		}
 
-		const applied = allResults.filter(r => r.startsWith('✓')).length
-		const total = allResults.length
+		const applied = orderedResults.filter(r => r.startsWith('✓')).length
+		const total = orderedResults.length
 
 		if (anyApplied) {
 			vscode.window.showInformationMessage(
