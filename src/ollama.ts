@@ -78,6 +78,12 @@ function bar(score: number): string {
 	return '█'.repeat(score) + '░'.repeat(10 - score)
 }
 
+function showOutput(channel: vscode.OutputChannel, lines: string[]): void {
+	channel.clear()
+	channel.appendLine(lines.join('\n'))
+	channel.show()
+}
+
 const INCOMPATIBLE_PATTERNS: Array<{ pattern: RegExp; reason: string }> = [
 	{ pattern: /embed|embedding/i,                              reason: 'embedding model — no chat support' },
 	{ pattern: /rerank|reranker/i,                              reason: 'reranking model — no chat support' },
@@ -127,7 +133,7 @@ export async function configureOllama(): Promise<void> {
 	})
 	if (!picked) return
 
-	const modelName = picked.label.replace(/^[✓⚠] /, '').replace(/ \(tested\)$/, '')
+	const modelName = picked.label.replace(/^⚠ /, '')
 
 	const settings = readClaudeSettings()
 	const env = ((settings.env ?? {}) as Record<string, string>)
@@ -183,9 +189,7 @@ export async function ollamaStatus(outputChannel: vscode.OutputChannel): Promise
 		}
 	}
 
-	outputChannel.clear()
-	outputChannel.appendLine(lines.join('\n'))
-	outputChannel.show()
+	showOutput(outputChannel, lines)
 
 	const activeModel = loadedModels[0]?.name ?? configuredModel ?? 'none'
 	const summary = ollamaReachable
@@ -246,18 +250,16 @@ export async function ollamaRecommend(outputChannel: vscode.OutputChannel): Prom
 		const bestSpeed    = scored.reduce((a, b) => b.speed > a.speed ? b : a)
 		const bestCoding   = scored.reduce((a, b) => b.coding > a.coding ? b : a)
 		const bestPlanning = scored.reduce((a, b) => b.planning > a.planning ? b : a)
-		lines.push(
-			'', '  ✓ Compatible models ranked:',
-			`  Quick responses:  ${pad(bestSpeed.name, maxLen)}  [Speed ${bar(bestSpeed.speed)} ${bestSpeed.speed}  Coding ${bar(bestSpeed.coding)} ${bestSpeed.coding}  Planning ${bar(bestSpeed.planning)} ${bestSpeed.planning}]`,
-			`  Coding:           ${pad(bestCoding.name, maxLen)}  [Speed ${bar(bestCoding.speed)} ${bestCoding.speed}  Coding ${bar(bestCoding.coding)} ${bestCoding.coding}  Planning ${bar(bestCoding.planning)} ${bestCoding.planning}]`,
-			`  Planning:         ${pad(bestPlanning.name, maxLen)}  [Speed ${bar(bestPlanning.speed)} ${bestPlanning.speed}  Coding ${bar(bestPlanning.coding)} ${bestPlanning.coding}  Planning ${bar(bestPlanning.planning)} ${bestPlanning.planning}]`,
-			'', '  All compatible models scored:',
-			...scored.map(m => `  • ${pad(m.name, maxLen)}  Speed:${m.speed}  Coding:${m.coding}  Planning:${m.planning}`),
-		)
+		lines.push('')
+		lines.push('  ✓ Compatible models ranked:')
+		lines.push(`  Quick responses:  ${pad(bestSpeed.name, maxLen)}  [Speed ${bar(bestSpeed.speed)} ${bestSpeed.speed}  Coding ${bar(bestSpeed.coding)} ${bestSpeed.coding}  Planning ${bar(bestSpeed.planning)} ${bestSpeed.planning}]`)
+		lines.push(`  Coding:           ${pad(bestCoding.name, maxLen)}  [Speed ${bar(bestCoding.speed)} ${bestCoding.speed}  Coding ${bar(bestCoding.coding)} ${bestCoding.coding}  Planning ${bar(bestCoding.planning)} ${bestCoding.planning}]`)
+		lines.push(`  Planning:         ${pad(bestPlanning.name, maxLen)}  [Speed ${bar(bestPlanning.speed)} ${bestPlanning.speed}  Coding ${bar(bestPlanning.coding)} ${bestPlanning.coding}  Planning ${bar(bestPlanning.planning)} ${bestPlanning.planning}]`)
+		lines.push('')
+		lines.push('  All compatible models scored:')
+		for (const m of scored) lines.push(`  • ${pad(m.name, maxLen)}  Speed:${m.speed}  Coding:${m.coding}  Planning:${m.planning}`)
 
-		outputChannel.clear()
-		outputChannel.appendLine(lines.join('\n'))
-		outputChannel.show()
+		showOutput(outputChannel, lines)
 
 		const summary = `Best for coding: ${bestCoding.name} | Speed: ${bestSpeed.name} | Planning: ${bestPlanning.name}`
 		vscode.window.showInformationMessage(summary, 'Select a Model').then(action => {
@@ -265,9 +267,7 @@ export async function ollamaRecommend(outputChannel: vscode.OutputChannel): Prom
 		})
 	} else {
 		lines.push('', '  No compatible models found. Install a chat model with `ollama pull <model>`.')
-		outputChannel.clear()
-		outputChannel.appendLine(lines.join('\n'))
-		outputChannel.show()
+		showOutput(outputChannel, lines)
 		vscode.window.showWarningMessage('No compatible Ollama models found. See output for details.')
 	}
 }
