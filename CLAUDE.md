@@ -55,6 +55,8 @@ On `activate()`, the extension:
 | 4 | Respect `~/.claude/settings.json` in plan mode | `extension.js` | Injects allow/deny list check before the tool-permission request is sent to the UI |
 | 5 | Label panel as "Claude Code - Patched" | `package.json` | Renames all five `"title"/"name": "Claude Code"` entries in `viewsContainers`/`views` contributions |
 | 6 | Auto-reset include-file toggle after send (migration) | `webview/index.js` | Migration patch for existing installs with old Patch 2 already applied — adds `_(!1)` to reset `P` without requiring a full revert |
+| 7 | Collapse skill invocation args with show more/less | `webview/index.js` | Replaces the args `div` in `hG1.permissionRequest()` with an inline IIFE function component that uses `gX.useState` to toggle a max-height of 80 px; shows a gradient fade and "Show more"/"Show less" button |
+| 8 | Collapse skill description in permission card | `webview/index.js` | Same IIFE collapse component for the `Q` (description) field in `hG1.permissionRequest()` — the description is pulled from `slashCommands` and can be very long |
 
 **Version change detection:** If `claudeExt.packageJSON.version` differs from the stored `patchedClaudeCodeVersion` in `globalState`, patches are re-applied automatically and the user is warned.
 
@@ -92,6 +94,8 @@ For regex searches use `re.finditer`. Always anchor searches to unique surroundi
 | `xt1` | Compact/context-usage button — receives `onCompact:J`, renders the circle percentage button. As of v2.1.138 the button is `onClick:J` directly — no internal dialog. Patch 3 intercepts this to add the confirmation dialog. |
 | `ht1` | Input footer — assembles `xt1`, the attach/mention buttons, and the send button |
 | `DL0` | Include-selection toggle button in the footer |
+| `hG1` | Skill tool handler class (extends `W2`) — `permissionRequest()` renders the "Use skill /name?" card including the args block (Patch 7 target) |
+| `No1` | Expandable/collapsible content wrapper used for user and assistant messages — takes `{content, context, maxHeight=250}`. Uses `R3.useState`/`R3.useRef`. Not used for skill cards; Patch 7 implements equivalent behavior inline. |
 
 ### Key functions
 
@@ -133,3 +137,5 @@ Search for stable string literals near the patch site rather than variable names
 | 3 (compact confirm) | `webview/index.js` | `click to compact\`` in the button's `title` attribute — patch site is `onClick:J,onMouseEnter:` (replace `onClick:J` with the dialog). If Claude Code re-adds its own dialog, the `from` will need to capture whatever onClick code precedes `,onMouseEnter:`. |
 | 4 (plan-mode permissions) | `extension.js` | `tool_permission_request` string — the injection site is immediately after the first early-return `{behavior:"allow",updatedInput:...}` before that string. Variable names change each release; check `inputs`, `channelId`, `suggestions`, `abortSignal`, and `result` vars. v2.1.143 map: `z`=channelId, `K`=toolName, `V`=inputs, `x`=suggestions, `N`=abortSignal, `Z`=result. Function now ends with `return G80(K,Z),Z.result}` — include this in the `from` string for uniqueness. |
 | 5 (panel label) | `package.json` | `"id": "claude-sidebar"` and `"id": "claudeVSCodeSidebar"` — each followed by a `"title"` or `"name"` key |
+| 7 (skill args collapse) | `webview/index.js` | `Z.args&&` inside `hG1` class — the `permissionRequestDescription` className and `"Arguments: "` string literal are stable anchors. React variable in scope is `gX`; hooks accessed as `gX.useState` (not `gX.default.useState`). |
+| 8 (skill description collapse) | `webview/index.js` | `Q&&` inside `hG1` class immediately before the args block — the `permissionRequestDescription` className is the stable anchor. Same IIFE pattern as Patch 7. |

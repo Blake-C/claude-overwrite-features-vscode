@@ -72,6 +72,16 @@ export const PATCHES: Patch[] = [
 		from: '"id": "claudeVSCodeSidebarSecondary",\n\t\t\t\t\t"name": "Claude Code"',
 		to: '"id": "claudeVSCodeSidebarSecondary",\n\t\t\t\t\t"name": "Claude Code - Patched"',
 	},
+	{
+		name: 'Feature 7: Collapse skill invocation args with show more/less',
+		from: 'Z.args&&gX.default.createElement("div",{className:q5.permissionRequestDescription},"Arguments: ",Z.args)',
+		to: 'Z.args&&gX.default.createElement((function(){function A({a}){let[e,s]=gX.useState(!1);return gX.default.createElement("div",null,gX.default.createElement("div",{style:{maxHeight:e?"none":"80px",overflow:e?"visible":"hidden",position:"relative"}},"Arguments: ",a,!e&&gX.default.createElement("div",{style:{position:"absolute",bottom:0,left:0,right:0,height:"20px",background:"linear-gradient(transparent,var(--vscode-sideBar-background))"}})),gX.default.createElement("button",{onClick:()=>s(!e),style:{background:"none",border:"none",color:"var(--vscode-textLink-foreground)",cursor:"pointer",fontSize:"11px",padding:"2px 0"}},e?"Show less":"Show more"))}return A})(),{a:Z.args})',
+	},
+	{
+		name: 'Feature 8: Collapse skill description in permission card',
+		from: 'Q&&gX.default.createElement("div",{className:q5.permissionRequestDescription},Q)',
+		to: 'Q&&gX.default.createElement((function(){function A({a}){let[e,s]=gX.useState(!1);return gX.default.createElement("div",null,gX.default.createElement("div",{style:{maxHeight:e?"none":"80px",overflow:e?"visible":"hidden",position:"relative"}},a,!e&&gX.default.createElement("div",{style:{position:"absolute",bottom:0,left:0,right:0,height:"20px",background:"linear-gradient(transparent,var(--vscode-sideBar-background))"}})),gX.default.createElement("button",{onClick:()=>s(!e),style:{background:"none",border:"none",color:"var(--vscode-textLink-foreground)",cursor:"pointer",fontSize:"11px",padding:"2px 0"}},e?"Show less":"Show more"))}return A})(),{a:Q})',
+	},
 ]
 
 export function applyPatch(content: string, patch: Patch): { content: string; applied: boolean; alreadyPatched: boolean } {
