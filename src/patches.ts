@@ -24,7 +24,7 @@ export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 2: Skip attachments + reset toggle on slash commands',
 		from: 'await $.send(v1,B,l1),W([]),Mk(Q,!0)',
-		to: 'await $.send(v1,q1?[]:B,l1),W([]),Mk(Q,!1)',
+		to: 'await $.send(v1,q1?[]:B,l1),W([]),_(!1),Mk(Q,!1)',
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',
