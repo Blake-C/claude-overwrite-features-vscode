@@ -79,7 +79,7 @@ npm run package
 npx @vscode/vsce package
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.4.5.vsix
+code --install-extension claude-overwrite-features-0.4.6.vsix
 ```
 
 Then **reload VS Code** — the extension activates on startup and applies patches automatically.
@@ -91,6 +91,24 @@ Patch results are written to the **Claude Code Patches** output channel (View �
 - `✓` — applied this run
 - `—` — already applied (no change needed)
 - `✗` — pattern not found (Claude Code may have updated)
+
+## Troubleshooting
+
+### If a feature isn't working
+
+Run **Claude Code Patch: Revert Feature Patches** from the Command Palette, then run **Claude Code Patch: Re-apply Feature Patches**, then reload VS Code. This restores the original files and re-patches from scratch, clearing any partial or stale patch state.
+
+### Uninstalling
+
+The extension patches files on disk inside the Claude Code install. If you disable or uninstall this extension without reverting first, those changes remain permanently and cannot be undone (the revert command requires this extension to be active).
+
+Correct uninstall order:
+
+1. Run **Claude Code Patch: Revert Feature Patches**
+2. Disable or uninstall this extension
+3. Reload VS Code
+
+Do not reload between steps 1 and 2 — the extension re-activates on startup and will immediately re-apply all patches.
 
 ## Caveats
 
