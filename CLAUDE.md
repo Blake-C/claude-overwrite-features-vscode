@@ -82,17 +82,32 @@ print(idx, repr(content[max(0,idx-300):idx+300]))
 
 For regex searches use `re.finditer`. Always anchor searches to unique surrounding context, not just the target string.
 
-### Component map (minified names, v2.1.138)
+### Component map (minified names, v2.1.138 — component names may change each release)
 
 | Minified name | Role |
 |---|---|
-| `De1` | Main chat view — owns `[B,W]` (attachedFiles) and `[P,_]` (includeSelection) state |
-| `ot1` | Input/compose area (`forwardRef`) — receives `attachedFiles:Q`, `includeSelection:z`, `onSubmit:J` as props |
-| `xt1` | Compact/context-usage button — receives `onCompact:J`, renders the circle percentage button. As of v2.1.138 the button is `onClick:J` directly — no internal dialog. Patch 3 intercepts this to add the confirmation dialog. |
+| `De1` | Main chat view — owns attachedFiles and includeSelection state |
+| `ot1` | Input/compose area (`forwardRef`) — receives attachedFiles, includeSelection, onSubmit as props |
+| `xt1` | Compact/context-usage button — receives onCompact, renders the circle percentage button. Patch 3 intercepts the onClick to add the confirmation dialog. |
 | `ht1` | Input footer — assembles `xt1`, the attach/mention buttons, and the send button |
 | `DL0` | Include-selection toggle button in the footer |
 | `hG1` | Skill tool handler class (extends `W2`) — `permissionRequest()` renders the "Use skill /name?" card including the args and description blocks |
 | `No1` | Expandable/collapsible content wrapper used for user and assistant messages — takes `{content, context, maxHeight=250}`. Uses `R3.useState`/`R3.useRef`. Not used for skill cards. |
+
+### Key variable names in the submit handler (change each release)
+
+| Semantic role | v2.1.162 | v2.1.165 |
+|---|---|---|
+| React namespace | `n1` | `Ye` |
+| includeSelection state | `[P,_]` | `[v,x]` |
+| attachedFiles state | `[B,W]` | `[h,p]` |
+| next state after includeSelection | `[M,w]` | `[C,y]` |
+| submit callback | `C` (useCallback) | `F` (useCallback) |
+| command text arg | `v1` | `Oe` |
+| isSlashCommand flag | `q1` | `ae` |
+| effective includeSelection | `l1` | `je` |
+| compact button onCompact | `J` | `i` |
+| scroll fn / scroll ref | `Nk` / `Q` | `IN` / `r` |
 
 ### Key functions
 
@@ -100,8 +115,7 @@ For regex searches use `re.finditer`. Always anchor searches to unique surroundi
 |---|---|
 | `VB1($,Z,J,...)` | Builds the message content array. `J` = IDE context (`{filePath, selectedText, startLine, endLine}`), `Z` = attached files. Injects `<ide_opened_file>` or `<ide_selection>` tags. |
 | `YB1($,Z)` | Creates a compact message object: `new kz("compact",[],{compactMetadata:{trigger:$,preTokens:Z}})` |
-| `C` (in `De1`) | The `useCallback` submit handler. Key locals: `e1` = `x1.startsWith("/")` (slash command flag), `B` = attached files, `k5 = P && !e1` (include-selection effective value). Calls `$.send(x1,B,k5)` then `W([])` to clear files. |
-| `Y0` (in `ot1`) | The compact trigger: `()=>{J("/compact")}`. `J` here is `onSubmit`, not `onCompact`. |
+| `F` (in main chat view, v2.1.165) | The `useCallback` submit handler. Key locals: `ae` = isSlashCommand, `h` = attached files, `je = v&&!ae` (include-selection effective value). Calls `e.send(Oe,h,je)` then `p([])` to clear files. |
 
 ### Data flow for message submission
 
@@ -131,6 +145,6 @@ Search for stable string literals near the patch site rather than variable names
 |---|---|---|
 | 1 (includeSelection default) | `webview/index.js` | `"selectionLabel"` CSS class string nearby, or the `De1` component signature `function De1({session:` |
 | 2 (attachments + slash) | `webview/index.js` | `"remote-control"` or `"/rc"` string in the same `if` block |
-| 3 (compact confirm) | `webview/index.js` | `click to compact\`` in the button's `title` attribute — patch site is `onClick:J,onMouseEnter:` (replace `onClick:J` with the dialog). If Claude Code re-adds its own dialog, the `from` will need to capture whatever onClick code precedes `,onMouseEnter:`. |
-| 4 (plan-mode permissions) | `extension.js` | `tool_permission_request` string — the injection site is immediately after the first early-return `{behavior:"allow",updatedInput:...}` before that string. Variable names change each release; check `inputs`, `channelId`, `suggestions`, `abortSignal`, and `result` vars. v2.1.158 map: `z`=channelId, `V`=toolName, `N`=inputs, `B`=suggestions, `K`=abortSignal, `Z`=result, `U80`=stats helper. v2.1.162 map: `z`=channelId, `V`=toolName, `B`=inputs, `N`=suggestions, `K`=abortSignal, `Z`=result, `E80`=stats helper. Function ends with `return E80(V,Z),Z.result}` — include this in the `from` string for uniqueness. |
+| 3 (compact confirm) | `webview/index.js` | `click to compact\`` in the button's `title` attribute — patch site is `onClick:i,onMouseEnter:` (replace `onClick:i` with the dialog). If Claude Code re-adds its own dialog, the `from` will need to capture whatever onClick code precedes `,onMouseEnter:`. |
+| 4 (plan-mode permissions) | `extension.js` | `tool_permission_request` string — the injection site is immediately after the first early-return `{behavior:"allow",updatedInput:...}` before that string. Variable names change each release; check `inputs`, `channelId`, `suggestions`, `abortSignal`, and `result` vars. v2.1.158 map: `z`=channelId, `V`=toolName, `N`=inputs, `B`=suggestions, `K`=abortSignal, `Z`=result, `U80`=stats helper. v2.1.162 map: `z`=channelId, `V`=toolName, `B`=inputs, `N`=suggestions, `K`=abortSignal, `Z`=result, `E80`=stats helper. v2.1.165 map: `e`=channelId, `t`=toolName, `r`=inputs, `i`=suggestions, `n`=abortSignal, `o`=result, `Tse`=stats helper. Function ends with `return Tse(t,o),o.result}` — include this in the `from` string for uniqueness. |
 | 5 (panel label) | `package.json` | `"id": "claude-sidebar"` and `"id": "claudeVSCodeSidebar"` — each followed by a `"title"` or `"name"` key |
