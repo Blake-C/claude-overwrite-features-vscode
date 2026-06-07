@@ -4,12 +4,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build commands
 
-All node/npm commands require NVM — always source it first:
-
-```bash
-source ~/.nvm/nvm.sh && nvm use --lts
-```
-
 | Task | Command |
 |---|---|
 | Install deps | `npm install` |
