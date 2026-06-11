@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1] — 2026-06-10
+
+Made the watcher launchd agent invoke its script directly (it has a `#!/bin/bash` shebang + executable bit) instead of via `/bin/bash`, so the macOS "Allow in the Background" entry displays as the script name rather than a generic "bash". `install-watcher.sh` now ensures the script is executable before loading.
+
 ## [0.6.0] — 2026-06-10
 
 Added an optional macOS launchd watcher that auto-detects Claude Code updates and self-heals broken patches.

@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Production build | `npm run package` |
 | Watch mode | `npm run watch` |
 | Package `.vsix` | `npx @vscode/vsce package` |
-| Install locally | `code --install-extension claude-overwrite-features-0.6.0.vsix` |
+| Install locally | `code --install-extension claude-overwrite-features-0.6.1.vsix` |
 
 There are no tests.
 

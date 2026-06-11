@@ -15,9 +15,13 @@
 	<key>Label</key>
 	<string>com.bcerecero.claude-overwrite-watcher</string>
 
+	<!--
+	  Invoke the script directly (it has a #!/bin/bash shebang + executable bit)
+	  rather than via /bin/bash, so the Login Items / "Allow in the Background"
+	  entry displays as the script name instead of a generic "bash".
+	-->
 	<key>ProgramArguments</key>
 	<array>
-		<string>/bin/bash</string>
 		<string>__REPO__/scripts/on-claude-update.sh</string>
 	</array>
 

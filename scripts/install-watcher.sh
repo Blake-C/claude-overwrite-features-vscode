@@ -15,6 +15,9 @@ TARGET="$HOME/Library/LaunchAgents/$LABEL.plist"
 
 mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
 
+# launchd runs the script directly, so it must be executable.
+chmod +x "$REPO/scripts/on-claude-update.sh"
+
 # Render the template with absolute paths.
 sed -e "s#__REPO__#$REPO#g" -e "s#__HOME__#$HOME#g" "$TEMPLATE" >"$TARGET"
 
