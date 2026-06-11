@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1] — 2026-06-10
+
+Updated Feature 2 and Feature 4 patch strings for Claude Code v2.1.172. Internal variable names changed; no behavior change.
+
+- Feature 2: command arg `q`→`$`, effective include-selection `_t`→`gt` (slash-command skip and toggle reset logic unchanged)
+- Feature 4: stats helper `Ase`→`Mse`; function now ends `return Mse(t,o),o.result}`
+
 ## [0.4.8] — 2026-06-05
 
 Updated patch strings for Claude Code v2.1.165. Internal variable names in `webview/index.js` and `extension.js` changed; all four webview/extension patches updated accordingly. No behavior change.

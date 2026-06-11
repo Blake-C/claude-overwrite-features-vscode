@@ -23,8 +23,8 @@ export const PATCHES: Patch[] = [
 	},
 	{
 		name: 'Feature 2: Skip attachments + reset toggle on slash commands',
-		from: 'await e.send(q,h,_t),p([]),BN(r,!0)',
-		to: 'await e.send(q,De?[]:h,_t),p([]),x(!1),BN(r,!0)',
+		from: 'await e.send($,h,gt),p([]),BN(r,!0)',
+		to: 'await e.send($,De?[]:h,gt),p([]),x(!1),BN(r,!0)',
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',
@@ -34,8 +34,8 @@ export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 4: Respect ~/.claude/settings.json permissions in plan mode',
 		targetFile: 'extension',
-		from: 'return{behavior:"allow",updatedInput:r};let o=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:r,suggestions:i},n);return Ase(t,o),o.result}',
-		to: 'return{behavior:"allow",updatedInput:r};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===t;if(_m[1]!==t)return!1;const c=typeof r==="object"&&r!==null?r.command??r.cmd??r.input??JSON.stringify(r):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:r}}catch(_e){}let o=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:r,suggestions:i},n);return Ase(t,o),o.result}',
+		from: 'return{behavior:"allow",updatedInput:r};let o=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:r,suggestions:i},n);return Mse(t,o),o.result}',
+		to: 'return{behavior:"allow",updatedInput:r};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===t;if(_m[1]!==t)return!1;const c=typeof r==="object"&&r!==null?r.command??r.cmd??r.input??JSON.stringify(r):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:r}}catch(_e){}let o=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:r,suggestions:i},n);return Mse(t,o),o.result}',
 	},
 	{
 		name: 'Feature 5: Label panel as patched (activitybar container)',
