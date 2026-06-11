@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Template for the Claude Code update watcher launchd agent.
+  Do not load this file directly: `npm run watcher:install` substitutes the
+  __REPO__ / __HOME__ placeholders with absolute paths and installs the result
+  into ~/Library/LaunchAgents/.
+
+  WatchPaths fires whenever ~/.vscode/extensions changes (e.g. VS Code installs
+  a new anthropic.claude-code-* version). The script itself no-ops unless the
+  newest Claude Code version differs from the last one it handled.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.bcerecero.claude-overwrite-watcher</string>
+
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>__REPO__/scripts/on-claude-update.sh</string>
+	</array>
+
+	<key>WatchPaths</key>
+	<array>
+		<string>__HOME__/.vscode/extensions</string>
+	</array>
+
+	<key>RunAtLoad</key>
+	<true/>
+
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HOME</key>
+		<string>__HOME__</string>
+		<key>PATH</key>
+		<string>__HOME__/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+
+	<key>StandardOutPath</key>
+	<string>__HOME__/Library/Logs/claude-overwrite-watcher.log</string>
+	<key>StandardErrorPath</key>
+	<string>__HOME__/Library/Logs/claude-overwrite-watcher.log</string>
+
+	<key>ProcessType</key>
+	<string>Background</string>
+</dict>
+</plist>

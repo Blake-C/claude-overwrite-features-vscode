@@ -2,7 +2,7 @@
 	"name": "claude-overwrite-features",
 	"displayName": "Claude Code — Overwrite Features",
 	"description": "Patches the Claude Code extension to fix auto-include file, compact attachments, and compact confirmation behaviors.",
-	"version": "0.5.1",
+	"version": "0.6.0",
 	"publisher": "bcerecero",
 	"engines": {
 		"vscode": "^1.94.0"
@@ -50,7 +50,11 @@
 		"compile": "webpack --mode development",
 		"watch": "webpack --mode development --watch",
 		"package": "webpack --mode production",
-		"lint": "eslint src"
+		"lint": "eslint src",
+		"check-patches": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-patches.ts",
+		"watcher:install": "bash scripts/install-watcher.sh",
+		"watcher:uninstall": "bash scripts/uninstall-watcher.sh",
+		"watcher:run": "bash scripts/on-claude-update.sh"
 	},
 	"devDependencies": {
 		"@types/node": "^20.0.0",

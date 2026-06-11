@@ -79,7 +79,7 @@ npm run package
 npx @vscode/vsce package
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.5.1.vsix
+code --install-extension claude-overwrite-features-0.6.0.vsix
 ```
 
 Then **reload VS Code** — the extension activates on startup and applies patches automatically.
@@ -91,6 +91,33 @@ Patch results are written to the **Claude Code Patches** output channel (View �
 - `✓` — applied this run
 - `—` — already applied (no change needed)
 - `✗` — pattern not found (Claude Code may have updated)
+
+## Auto-update watcher (optional)
+
+Claude Code updates often, and an update can rename the minified identifiers these patches target, breaking a feature until the patch strings are rewritten. The repo ships an optional macOS [launchd](https://www.launchd.info/) watcher that detects this and self-heals.
+
+How it works:
+
+1. A launchd agent watches `~/.vscode/extensions` and fires when VS Code installs a new `anthropic.claude-code-*` version.
+2. `scripts/on-claude-update.sh` runs a **deterministic** health check (`scripts/check-patches.ts`) that tests whether every patch's `from`/`to` literal still appears in the new files. No AI is involved here — it's a string match reusing the same `PATCHES`/`applyPatch` the extension uses.
+3. If all patches still match, it does nothing (the extension re-applies them on activation).
+4. **Only if a patch has actually broken**, it launches headless Claude Code (`claude -p`) with a scoped permission allowlist to rewrite the broken strings on a new branch `auto/patch-update-<version>`, bump the version, update docs, compile, and package. It commits to the branch and notifies you. It never touches `main` and never installs the `.vsix` — you review and merge.
+
+Install / manage:
+
+```bash
+npm run watcher:install     # render the plist with absolute paths and load it
+npm run watcher:uninstall   # unload and remove it
+npm run check-patches       # run the health check by hand (exit 0 = healthy, 2 = broken)
+npm run watcher:run         # run the watcher logic once by hand
+```
+
+Notes:
+
+- **Security** — the headless run uses a scoped `--allowedTools` allowlist (Read/Edit/Write plus Bash limited to git/npm/npx/node/python3/code) confined to this repo via `--add-dir`, not `--dangerously-skip-permissions`. Automated commits land on a throwaway branch, so a wrong patch is caught at review.
+- **Prerequisites** — `node` must be resolvable for a bare-PATH launchd job (the script initializes fnm); the Claude CLI is expected at `~/.local/bin/claude`. Headless Claude must be authenticated (subscription login via Keychain, or `ANTHROPIC_API_KEY`).
+- **Logs** — `~/Library/Logs/claude-overwrite-watcher.log`. The last-handled version is tracked in `~/.claude/claude-overwrite-watcher.state`.
+- **macOS only** (launchd). On other platforms, run `npm run check-patches` manually or wire the same script into cron/systemd.
 
 ## Troubleshooting
 

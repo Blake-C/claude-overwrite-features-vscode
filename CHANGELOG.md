@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.0] — 2026-06-10
+
+Added an optional macOS launchd watcher that auto-detects Claude Code updates and self-heals broken patches.
+
+- Split the vscode-free patch data and pure helpers (`PATCHES`, `applyPatch`, `revertPatch`, `getPatchesByTarget`) into `src/patch-defs.ts` so Node tooling can reuse them; `src/patches.ts` now keeps only the vscode-dependent IO. No behavior change to the extension.
+- Added `scripts/check-patches.ts` — a deterministic health check (Node 24+ native TS) that reports whether every patch still matches the installed files (exit 0 healthy / 2 broken), reusing the extension's own `applyPatch`.
+- Added `scripts/on-claude-update.sh` + `launchd/com.bcerecero.claude-overwrite-watcher.plist` — a `WatchPaths` agent on `~/.vscode/extensions` that runs the health check on each Claude Code update and, **only when a patch has actually broken**, launches headless `claude -p` (scoped `--allowedTools`, confined to the repo) to rewrite the strings on a new `auto/patch-update-<version>` branch. Never touches `main`, never installs.
+- Added npm scripts: `check-patches`, `watcher:install`, `watcher:uninstall`, `watcher:run`, plus `scripts/install-watcher.sh` / `uninstall-watcher.sh`.
+
 ## [0.5.1] — 2026-06-10
 
 Updated Feature 2 and Feature 4 patch strings for Claude Code v2.1.172. Internal variable names changed; no behavior change.

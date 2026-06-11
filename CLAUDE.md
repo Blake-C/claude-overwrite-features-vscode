@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Production build | `npm run package` |
 | Watch mode | `npm run watch` |
 | Package `.vsix` | `npx @vscode/vsce package` |
-| Install locally | `code --install-extension claude-overwrite-features-0.5.1.vsix` |
+| Install locally | `code --install-extension claude-overwrite-features-0.6.0.vsix` |
 
 There are no tests.
 
@@ -27,7 +27,13 @@ Use semantic versioning: patch bump (0.1.x) for fixes and minor tweaks, minor bu
 
 ## Architecture
 
-This is a single-file VS Code extension (`src/extension.ts`) whose sole job is to patch the installed Claude Code extension's files on startup.
+This is a VS Code extension whose sole job is to patch the installed Claude Code extension's files on startup. Source layout:
+
+- `src/extension.ts` — `activate()`, command registration, compact-dialog preview.
+- `src/patch-defs.ts` — **vscode-free** patch data and pure helpers: the `Patch` interface, the `PATCHES` array, `applyPatch`/`revertPatch`/`getPatchesByTarget`, and the file-name constants. This file imports nothing from `vscode` so plain Node (e.g. the watcher's health check) can import it directly. **Edit patch strings here.**
+- `src/patches.ts` — the vscode-dependent file IO and output-channel logic (`patchWebview`, `revertWebview`, `applyPatchesToFile`); re-exports `PATCHES`/`Patch`/`STATE_KEY_PATCHED_VERSION` for `extension.ts`.
+- `src/ollama.ts` — Ollama local-model commands.
+- `scripts/` — the optional auto-update watcher (see "Auto-update watcher" below).
 
 **How patching works:**
 
@@ -60,6 +66,21 @@ Patches are string literals matched against minified code. If Claude Code update
 If it appears that Anthropic has fixed a patch internally within the plugin, report it to the code author.
 
 Update CLAUDE.md file when new findings are made to keep knowledge up to date.
+
+## Auto-update watcher (`scripts/`)
+
+An optional macOS launchd agent self-heals patches when Claude Code updates. It separates the work into a deterministic half (no AI) and a semantic half (AI), and only invokes Claude for the latter.
+
+| File | Role |
+|---|---|
+| `scripts/check-patches.ts` | Deterministic health check. Run with Node 24+ native TS: `node scripts/check-patches.ts [installDir]`. Reuses `applyPatch`/`getPatchesByTarget` from `patch-defs.ts`. A patch is **broken** when neither its `from` nor `to` is present. Exit 0 = healthy, 2 = broken, 1 = error. Auto-detects the newest `~/.vscode/extensions/anthropic.claude-code-*` if no dir given. |
+| `scripts/on-claude-update.sh` | launchd entry point. Sets up node via fnm (launchd has a bare PATH), single-run lock, diffs the newest installed version against `~/.claude/claude-overwrite-watcher.state`, runs the health check, and **only if broken** launches `claude -p` on branch `auto/patch-update-<version>` with a scoped `--allowedTools` allowlist. Guards on a clean `main`. Never touches `main`, never installs. Notifies via `osascript`. Logs to `~/Library/Logs/claude-overwrite-watcher.log`. |
+| `scripts/install-watcher.sh` / `uninstall-watcher.sh` | Render `launchd/com.bcerecero.claude-overwrite-watcher.plist` (substituting `__REPO__`/`__HOME__`) into `~/Library/LaunchAgents/` and `launchctl bootstrap`/`bootout` it. |
+| `launchd/…​.plist` | Template. `WatchPaths` = `~/.vscode/extensions` (fires on any extension install; the script no-ops unless the Claude Code version actually changed). |
+
+npm scripts: `check-patches`, `watcher:install`, `watcher:uninstall`, `watcher:run`.
+
+The headless prompt tells Claude to follow the "Finding patches after a version update" and "Navigating the Claude Code webview" sections below, edit the `from`/`to` literals in `src/patch-defs.ts`, bump version + docs, compile, package, and commit to the branch. So keep those sections accurate — the watcher depends on them.
 
 ## Navigating the Claude Code webview
 
