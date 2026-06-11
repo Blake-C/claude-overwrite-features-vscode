@@ -13,7 +13,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.bcerecero.claude-overwrite-watcher</string>
+	<string>com.Blake-C.claude-overwrite-watcher</string>
 
 	<!--
 	  Invoke the script directly (it has a #!/bin/bash shebang + executable bit)

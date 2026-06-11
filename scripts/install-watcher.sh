@@ -7,7 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
-LABEL="com.bcerecero.claude-overwrite-watcher"
+LABEL="com.Blake-C.claude-overwrite-watcher"
 TEMPLATE="$REPO/launchd/$LABEL.plist"
 TARGET="$HOME/Library/LaunchAgents/$LABEL.plist"
 

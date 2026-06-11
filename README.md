@@ -1,6 +1,10 @@
 # Claude Code — Overwrite Features
 
 > **Use at your own risk.** This extension works by directly modifying the installed Claude Code extension's minified files. It is inherently fragile — any Claude Code update can rename internal variables, restructure the bundle, or move patch sites, silently breaking one or more features. Rapid or back-to-back Claude Code updates are especially likely to leave patches in a partial or failed state. Always check the Claude Code Patches output channel after VS Code restarts and be prepared to revert if something looks wrong.
+>
+> **Legal and terms.** This is an unofficial, independent project. It is not affiliated with, endorsed by, or supported by Anthropic. Claude Code is proprietary software (© Anthropic PBC, all rights reserved); your use of it is governed by Anthropic's [Consumer Terms](https://www.anthropic.com/legal/consumer-terms), [Commercial Terms](https://www.anthropic.com/legal/commercial-terms), [Usage Policy](https://www.anthropic.com/legal/aup), and the [Claude Code legal terms](https://code.claude.com/docs/en/legal-and-compliance). Modifying Claude Code's files may conflict with those terms (which restrict, among other things, reverse engineering) — review them and decide for yourself before using this. Two specific points:
+> - **The optional auto-update watcher runs `claude -p` (the Agent SDK) from a script.** Anthropic's Consumer Terms permit automated/programmatic access **only via an Anthropic API key**, not subscription (Pro/Max) login. If you enable the watcher, authenticate it with `ANTHROPIC_API_KEY`. Note that Agent SDK / `claude -p` usage also draws on usage limits (and, from June 15 2026, a separate Agent SDK credit on subscription plans).
+> - This project distributes only your own wrapper code. The short minified fragments used as patch anchors remain Anthropic's; the MIT license here does not grant any rights to Anthropic's code.
 
 A companion VS Code extension that patches six UX behaviors in the [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) extension and adds commands for running Claude Code against a local [Ollama](https://ollama.com) model.
 
@@ -79,7 +83,7 @@ npm run package
 npx @vscode/vsce package
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.6.1.vsix
+code --install-extension claude-overwrite-features-0.6.2.vsix
 ```
 
 Then **reload VS Code** — the extension activates on startup and applies patches automatically.
@@ -115,7 +119,7 @@ npm run watcher:run         # run the watcher logic once by hand
 Notes:
 
 - **Security** — the headless run uses a scoped `--allowedTools` allowlist (Read/Edit/Write plus Bash limited to git/npm/npx/node/python3/code) confined to this repo via `--add-dir`, not `--dangerously-skip-permissions`. Automated commits land on a throwaway branch, so a wrong patch is caught at review.
-- **Prerequisites** — `node` must be resolvable for a bare-PATH launchd job (the script initializes fnm); the Claude CLI is expected at `~/.local/bin/claude`. Headless Claude must be authenticated (subscription login via Keychain, or `ANTHROPIC_API_KEY`).
+- **Prerequisites** — `node` must be resolvable for a bare-PATH launchd job (the script initializes fnm); the Claude CLI is expected at `~/.local/bin/claude`. The headless run must be authenticated, and because it is automated/programmatic access it should use an **Anthropic API key** (`ANTHROPIC_API_KEY`) rather than subscription login — see the Legal note above.
 - **Logs** — `~/Library/Logs/claude-overwrite-watcher.log`. The last-handled version is tracked in `~/.claude/claude-overwrite-watcher.state`.
 - **macOS only** (launchd). On other platforms, run `npm run check-patches` manually or wire the same script into cron/systemd.
 

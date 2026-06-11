@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.2] — 2026-06-10
+
+Prepared the project for public sharing.
+
+- Added an MIT `LICENSE` (with an AS-IS / no-liability disclaimer and a note that it grants no rights in Anthropic's proprietary Claude Code code); set `"license": "MIT"` in `package.json`.
+- Expanded the README disclaimer with a "Legal and terms" section: unofficial/unaffiliated notice, links to Anthropic's terms, and the note that the optional watcher's automated `claude -p` use should authenticate with an Anthropic API key (not subscription login) per Anthropic's Consumer Terms.
+- Renamed the publisher and launchd label from `bcerecero` to `Blake-C` (plist file is now `launchd/com.Blake-C.claude-overwrite-watcher.plist`).
+
 ## [0.6.1] — 2026-06-10
 
 Made the watcher launchd agent invoke its script directly (it has a `#!/bin/bash` shebang + executable bit) instead of via `/bin/bash`, so the macOS "Allow in the Background" entry displays as the script name rather than a generic "bash". `install-watcher.sh` now ensures the script is executable before loading.
@@ -10,7 +18,7 @@ Added an optional macOS launchd watcher that auto-detects Claude Code updates an
 
 - Split the vscode-free patch data and pure helpers (`PATCHES`, `applyPatch`, `revertPatch`, `getPatchesByTarget`) into `src/patch-defs.ts` so Node tooling can reuse them; `src/patches.ts` now keeps only the vscode-dependent IO. No behavior change to the extension.
 - Added `scripts/check-patches.ts` — a deterministic health check (Node 24+ native TS) that reports whether every patch still matches the installed files (exit 0 healthy / 2 broken), reusing the extension's own `applyPatch`.
-- Added `scripts/on-claude-update.sh` + `launchd/com.bcerecero.claude-overwrite-watcher.plist` — a `WatchPaths` agent on `~/.vscode/extensions` that runs the health check on each Claude Code update and, **only when a patch has actually broken**, launches headless `claude -p` (scoped `--allowedTools`, confined to the repo) to rewrite the strings on a new `auto/patch-update-<version>` branch. Never touches `main`, never installs.
+- Added `scripts/on-claude-update.sh` + `launchd/com.Blake-C.claude-overwrite-watcher.plist` — a `WatchPaths` agent on `~/.vscode/extensions` that runs the health check on each Claude Code update and, **only when a patch has actually broken**, launches headless `claude -p` (scoped `--allowedTools`, confined to the repo) to rewrite the strings on a new `auto/patch-update-<version>` branch. Never touches `main`, never installs.
 - Added npm scripts: `check-patches`, `watcher:install`, `watcher:uninstall`, `watcher:run`, plus `scripts/install-watcher.sh` / `uninstall-watcher.sh`.
 
 ## [0.5.1] — 2026-06-10
