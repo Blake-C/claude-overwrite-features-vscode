@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3] — 2026-06-11
+
+Updated Feature 2 and Feature 4 patch strings for Claude Code v2.1.174. Internal variable names changed; no behavior change.
+
+- Feature 2: scroll function `BN`→`VN` (slash-command skip and toggle reset logic unchanged)
+- Feature 4: stats helper `Mse`→`Lse`; function now ends `return Lse(t,o),o.result}`
+
 ## [0.6.2] — 2026-06-10
 
 Prepared the project for public sharing.
