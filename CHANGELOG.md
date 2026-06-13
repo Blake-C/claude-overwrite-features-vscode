@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.4] — 2026-06-12
+
+Updated the Feature 4 patch string for Claude Code v2.1.177. Internal variable name changed; no behavior change. Feature 2 was unaffected this time.
+
+- Feature 4: stats helper `Lse`→`noe`; function now ends `return noe(t,o),o.result}`
+
 ## [0.6.3] — 2026-06-11
 
 Updated Feature 2 and Feature 4 patch strings for Claude Code v2.1.174. Internal variable names changed; no behavior change.
