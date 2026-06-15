@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.5] — 2026-06-15
+
+Updated the Feature 1, Feature 2, and Feature 4 patch strings for Claude Code v2.1.178. Internal variable names changed; no behavior change.
+
+- Feature 1: React namespace `Ke`→`je` in the `useRef`/`useState` destructuring
+- Feature 2: React namespace `Ke`→`je` and scroll function `VN`→`zN` (slash-command skip and toggle reset logic unchanged)
+- Feature 4: stats helper `noe`→`aoe`; function now ends `return aoe(t,o),o.result}`
+
 ## [0.6.4] — 2026-06-12
 
 Updated the Feature 4 patch string for Claude Code v2.1.177. Internal variable name changed; no behavior change. Feature 2 was unaffected this time.
