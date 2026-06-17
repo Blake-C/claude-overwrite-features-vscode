@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Production build | `npm run package` |
 | Watch mode | `npm run watch` |
 | Package `.vsix` | `npx @vscode/vsce package` |
-| Install locally | `code --install-extension claude-overwrite-features-0.6.5.vsix` |
+| Install locally | `code --install-extension claude-overwrite-features-0.6.6.vsix` |
 
 There are no tests.
 
@@ -111,18 +111,18 @@ For regex searches use `re.finditer`. Always anchor searches to unique surroundi
 
 ### Key variable names in the submit handler (change each release)
 
-| Semantic role | v2.1.162 | v2.1.165 | v2.1.170 | v2.1.172 | v2.1.174 | v2.1.177 | v2.1.178 |
-|---|---|---|---|---|---|---|---|
-| React namespace | `n1` | `Ye` | `Ke` | `Ke` | `Ke` | `Ke` | `je` |
-| includeSelection state | `[P,_]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` |
-| attachedFiles state | `[B,W]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` |
-| next state after includeSelection | `[M,w]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` |
-| submit callback | `C` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) |
-| command text arg | `v1` | `Oe` | `q` | `$` | `$` | `$` | `$` |
-| isSlashCommand flag | `q1` | `ae` | `De` | `De` | `De` | `De` | `De` |
-| effective includeSelection | `l1` | `je` | `_t` | `gt` | `gt` | `gt` | `gt` |
-| compact button onCompact | `J` | `i` | `i` | `i` | `i` | `i` | `i` |
-| scroll fn / scroll ref | `Nk` / `Q` | `IN` / `r` | `BN` / `r` | `BN` / `r` | `VN` / `r` | `VN` / `r` | `zN` / `r` |
+| Semantic role | v2.1.162 | v2.1.165 | v2.1.170 | v2.1.172 | v2.1.174 | v2.1.177 | v2.1.178 | v2.1.179 |
+|---|---|---|---|---|---|---|---|---|
+| React namespace | `n1` | `Ye` | `Ke` | `Ke` | `Ke` | `Ke` | `je` | `je` |
+| includeSelection state | `[P,_]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` |
+| attachedFiles state | `[B,W]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` |
+| next state after includeSelection | `[M,w]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` |
+| submit callback | `C` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) |
+| command text arg | `v1` | `Oe` | `q` | `$` | `$` | `$` | `$` | `$` |
+| isSlashCommand flag | `q1` | `ae` | `De` | `De` | `De` | `De` | `De` | `De` |
+| effective includeSelection | `l1` | `je` | `_t` | `gt` | `gt` | `gt` | `gt` | `gt` |
+| compact button onCompact | `J` | `i` | `i` | `i` | `i` | `i` | `i` | `i` |
+| scroll fn / scroll ref | `Nk` / `Q` | `IN` / `r` | `BN` / `r` | `BN` / `r` | `VN` / `r` | `VN` / `r` | `zN` / `r` | `zN` / `r` |
 
 ### Key functions
 
@@ -161,5 +161,5 @@ Search for stable string literals near the patch site rather than variable names
 | 1 (includeSelection default) | `webview/index.js` | `"selectionLabel"` CSS class string nearby, or the `De1` component signature `function De1({session:` |
 | 2 (attachments + slash) | `webview/index.js` | `"remote-control"` or `"/rc"` string in the same `if` block |
 | 3 (compact confirm) | `webview/index.js` | `click to compact\`` in the button's `title` attribute — patch site is `onClick:i,onMouseEnter:` (replace `onClick:i` with the dialog). If Claude Code re-adds its own dialog, the `from` will need to capture whatever onClick code precedes `,onMouseEnter:`. |
-| 4 (plan-mode permissions) | `extension.js` | `tool_permission_request` string — the injection site is immediately after the first early-return `{behavior:"allow",updatedInput:...}` before that string. Variable names change each release; check `inputs`, `channelId`, `suggestions`, `abortSignal`, and `result` vars. v2.1.158 map: `z`=channelId, `V`=toolName, `N`=inputs, `B`=suggestions, `K`=abortSignal, `Z`=result, `U80`=stats helper. v2.1.162 map: `z`=channelId, `V`=toolName, `B`=inputs, `N`=suggestions, `K`=abortSignal, `Z`=result, `E80`=stats helper. v2.1.165 map: `e`=channelId, `t`=toolName, `r`=inputs, `i`=suggestions, `n`=abortSignal, `o`=result, `Tse`=stats helper. Function ends with `return Tse(t,o),o.result}` — include this in the `from` string for uniqueness. v2.1.167 map: identical to v2.1.165 except stats helper renamed `Tse`→`Rse`; function ends with `return Rse(t,o),o.result}`. v2.1.170 map: identical to v2.1.165/v2.1.167 variable names; stats helper renamed `Rse`→`Ase`; function ends with `return Ase(t,o),o.result}`. v2.1.172 map: identical to v2.1.170 except stats helper renamed `Ase`→`Mse`; function ends with `return Mse(t,o),o.result}`. v2.1.174 map: identical to v2.1.172 except stats helper renamed `Mse`→`Lse`; function ends with `return Lse(t,o),o.result}`. v2.1.177 map: identical to v2.1.174 except stats helper renamed `Lse`→`noe`; function ends with `return noe(t,o),o.result}`. v2.1.178 map: identical to v2.1.177 except stats helper renamed `noe`→`aoe`; function ends with `return aoe(t,o),o.result}`. |
+| 4 (plan-mode permissions) | `extension.js` | `tool_permission_request` string — the injection site is immediately after the first early-return `{behavior:"allow",updatedInput:...}` before that string. Variable names change each release; check `inputs`, `channelId`, `suggestions`, `abortSignal`, and `result` vars. v2.1.158 map: `z`=channelId, `V`=toolName, `N`=inputs, `B`=suggestions, `K`=abortSignal, `Z`=result, `U80`=stats helper. v2.1.162 map: `z`=channelId, `V`=toolName, `B`=inputs, `N`=suggestions, `K`=abortSignal, `Z`=result, `E80`=stats helper. v2.1.165 map: `e`=channelId, `t`=toolName, `r`=inputs, `i`=suggestions, `n`=abortSignal, `o`=result, `Tse`=stats helper. Function ends with `return Tse(t,o),o.result}` — include this in the `from` string for uniqueness. v2.1.167 map: identical to v2.1.165 except stats helper renamed `Tse`→`Rse`; function ends with `return Rse(t,o),o.result}`. v2.1.170 map: identical to v2.1.165/v2.1.167 variable names; stats helper renamed `Rse`→`Ase`; function ends with `return Ase(t,o),o.result}`. v2.1.172 map: identical to v2.1.170 except stats helper renamed `Ase`→`Mse`; function ends with `return Mse(t,o),o.result}`. v2.1.174 map: identical to v2.1.172 except stats helper renamed `Mse`→`Lse`; function ends with `return Lse(t,o),o.result}`. v2.1.177 map: identical to v2.1.174 except stats helper renamed `Lse`→`noe`; function ends with `return noe(t,o),o.result}`. v2.1.178 map: identical to v2.1.177 except stats helper renamed `noe`→`aoe`; function ends with `return aoe(t,o),o.result}`. v2.1.179 map: identical to v2.1.178 except stats helper renamed `aoe`→`coe`; function ends with `return coe(t,o),o.result}`. |
 | 5 (panel label) | `package.json` | `"id": "claude-sidebar"` and `"id": "claudeVSCodeSidebar"` — each followed by a `"title"` or `"name"` key |

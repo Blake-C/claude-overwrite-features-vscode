@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.6] — 2026-06-16
+
+Updated the Feature 4 patch string for Claude Code v2.1.179. Internal variable name changed; no behavior change. Features 1, 2, 3, and 5 were unaffected this time.
+
+- Feature 4: stats helper `aoe`→`coe`; function now ends `return coe(t,o),o.result}`
+
 ## [0.6.5] — 2026-06-15
 
 Updated the Feature 1, Feature 2, and Feature 4 patch strings for Claude Code v2.1.178. Internal variable names changed; no behavior change.
