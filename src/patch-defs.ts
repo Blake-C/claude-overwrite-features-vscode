@@ -16,8 +16,8 @@ export interface Patch {
 export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 1: Default include-file toggle to OFF',
-		from: '_=Ie(!0),[C,x]=oe(!0),[y,w]=oe(!1)',
-		to: '_=Ie(!0),[C,x]=oe(!1),[y,w]=oe(!1)',
+		from: '_=ke(!0),[C,x]=oe(!0),[y,w]=oe(!1)',
+		to: '_=ke(!0),[C,x]=oe(!1),[y,w]=oe(!1)',
 	},
 	{
 		name: 'Feature 2: Skip attachments + reset toggle on slash commands',

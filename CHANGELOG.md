@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.10] — 2026-06-24
+
+Updated the Feature 1 patch string for Claude Code v2.1.190. Internal variable name changed; no behavior change. Features 2, 3, 4, and 5 were unaffected this time.
+
+- Feature 1: `useRef` helper renamed `Ie`→`ke`; includeSelection state is still `[C,x]=oe(!0)` → `oe(!1)`
+
 ## [0.6.9] — 2026-06-24
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.187. Internal variable names changed; no behavior change. Features 1, 3, and 5 were unaffected this time.

@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Production build | `npm run package` |
 | Watch mode | `npm run watch` |
 | Package `.vsix` | `npx @vscode/vsce package` |
-| Install locally | `code --install-extension claude-overwrite-features-0.6.9.vsix` |
+| Install locally | `code --install-extension claude-overwrite-features-0.6.10.vsix` |
 
 There are no tests.
 
@@ -111,18 +111,18 @@ For regex searches use `re.finditer`. Always anchor searches to unique surroundi
 
 ### Key variable names in the submit handler (change each release)
 
-| Semantic role | v2.1.162 | v2.1.165 | v2.1.170 | v2.1.172 | v2.1.174 | v2.1.177 | v2.1.178 | v2.1.179 | v2.1.186 | v2.1.187 |
-|---|---|---|---|---|---|---|---|---|---|---|
-| React namespace | `n1` | `Ye` | `Ke` | `Ke` | `Ke` | `Ke` | `je` | `je` | none (bare `oe`=useState, `Ie`=useRef) | none (bare `oe`=useState, `Ie`=useRef) |
-| includeSelection state | `[P,_]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[C,x]` | `[C,x]` |
-| attachedFiles state | `[B,W]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` |
-| next state after includeSelection | `[M,w]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[y,w]` | `[y,w]` |
-| submit callback | `C` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `H` (`Vt`/useCallback) | `H` (`Vt`/useCallback) |
-| command text arg | `v1` | `Oe` | `q` | `$` | `$` | `$` | `$` | `$` | `K` | `K` |
-| isSlashCommand flag | `q1` | `ae` | `De` | `De` | `De` | `De` | `De` | `De` | `Ne` | `Ne` |
-| effective includeSelection | `l1` | `je` | `_t` | `gt` | `gt` | `gt` | `gt` | `gt` | `bt` | `bt` |
-| compact button onCompact | `J` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` |
-| scroll fn / scroll ref | `Nk` / `Q` | `IN` / `r` | `BN` / `r` | `BN` / `r` | `VN` / `r` | `VN` / `r` | `zN` / `r` | `zN` / `r` | `TM` / `r` | `DM` / `r` |
+| Semantic role | v2.1.162 | v2.1.165 | v2.1.170 | v2.1.172 | v2.1.174 | v2.1.177 | v2.1.178 | v2.1.179 | v2.1.186 | v2.1.187 | v2.1.190 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| React namespace | `n1` | `Ye` | `Ke` | `Ke` | `Ke` | `Ke` | `je` | `je` | none (bare `oe`=useState, `Ie`=useRef) | none (bare `oe`=useState, `Ie`=useRef) | none (bare `oe`=useState, `ke`=useRef) |
+| includeSelection state | `[P,_]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[C,x]` | `[C,x]` | `[C,x]` |
+| attachedFiles state | `[B,W]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` |
+| next state after includeSelection | `[M,w]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[y,w]` | `[y,w]` | `[y,w]` |
+| submit callback | `C` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `H` (`Vt`/useCallback) | `H` (`Vt`/useCallback) | `H` (`Vt`/useCallback) |
+| command text arg | `v1` | `Oe` | `q` | `$` | `$` | `$` | `$` | `$` | `K` | `K` | `K` |
+| isSlashCommand flag | `q1` | `ae` | `De` | `De` | `De` | `De` | `De` | `De` | `Ne` | `Ne` | `Ne` |
+| effective includeSelection | `l1` | `je` | `_t` | `gt` | `gt` | `gt` | `gt` | `gt` | `bt` | `bt` | `bt` |
+| compact button onCompact | `J` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` |
+| scroll fn / scroll ref | `Nk` / `Q` | `IN` / `r` | `BN` / `r` | `BN` / `r` | `VN` / `r` | `VN` / `r` | `zN` / `r` | `zN` / `r` | `TM` / `r` | `DM` / `r` | `DM` / `r` |
 
 ### Key functions
 
