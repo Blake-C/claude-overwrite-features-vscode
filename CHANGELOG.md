@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.9] — 2026-06-24
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.187. Internal variable names changed; no behavior change. Features 1, 3, and 5 were unaffected this time.
+
+- Feature 2: submit-handler scroll fn `TM`→`DM` (command arg `K`, isSlashCommand `Ne`, effective includeSelection `bt`, includeSelection setter `x` all unchanged)
+- Feature 4: stats helper `boe`→`Eoe`; function now ends `return Eoe(t,o),o.result}`
+
 ## [0.6.8] — 2026-06-22
 
 Updated the Feature 1, Feature 2, and Feature 4 patch strings for Claude Code v2.1.186. Internal variable names changed; no behavior change. Features 3 and 5 were unaffected this time.
