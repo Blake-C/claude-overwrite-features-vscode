@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.11] — 2026-06-25
+
+Updated the Feature 1, Feature 2, and Feature 4 patch strings for Claude Code v2.1.191. Internal variable names changed; no behavior change. Features 3 and 5 were unaffected this time.
+
+- Feature 1: includeSelection state setter renamed `[C,x]`→`[C,y]` and next state `[y,w]`→`[x,w]`; still `oe(!0)` → `oe(!1)`
+- Feature 2: submit-handler scroll fn `DM`→`ND`, isSlashCommand flag `Ne`→`Me` (local `let Me=K.trim().startsWith("/")`), includeSelection setter `x`→`y`; command arg `K` and effective includeSelection `bt` unchanged
+- Feature 4: stats helper `Eoe`→`Poe`; function now ends `return Poe(t,o),o.result}`
+
 ## [0.6.10] — 2026-06-24
 
 Updated the Feature 1 patch string for Claude Code v2.1.190. Internal variable name changed; no behavior change. Features 2, 3, 4, and 5 were unaffected this time.
