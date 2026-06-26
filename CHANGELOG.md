@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.12] — 2026-06-25
+
+Updated the Feature 1, Feature 2, and Feature 4 patch strings for Claude Code v2.1.193. Internal variable names changed; no behavior change. Features 3 and 5 were unaffected this time.
+
+- Feature 1: `useState` helper renamed `oe`→`ne` (still bare, no React namespace); includeSelection state is `[C,y]=ne(!0)` → `ne(!1)` (useRef helper `ke` and next state `[x,w]` unchanged)
+- Feature 2: submit-handler `useState` namespace `oe`→`ne` propagated through; scroll fn `ND`→`MD`, isSlashCommand flag `Me`→`Ee` (local `let Ee=K.trim().startsWith("/")`), effective includeSelection `bt`→`_t`; command arg `K` and includeSelection setter `y` unchanged
+- Feature 4: stats helper `Poe`→`Noe`; function now ends `return Noe(t,o),o.result}`
+
 ## [0.6.11] — 2026-06-25
 
 Updated the Feature 1, Feature 2, and Feature 4 patch strings for Claude Code v2.1.191. Internal variable names changed; no behavior change. Features 3 and 5 were unaffected this time.

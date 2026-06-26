@@ -2,7 +2,7 @@
 	"name": "claude-overwrite-features",
 	"displayName": "Claude Code — Overwrite Features",
 	"description": "Patches the Claude Code extension to fix auto-include file, compact attachments, and compact confirmation behaviors.",
-	"version": "0.6.11",
+	"version": "0.6.12",
 	"publisher": "Blake-C",
 	"license": "MIT",
 	"engines": {

@@ -83,7 +83,7 @@ npm run package
 npx @vscode/vsce package
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.6.11.vsix
+code --install-extension claude-overwrite-features-0.6.12.vsix
 ```
 
 Then **reload VS Code** — the extension activates on startup and applies patches automatically.
