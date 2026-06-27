@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.13] — 2026-06-26
+
+Updated the Feature 2 patch string for Claude Code v2.1.195. Only the scroll function was renamed; no behavior change. Features 1, 3, 4, and 5 were unaffected this time.
+
+- Feature 2: submit-handler scroll fn `MD`→`PD`; command arg `K`, attachedFiles setter `p`, isSlashCommand flag `Ee` (local `let Ee=K.trim().startsWith("/")`), effective includeSelection `_t`, and includeSelection setter `y` all unchanged
+
 ## [0.6.12] — 2026-06-25
 
 Updated the Feature 1, Feature 2, and Feature 4 patch strings for Claude Code v2.1.193. Internal variable names changed; no behavior change. Features 3 and 5 were unaffected this time.

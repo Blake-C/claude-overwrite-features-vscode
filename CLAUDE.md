@@ -111,18 +111,18 @@ For regex searches use `re.finditer`. Always anchor searches to unique surroundi
 
 ### Key variable names in the submit handler (change each release)
 
-| Semantic role | v2.1.162 | v2.1.165 | v2.1.170 | v2.1.172 | v2.1.174 | v2.1.177 | v2.1.178 | v2.1.179 | v2.1.186 | v2.1.187 | v2.1.190 | v2.1.191 | v2.1.193 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| React namespace | `n1` | `Ye` | `Ke` | `Ke` | `Ke` | `Ke` | `je` | `je` | none (bare `oe`=useState, `Ie`=useRef) | none (bare `oe`=useState, `Ie`=useRef) | none (bare `oe`=useState, `ke`=useRef) | none (bare `oe`=useState, `ke`=useRef) | none (bare `ne`=useState, `ke`=useRef) |
-| includeSelection state | `[P,_]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[C,x]` | `[C,x]` | `[C,x]` | `[C,y]` | `[C,y]` |
-| attachedFiles state | `[B,W]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` |
-| next state after includeSelection | `[M,w]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[y,w]` | `[y,w]` | `[y,w]` | `[x,w]` | `[x,w]` |
-| submit callback | `C` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `H` (`Vt`/useCallback) | `H` (`Vt`/useCallback) | `H` (`Vt`/useCallback) | `H` (`Wt`/useCallback) | `H` (`Wt`/useCallback) |
-| command text arg | `v1` | `Oe` | `q` | `$` | `$` | `$` | `$` | `$` | `K` | `K` | `K` | `K` | `K` |
-| isSlashCommand flag | `q1` | `ae` | `De` | `De` | `De` | `De` | `De` | `De` | `Ne` | `Ne` | `Ne` | `Me` | `Ee` |
-| effective includeSelection | `l1` | `je` | `_t` | `gt` | `gt` | `gt` | `gt` | `gt` | `bt` | `bt` | `bt` | `bt` | `_t` |
-| compact button onCompact | `J` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` |
-| scroll fn / scroll ref | `Nk` / `Q` | `IN` / `r` | `BN` / `r` | `BN` / `r` | `VN` / `r` | `VN` / `r` | `zN` / `r` | `zN` / `r` | `TM` / `r` | `DM` / `r` | `DM` / `r` | `ND` / `r` | `MD` / `r` |
+| Semantic role | v2.1.162 | v2.1.165 | v2.1.170 | v2.1.172 | v2.1.174 | v2.1.177 | v2.1.178 | v2.1.179 | v2.1.186 | v2.1.187 | v2.1.190 | v2.1.191 | v2.1.193 | v2.1.195 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| React namespace | `n1` | `Ye` | `Ke` | `Ke` | `Ke` | `Ke` | `je` | `je` | none (bare `oe`=useState, `Ie`=useRef) | none (bare `oe`=useState, `Ie`=useRef) | none (bare `oe`=useState, `ke`=useRef) | none (bare `oe`=useState, `ke`=useRef) | none (bare `ne`=useState, `ke`=useRef) | none (bare `ne`=useState, `ke`=useRef) |
+| includeSelection state | `[P,_]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[v,x]` | `[C,x]` | `[C,x]` | `[C,x]` | `[C,y]` | `[C,y]` | `[C,y]` |
+| attachedFiles state | `[B,W]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` | `[h,p]` |
+| next state after includeSelection | `[M,w]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[C,y]` | `[y,w]` | `[y,w]` | `[y,w]` | `[x,w]` | `[x,w]` | `[x,w]` |
+| submit callback | `C` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `F` (useCallback) | `H` (`Vt`/useCallback) | `H` (`Vt`/useCallback) | `H` (`Vt`/useCallback) | `H` (`Wt`/useCallback) | `H` (`Wt`/useCallback) | `H` (`Wt`/useCallback) |
+| command text arg | `v1` | `Oe` | `q` | `$` | `$` | `$` | `$` | `$` | `K` | `K` | `K` | `K` | `K` | `K` |
+| isSlashCommand flag | `q1` | `ae` | `De` | `De` | `De` | `De` | `De` | `De` | `Ne` | `Ne` | `Ne` | `Me` | `Ee` | `Ee` |
+| effective includeSelection | `l1` | `je` | `_t` | `gt` | `gt` | `gt` | `gt` | `gt` | `bt` | `bt` | `bt` | `bt` | `_t` | `_t` |
+| compact button onCompact | `J` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` | `i` |
+| scroll fn / scroll ref | `Nk` / `Q` | `IN` / `r` | `BN` / `r` | `BN` / `r` | `VN` / `r` | `VN` / `r` | `zN` / `r` | `zN` / `r` | `TM` / `r` | `DM` / `r` | `DM` / `r` | `ND` / `r` | `MD` / `r` | `PD` / `r` |
 
 ### Key functions
 
