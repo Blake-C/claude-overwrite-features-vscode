@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.15] — 2026-07-01
+
+Updated the Feature 4 patch string for Claude Code v2.1.198. Only the stats helper was renamed; no behavior change. Features 1, 2, 3, and 5 were unaffected this time.
+
+- Feature 4: stats helper `Loe`→`lae`; function now ends `return lae(t,o),o.result}`. All surrounding variable names (`e`=channelId, `t`=toolName, `r`=inputs, `i`=suggestions, `n`=abortSignal, `o`=result) unchanged
+
 ## [0.6.14] — 2026-06-29
 
 Updated the Feature 4 patch string for Claude Code v2.1.196. Only the stats helper was renamed; no behavior change. Features 1, 2, 3, and 5 were unaffected this time.
