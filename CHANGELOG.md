@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.18] — 2026-07-07
+
+Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.204. The webview minifier reassigned the React hook aliases and renamed the main chat view, and the plan-mode permission function gained a new early-return guard. Features 3 and 5 were unaffected.
+
+- Feature 1: main chat view renamed `De1`→`_Qe`; hook aliases changed (`ne`→`ie` for `useState`, `ke`→`Se` for `useRef`). The `useState` triple is now `_=Se(!0),[C,y]=ie(!0),[x,w]=ie(!1)`
+- Feature 2: submit handler vars changed — command text arg `K`→`ne`, isSlashCommand `Ee`→`Je`, effective includeSelection `_t`→`Dt`, scroll fn `PD`→`OD`. The includeSelection reset setter stays `y`
+- Feature 4: the early-return guard changed to a Chrome-MCP check and the result var was renamed `o`→`s`; stats helper stays `Bce`; function now ends `return Bce(t,s),s.result}`. Vars `e`=channelId, `t`=toolName, `r`=inputs, `i`=suggestions, `n`=abortSignal, `s`=result
+
 ## [0.6.17] — 2026-07-07
 
 Updated the Feature 4 patch string for Claude Code v2.1.202. Only the stats helper was renamed; no behavior change. Features 1, 2, 3, and 5 were unaffected this time.
