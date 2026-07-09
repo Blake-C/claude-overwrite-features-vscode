@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.19] — 2026-07-08
+
+Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.205. The webview minifier reassigned the `useState` alias again and the submit handler's variable names shifted; the plan-mode permission function only had its stats helper renamed. Features 3 and 5 were unaffected.
+
+- Feature 1: `useState` alias changed `ie`→`ne`. The `useState` triple is now `_=Se(!0),[C,y]=ne(!0),[x,w]=ne(!1)`
+- Feature 2: submit handler vars changed — command text arg `ne`→`K`, isSlashCommand `Je`→`De`, effective includeSelection `Dt`→`ct`, scroll fn stays `OD`. The includeSelection reset setter stays `y`
+- Feature 4: stats helper `Bce`→`Wce`; function now ends `return Wce(t,s),s.result}`. All surrounding variable names (`e`=channelId, `t`=toolName, `r`=inputs, `i`=suggestions, `n`=abortSignal, `s`=result) unchanged
+
+This release was applied manually: the launchd watcher detected v2.1.205 and ran the health check correctly, but the headless `claude -p` auto-fix failed with a `401 Invalid authentication credentials` error after Anthropic forced a re-login.
+
 ## [0.6.18] — 2026-07-07
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.204. The webview minifier reassigned the React hook aliases and renamed the main chat view, and the plan-mode permission function gained a new early-return guard. Features 3 and 5 were unaffected.
