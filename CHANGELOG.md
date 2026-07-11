@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.21] — 2026-07-11
+
+Updated the Feature 4 patch string for Claude Code v2.1.207. Only the stats helper was renamed; no behavior change. Features 1, 2, 3, and 5 were unaffected this time.
+
+- Feature 4: stats helper `Kle`→`uue`; function now ends `return uue(t,s),s.result}`. All surrounding variable names (`e`=channelId, `t`=toolName, `r`=inputs, `i`=suggestions, `n`=abortSignal, `s`=result) and the Chrome-MCP early-return guard unchanged
+
 ## [0.6.20] — 2026-07-10
 
 Updated the Feature 4 patch string for Claude Code v2.1.206. Only the stats helper was renamed; no behavior change. Features 1, 2, 3, and 5 were unaffected this time.
