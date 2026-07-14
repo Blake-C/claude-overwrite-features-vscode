@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.22] — 2026-07-13
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.208. Features 1, 3, and 5 were unaffected this time.
+
+- Feature 2: the submit handler's scroll fn was renamed `OD`→`PD`; all other vars unchanged (command text arg `K`, isSlashCommand `De`, effective includeSelection `ct`, attached-files setter `p`, includeSelection reset setter `y`). New site: `await e.send(K,h,ct),p([]),PD(r,!0)`
+- Feature 4: the `sendRequest` call swapped the `suggestions`/`abortSignal` argument names (`suggestions:i},n` → `suggestions:n},i`, so suggestions is now `n` and abortSignal is `i`) and the stats helper was renamed `uue`→`xue`; function now ends `return xue(t,s),s.result}`. The Chrome-MCP early-return guard and the remaining vars (`e`=channelId, `t`=toolName, `r`=inputs, `s`=result) are unchanged
+
 ## [0.6.21] — 2026-07-11
 
 Updated the Feature 4 patch string for Claude Code v2.1.207. Only the stats helper was renamed; no behavior change. Features 1, 2, 3, and 5 were unaffected this time.
