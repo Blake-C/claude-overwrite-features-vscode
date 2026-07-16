@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.24] — 2026-07-15
+
+Updated the Feature 4 patch string for Claude Code v2.1.211. Features 1, 2, 3, and 5 were unaffected this time.
+
+- Feature 4: the `sendRequest` call's `suggestions`/`abortSignal` argument names reverted again (`suggestions:i},n` → `suggestions:n},i`, so suggestions is `n` and abortSignal is `i`, matching v2.1.208) and the stats helper was renamed `Sue`→`Rue`; function now ends `return Rue(t,s),s.result}`. The Chrome-MCP early-return guard and the remaining vars (`e`=channelId, `t`=toolName, `r`=inputs, `s`=result) are unchanged
+
 ## [0.6.23] — 2026-07-15
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.210. Features 1, 3, and 5 were unaffected this time.
