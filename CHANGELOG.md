@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.30] — 2026-08-04
+
+Updated the Feature 4 patch string for Claude Code v2.1.222. Features 1, 2, 3, and 5 were unaffected this time.
+
+- Feature 4: only the stats helper was renamed `Q_e`→`fve`; function now ends `return fve(t,s),s.result}`. The Chrome-MCP early-return guard, the `sendRequest` argument order (`suggestions:n},i`, so suggestions is `n` and abortSignal is `i`), and the remaining vars (`e`=channelId, `t`=toolName, `r`=inputs, `s`=result) are unchanged
+
 ## [0.6.29] — 2026-08-03
 
 Updated the Feature 1, Feature 2, and Feature 4 patch strings for Claude Code v2.1.221. Features 3 and 5 were unaffected this time.
