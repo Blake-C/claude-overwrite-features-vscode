@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.32] — 2026-08-07
+
+Updated the Feature 4 patch string for Claude Code v2.1.224. Features 1, 2, 3, and 5 were unaffected this time.
+
+- Feature 4: only the stats helper was renamed `Ave`→`Yfe`; function now ends `return Yfe(t,s),s.result}`. The Chrome-MCP early-return guard, the `sendRequest` argument order (`suggestions:n},i`, so suggestions is `n` and abortSignal is `i`), and the remaining vars (`e`=channelId, `t`=toolName, `r`=inputs, `s`=result) are unchanged
+
 ## [0.6.31] — 2026-08-06
 
 Updated the Feature 4 patch string for Claude Code v2.1.223. Features 1, 2, 3, and 5 were unaffected this time.
