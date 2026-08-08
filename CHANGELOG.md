@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.33] — 2026-08-08
+
+Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.226. Features 3 and 5 were unaffected this time.
+
+- Feature 1: the `useRef` alias changed `Se`→`we` (the `useState` alias stays `ie`), so the site is now `_=we(!0),[C,y]=ie(!0),[x,w]=ie(!1)`. The main chat view component is `tJe`
+- Feature 2: the submit handler dropped its separate command-text local and now uses the callback argument `ve` directly (was `_e`); isSlashCommand is `_t` (was `ot`), effective includeSelection is `bt=C&&!_t` (was `Wt`), and the scroll function was renamed `BD`→`HD`. Attached files `h`, attached-files setter `p`, includeSelection reset setter `y`, and scroll ref `r` are unchanged. The site is now `await e.send(ve,h,bt,{kind:"human"}),p([]),HD(r,!0)`
+- Feature 4: only the stats helper was renamed `Yfe`→`Sme`; function now ends `return Sme(t,s),s.result}`. The Chrome-MCP early-return guard, the `sendRequest` argument order (`suggestions:n},i`, so suggestions is `n` and abortSignal is `i`), and the remaining vars (`e`=channelId, `t`=toolName, `r`=inputs, `s`=result) are unchanged
+
 ## [0.6.32] — 2026-08-07
 
 Updated the Feature 4 patch string for Claude Code v2.1.224. Features 1, 2, 3, and 5 were unaffected this time.
