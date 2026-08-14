@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.36] — 2026-08-14
+
+Updated the Feature 2 and 4 patch strings for Claude Code v2.1.232. Features 1, 3, and 5 were unaffected this time.
+
+- Feature 2: isSlashCommand is `st` (was `rt`) and the scroll function was renamed `EN`→`TN`. The command text is still the submit callback's argument `ve`, effective includeSelection is still `Vt=C&&!st`, and attached files `h`, attached-files setter `p`, includeSelection reset setter `x`, and scroll ref `r` are unchanged. The site is now `await e.send(ve,h,Vt,{kind:"human"}),p([]),TN(r,!0)`. The main chat view component is `Uot` and the submit handler is `zo` (via `Ut`/useCallback)
+- Feature 4: only the stats helper was renamed `OTe`→`XTe`; function now ends `return XTe(t,s),s.result}`. The Chrome-MCP early-return guard, the `sendRequest` argument order (`suggestions:n},i`, so suggestions is `n` and abortSignal is `i`), and the remaining vars (`e`=channelId, `t`=toolName, `r`=inputs, `s`=result) are unchanged
+
 ## [0.6.35] — 2026-08-12
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.229. Features 3 and 5 were unaffected this time.
