@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.37] — 2026-08-14
+
+Updated the Feature 4 patch string for Claude Code v2.1.233. Features 1, 2, 3, and 5 were unaffected this time.
+
+- Feature 4: only the stats helper was renamed `XTe`→`nAe`; function now ends `return nAe(t,s),s.result}`. The Chrome-MCP early-return guard, the `sendRequest` argument order (`suggestions:n},i`, so suggestions is `n` and abortSignal is `i`), and the remaining vars (`e`=channelId, `t`=toolName, `r`=inputs, `s`=result) are unchanged
+
 ## [0.6.36] — 2026-08-14
 
 Updated the Feature 2 and 4 patch strings for Claude Code v2.1.232. Features 1, 3, and 5 were unaffected this time.
