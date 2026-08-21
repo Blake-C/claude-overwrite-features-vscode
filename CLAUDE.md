@@ -10,8 +10,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Development build | `npm run compile` |
 | Production build | `npm run package` |
 | Watch mode | `npm run watch` |
-| Package `.vsix` | `npx @vscode/vsce package` |
-| Install locally | `code --install-extension claude-overwrite-features-0.6.41.vsix` |
+| Package `.vsix` | `npm run vsix` |
+| Install locally | `code --install-extension claude-overwrite-features-0.6.42.vsix` |
+
+`vsce` is a devDependency, so `npm run vsix` runs the local binary and needs no network. Do not use `npx @vscode/vsce package` — npx resolves the unpinned spec against the registry, which fails under the Bash sandbox.
 
 There are no tests.
 
@@ -20,7 +22,7 @@ There are no tests.
 After any substantial change (new patch, bug fix, behavior change), bump the version in `package.json` and repackage:
 
 1. Increment the `"version"` field in `package.json` (e.g. `0.1.0` → `0.2.0`)
-2. Run `npx @vscode/vsce package` to produce the new `.vsix`
+2. Run `npm run vsix` to produce the new `.vsix`
 3. Run `code --install-extension claude-overwrite-features-<version>.vsix` to install it
 
 Use semantic versioning: patch bump (0.1.x) for fixes and minor tweaks, minor bump (0.x.0) for new features.
@@ -78,9 +80,9 @@ An optional macOS launchd agent self-heals patches when Claude Code updates. It 
 | `scripts/install-watcher.sh` / `uninstall-watcher.sh` | Render `launchd/com.Blake-C.claude-overwrite-watcher.plist` (substituting `__REPO__`/`__HOME__`) into `~/Library/LaunchAgents/` and `launchctl bootstrap`/`bootout` it. |
 | `launchd/…​.plist` | Template. `WatchPaths` = `~/.vscode/extensions` (fires on any extension install; the script no-ops unless the Claude Code version actually changed). |
 
-npm scripts: `check-patches`, `watcher:install`, `watcher:uninstall`, `watcher:run`.
+npm scripts: `check-patches`, `vsix`, `watcher:install`, `watcher:uninstall`, `watcher:run`.
 
-The headless prompt tells Claude to follow the "Finding patches after a version update" and "Navigating the Claude Code webview" sections below, edit the `from`/`to` literals in `src/patch-defs.ts`, bump version + docs, compile, package, and commit to the branch. So keep those sections accurate — the watcher depends on them.
+The headless prompt tells Claude to follow the "Finding patches after a version update" and "Navigating the Claude Code webview" sections below, edit the `from`/`to` literals in `src/patch-defs.ts`, bump version + docs, compile, and commit to the branch. The script packages the `.vsix` itself after Claude exits, because the headless run has no network access and no way to answer a permission prompt. So keep those sections accurate — the watcher depends on them.
 
 ## Navigating the Claude Code webview
 

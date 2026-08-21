@@ -113,10 +113,10 @@ Fix them by following the repository's own documented workflow:
 2. Create and switch to a new branch named exactly: $FIX_BRANCH
 3. Update the broken patch strings in src/patch-defs.ts (the from/to literals) so they match v$VERSION. Verify each new 'from' string appears EXACTLY ONCE in the relevant clean .backup file before trusting it.
 4. Bump the version in package.json (patch bump), and update README.md, CHANGELOG.md, and CLAUDE.md per the conventions already used in those files.
-5. Run 'npm run compile' and confirm it succeeds, then 'npx @vscode/vsce package' to produce the .vsix.
+5. Run 'npm run compile' and confirm it succeeds, then 'npm run check-patches' and confirm it reports HEALTHY. Do NOT package the .vsix — this script does that after you finish.
 6. Commit the source/doc changes to the $FIX_BRANCH branch with a message in the repo's style (past-tense verb, no AI attribution).
 
-Hard constraints: do NOT switch back to or commit on main. Do NOT install the .vsix. Do NOT push. If you cannot confidently locate a patch site, stop and explain rather than guessing.
+Hard constraints: do NOT switch back to or commit on main. Do NOT package or install the .vsix. Do NOT push. If you cannot confidently locate a patch site, stop and explain rather than guessing.
 EOF
 
 cd "$REPO" || exit 1
@@ -131,10 +131,25 @@ CLAUDE_RC=$?
 # Record that we have handled this version (success or fail) to avoid re-running on every fs event.
 echo "$VERSION" >"$STATE_FILE"
 
-if [ "$CLAUDE_RC" -eq 0 ] && git -C "$REPO" rev-parse --verify "$FIX_BRANCH" >/dev/null 2>&1; then
-	log "Auto-fix complete on branch $FIX_BRANCH (claude rc=0)."
-	notify "Claude patch watcher" "Auto-fixed patches for v$VERSION on branch $FIX_BRANCH. Review and merge."
-else
+if [ "$CLAUDE_RC" -ne 0 ] || ! git -C "$REPO" rev-parse --verify "$FIX_BRANCH" >/dev/null 2>&1; then
 	log "Auto-fix did not complete cleanly (claude rc=$CLAUDE_RC). See log."
 	notify "Claude patch watcher" "Auto-fix for v$VERSION needs attention — see log."
+	exit 1
+fi
+
+# --- Package the .vsix here, not inside Claude -----------------------------
+# claude -p runs under a sandbox with no network and no way to answer a
+# permission prompt, so packaging from there fails whenever npm needs the
+# registry. This shell runs outside that sandbox.
+log "Packaging .vsix for $FIX_BRANCH."
+npm --prefix "$REPO" run vsix >>"$LOG_FILE" 2>&1
+PACK_RC=$?
+
+if [ "$PACK_RC" -eq 0 ]; then
+	log "Auto-fix complete on branch $FIX_BRANCH; .vsix packaged."
+	notify "Claude patch watcher" "Auto-fixed patches for v$VERSION on branch $FIX_BRANCH. Review and merge."
+else
+	log "Patches fixed on $FIX_BRANCH but packaging failed (rc=$PACK_RC). See log."
+	notify "Claude patch watcher" "Patches fixed for v$VERSION but the .vsix failed to build — see log."
+	exit 1
 fi

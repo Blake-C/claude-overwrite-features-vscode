@@ -61,7 +61,7 @@ Models structurally incompatible with Claude Code (embedding models, audio/image
 
 - [Claude Code VS Code extension](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) must be installed
 - Node.js (via [NVM](https://github.com/nvm-sh/nvm) or global install)
-- [`@vscode/vsce`](https://github.com/microsoft/vscode-vsce) for packaging
+- [`@vscode/vsce`](https://github.com/microsoft/vscode-vsce) for packaging, installed by `npm install` as a devDependency
 
 ## Build
 
@@ -80,10 +80,10 @@ npm run package
 
 ```bash
 # Generate the .vsix file
-npx @vscode/vsce package
+npm run vsix
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.6.41.vsix
+code --install-extension claude-overwrite-features-0.6.42.vsix
 ```
 
 Then **reload VS Code** — the extension activates on startup and applies patches automatically.
@@ -105,7 +105,7 @@ How it works:
 1. A launchd agent watches `~/.vscode/extensions` and fires when VS Code installs a new `anthropic.claude-code-*` version.
 2. `scripts/on-claude-update.sh` runs a **deterministic** health check (`scripts/check-patches.ts`) that tests whether every patch's `from`/`to` literal still appears in the new files. No AI is involved here — it's a string match reusing the same `PATCHES`/`applyPatch` the extension uses.
 3. If all patches still match, it does nothing (the extension re-applies them on activation).
-4. **Only if a patch has actually broken**, it launches headless Claude Code (`claude -p`) with a scoped permission allowlist to rewrite the broken strings on a new branch `auto/patch-update-<version>`, bump the version, update docs, compile, and package. It commits to the branch and notifies you. It never touches `main` and never installs the `.vsix` — you review and merge.
+4. **Only if a patch has actually broken**, it launches headless Claude Code (`claude -p`) with a scoped permission allowlist to rewrite the broken strings on a new branch `auto/patch-update-<version>`, bump the version, update docs, and compile. It commits to the branch, and the shell script then runs `npm run vsix` to build the `.vsix` and notifies you. Packaging runs in the script rather than in the headless Claude run, which has no network access and no way to answer a permission prompt. It never touches `main` and never installs the `.vsix` — you review and merge.
 
 Install / manage:
 

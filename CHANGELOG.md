@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.42] — 2026-08-21
+
+Fixed the auto-update watcher so it builds the `.vsix` again. The v2.1.236 and v2.1.238 runs fixed their patches and committed, but produced no package.
+
+- `@vscode/vsce` is now a devDependency with an `npm run vsix` script. `npx @vscode/vsce package` resolved the unpinned spec against `registry.npmjs.org` on every run, which the Bash sandbox blocks. The sandbox was enabled globally on 2026-08-19, and every watcher run after that failed at the packaging step with a 403
+- `scripts/on-claude-update.sh` now runs `npm run vsix` itself after the headless Claude run commits, instead of asking Claude to package. The script runs outside the sandbox, and a packaging failure is now reported in the notification instead of passing silently
+
 ## [0.6.41] — 2026-08-20
 
 Updated the Feature 4 patch string for Claude Code v2.1.238. Features 1, 2, 3, and 5 were unaffected this time.
