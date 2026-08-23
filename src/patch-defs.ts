@@ -16,13 +16,13 @@ export interface Patch {
 export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 1: Default include-file toggle to OFF',
-		from: '_=me(!0),[C,x]=te(!0),[y,w]=te(!1)',
-		to: '_=me(!0),[C,x]=te(!1),[y,w]=te(!1)',
+		from: '_=_e(!0),[C,x]=ie(!0),[y,w]=ie(!1)',
+		to: '_=_e(!0),[C,x]=ie(!1),[y,w]=ie(!1)',
 	},
 	{
 		name: 'Feature 2: Skip attachments + reset toggle on slash commands',
-		from: 'await e.send(H,h,le,{kind:"human"}),p([]),HN(r,!0)',
-		to: 'await e.send(H,ne?[]:h,le,{kind:"human"}),p([]),x(!1),HN(r,!0)',
+		from: 'await e.send(K,h,Re,{kind:"human"}),p([]),XN(r,!0)',
+		to: 'await e.send(K,oe?[]:h,Re,{kind:"human"}),p([]),x(!1),XN(r,!0)',
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.44] — 2026-08-23
+
+Updated the Feature 1 and 2 patch strings for Claude Code v2.1.241. Features 3, 4, and 5 were unaffected this time.
+
+- Feature 1: the `useRef` alias changed `me`→`_e` and the `useState` alias changed `te`→`ie`, so the site is back to `_=_e(!0),[C,x]=ie(!0),[y,w]=ie(!1)`. The includeSelection state pair stays `[C,x]`. The main chat view component is `bct`
+- Feature 2: the submit handler is `xr` (via `Bt`/useCallback) and uses its callback argument `K` for the command text (was `H`). isSlashCommand is `oe` (was `ne`), effective includeSelection is `Re=C&&!oe` (was `le`), and the scroll function was renamed `HN`→`XN`. Attached files `h`, attached-files setter `p`, includeSelection reset setter `x`, and scroll ref `r` are unchanged. The site is now `await e.send(K,h,Re,{kind:"human"}),p([]),XN(r,!0)`
+
 ## [0.6.43] — 2026-08-22
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.239. Features 3 and 5 were unaffected this time.
