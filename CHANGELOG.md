@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.45] — 2026-08-25
+
+Updated the Feature 1, 2, 3, and 4 patch strings for Claude Code v2.1.245. Feature 5 was unaffected.
+
+v2.1.245 switched minifiers. Identifiers are now `$`, `J`, `X`, `Y`, `Q`, `Z`, `W` and suffixed names like `D1`, `Y1`, `tk`, instead of the `e`/`t`/`r`/`ie`/`_e` style used since v2.1.162. Every webview and extension patch site changed as a result, so expect no name to carry over from the tables above.
+
+- Feature 1: the main chat view component is `b30`, the `useRef` alias is `D1`, and the `useState` alias is `Y1`. The includeSelection state pair is `[M,w]`, so the site is now `D=D1(!0),[M,w]=Y1(!0),[_,O]=Y1(!1)`
+- Feature 2: the submit handler is `j4` (via `v0`/useCallback) and uses its callback argument `a` for the command text. The session object is `$` (was `e`), isSlashCommand is `Q1`, effective includeSelection is `I1=M&&!Q1`, attached files are `B` with setter `W`, the includeSelection reset setter is `w`, and the scroll function is `tk` with ref `Z`. The site is now `await $.send(a,B,I1,{kind:"human"}),W([]),tk(Z,!0)`
+- Feature 3: the compact button component is `c90` and its `onCompact` prop is `Y` (was `i`), so the site is `click to compact\`,onClick:Y,onMouseEnter:`. The dialog's confirm branch calls `Y()`
+- Feature 4: the Chrome-MCP early-return guard and the `sendRequest` argument order are unchanged, but every variable was renamed: `$`=channelId, `J`=toolName, `X`=inputs, `Y`=suggestions, `Q`=abortSignal, `W`=result, and the stats helper is `iA0`. The function now ends `return iA0(J,W),W.result}`
+
 ## [0.6.44] — 2026-08-23
 
 Updated the Feature 1 and 2 patch strings for Claude Code v2.1.241. Features 3, 4, and 5 were unaffected this time.

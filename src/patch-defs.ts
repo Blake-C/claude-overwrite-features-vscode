@@ -16,24 +16,24 @@ export interface Patch {
 export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 1: Default include-file toggle to OFF',
-		from: '_=_e(!0),[C,x]=ie(!0),[y,w]=ie(!1)',
-		to: '_=_e(!0),[C,x]=ie(!1),[y,w]=ie(!1)',
+		from: 'D=D1(!0),[M,w]=Y1(!0),[_,O]=Y1(!1)',
+		to: 'D=D1(!0),[M,w]=Y1(!1),[_,O]=Y1(!1)',
 	},
 	{
 		name: 'Feature 2: Skip attachments + reset toggle on slash commands',
-		from: 'await e.send(K,h,Re,{kind:"human"}),p([]),XN(r,!0)',
-		to: 'await e.send(K,oe?[]:h,Re,{kind:"human"}),p([]),x(!1),XN(r,!0)',
+		from: 'await $.send(a,B,I1,{kind:"human"}),W([]),tk(Z,!0)',
+		to: 'await $.send(a,Q1?[]:B,I1,{kind:"human"}),W([]),w(!1),tk(Z,!0)',
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',
-		from: 'click to compact`,onClick:i,onMouseEnter:',
-		to: 'click to compact`,onClick:()=>{const d=document.createElement("dialog");d.style.cssText="background:var(--vscode-editor-background);color:var(--vscode-editor-foreground);border:1px solid var(--vscode-widget-border,#454545);border-radius:6px;padding:20px;min-width:260px;box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:var(--vscode-font-family);font-size:var(--vscode-font-size,13px)";d.innerHTML=\'<form method="dialog" style="margin:0"><p style="margin:0 0 16px;line-height:1.5">Compact conversation now?<br>This cannot be undone.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel" style="padding:4px 14px;background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground);border:none;border-radius:3px;cursor:pointer;font:inherit">Cancel</button><button value="ok" autofocus style="padding:4px 14px;background:var(--vscode-button-background);color:var(--vscode-button-foreground);border:none;border-radius:3px;cursor:pointer;font:inherit">Compact</button></div></form>\';document.body.appendChild(d);d.showModal();d.addEventListener("close",()=>{if(d.returnValue==="ok")i();d.remove()})},onMouseEnter:',
+		from: 'click to compact`,onClick:Y,onMouseEnter:',
+		to: 'click to compact`,onClick:()=>{const d=document.createElement("dialog");d.style.cssText="background:var(--vscode-editor-background);color:var(--vscode-editor-foreground);border:1px solid var(--vscode-widget-border,#454545);border-radius:6px;padding:20px;min-width:260px;box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:var(--vscode-font-family);font-size:var(--vscode-font-size,13px)";d.innerHTML=\'<form method="dialog" style="margin:0"><p style="margin:0 0 16px;line-height:1.5">Compact conversation now?<br>This cannot be undone.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel" style="padding:4px 14px;background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground);border:none;border-radius:3px;cursor:pointer;font:inherit">Cancel</button><button value="ok" autofocus style="padding:4px 14px;background:var(--vscode-button-background);color:var(--vscode-button-foreground);border:none;border-radius:3px;cursor:pointer;font:inherit">Compact</button></div></form>\';document.body.appendChild(d);d.showModal();d.addEventListener("close",()=>{if(d.returnValue==="ok")Y();d.remove()})},onMouseEnter:',
 	},
 	{
 		name: 'Feature 4: Respect ~/.claude/settings.json permissions in plan mode',
 		targetFile: 'extension',
-		from: 'return{behavior:"allow",updatedInput:r};let s=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:r,suggestions:n},i);return tIe(t,s),s.result}',
-		to: 'return{behavior:"allow",updatedInput:r};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===t;if(_m[1]!==t)return!1;const c=typeof r==="object"&&r!==null?r.command??r.cmd??r.input??JSON.stringify(r):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:r}}catch(_e){}let s=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:r,suggestions:n},i);return tIe(t,s),s.result}',
+		from: 'return{behavior:"allow",updatedInput:X};let W=await this.sendRequest($,{type:"tool_permission_request",toolName:J,inputs:X,suggestions:Y},Q);return iA0(J,W),W.result}',
+		to: 'return{behavior:"allow",updatedInput:X};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===J;if(_m[1]!==J)return!1;const c=typeof X==="object"&&X!==null?X.command??X.cmd??X.input??JSON.stringify(X):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:X}}catch(_e){}let W=await this.sendRequest($,{type:"tool_permission_request",toolName:J,inputs:X,suggestions:Y},Q);return iA0(J,W),W.result}',
 	},
 	{
 		name: 'Feature 5: Label panel as patched (activitybar container)',
