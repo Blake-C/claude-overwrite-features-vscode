@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.46] — 2026-08-27
+
+Updated the Feature 2 and 4 patch strings for Claude Code v2.1.246. Features 1, 3, and 5 were unaffected this time.
+
+v2.1.246 keeps the minifier introduced in v2.1.245, so the `$`/`J`/`X`/`Y`/`Q`/`W` identifier style still holds. Only two names moved.
+
+- Feature 2: the scroll function was renamed `tk`→`$y`. The command text `a`, isSlashCommand `Q1`, effective includeSelection `I1=M&&!Q1`, attached files `B` with setter `W`, includeSelection reset setter `w`, and scroll ref `Z` are unchanged. The site is now `await $.send(a,B,I1,{kind:"human"}),W([]),$y(Z,!0)`
+- Feature 4: every variable in `requestToolPermission` shifted one position and the stats helper was renamed `iA0`→`jA$`. Vars are now `$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=result. The Chrome-MCP early-return guard and the `sendRequest` argument order are unchanged. The function now ends `return jA$(Q,W),W.result}`
+
 ## [0.6.45] — 2026-08-25
 
 Updated the Feature 1, 2, 3, and 4 patch strings for Claude Code v2.1.245. Feature 5 was unaffected.
