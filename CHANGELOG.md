@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.48] — 2026-08-28
+
+Updated the Feature 4 patch string for Claude Code v2.1.250. Features 1, 2, 3, and 5 were unaffected this time.
+
+v2.1.250 keeps the minifier from v2.1.245, and `requestToolPermission` is otherwise byte-identical to v2.1.247. The Chrome-MCP early-return guard, the `sendRequest` argument order, and every variable name (`$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=result) are unchanged.
+
+- Feature 4: the stats helper was renamed `wj$`→`Fw$`. The function now ends `return Fw$(Q,W),W.result}`
+
 ## [0.6.47] — 2026-08-27
 
 Updated the Feature 4 patch string for Claude Code v2.1.247. Features 1, 2, 3, and 5 were unaffected this time.
