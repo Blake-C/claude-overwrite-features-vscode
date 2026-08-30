@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.49] — 2026-08-30
+
+Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.251. Features 3 and 5 were unaffected this time.
+
+v2.1.251 keeps the minifier from v2.1.245. The webview submit handler and the includeSelection state pair both had names shuffled, and the extension's stats helper was renamed again.
+
+- Feature 1: the includeSelection state pair is now `[M,_]` (the setter was `w`) and the pair that follows it is `[w,O]`. The `useRef` alias `D1` and the `useState` alias `Y1` are unchanged. The site is now `D=D1(!0),[M,_]=Y1(!0),[w,O]=Y1(!1)`
+- Feature 2: the submit handler is `j4` (via `p0`/useCallback) and uses its callback argument `g` for the command text (was `a`). Effective includeSelection is `q1=M&&!Q1` (was `I1`), the scroll function was renamed `$y`→`Jy`, and the includeSelection reset setter is `_` (was `w`). isSlashCommand `Q1`, attached files `B` with setter `W`, and scroll ref `Z` are unchanged. The site is now `await $.send(g,B,q1,{kind:"human"}),W([]),Jy(Z,!0)`
+- Feature 4: the stats helper was renamed `Fw$`→`Cw0`. The Chrome-MCP early-return guard, the `sendRequest` argument order, and every variable name (`$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=result) are unchanged. The function now ends `return Cw0(Q,W),W.result}`
+
 ## [0.6.48] — 2026-08-28
 
 Updated the Feature 4 patch string for Claude Code v2.1.250. Features 1, 2, 3, and 5 were unaffected this time.
