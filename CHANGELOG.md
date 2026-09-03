@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.51] — 2026-09-03
+
+Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.259. Features 3 and 5 were unaffected this time.
+
+v2.1.259 keeps the minifier from v2.1.245. The webview's `useState` alias reverted to `Y1`, the whole submit handler was renamed, and in the extension the `requestToolPermission` parameters shifted position again.
+
+- Feature 1: the main chat view is `NJ0`, the `useRef` alias stays `H1`, and the `useState` alias changed `J1`→`Y1`. The leading `useRef` local stays `j`. The includeSelection state pair stays `[M,_]` and the pair that follows it is `[w,R]` (the setter was `O`). The site is now `j=H1(!0),[M,_]=Y1(!0),[w,R]=Y1(!1)`
+- Feature 2: the submit handler is `p7` (via `z0`/useCallback) and still uses its callback argument `a` for the command text. isSlashCommand is `R1` (was `N1`), effective includeSelection is `l1=M&&!R1`, and the scroll function was renamed `Py`→`fy`. Attached files `B` with setter `W`, includeSelection reset setter `_`, and scroll ref `Z` are unchanged. The site is now `await $.send(a,B,l1,{kind:"human"}),W([]),fy(Z,!0)`
+- Feature 4: the Chrome-MCP early-return guard and the `sendRequest` argument order are unchanged, but abortSignal and the result local were renamed and the stats helper was renamed `ST$`→`Q_$`. Vars: `$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `z`=abortSignal, `K`=result. The function now ends `return Q_$(Q,K),K.result}`
+
 ## [0.6.50] — 2026-09-02
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.257. Features 3 and 5 were unaffected this time.
