@@ -17,6 +17,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 STATE_FILE="$HOME/.claude/claude-overwrite-watcher.state"
+ATTEMPTS_FILE="$HOME/.claude/claude-overwrite-watcher.attempts"
+MAX_ATTEMPTS=3
 LOG_FILE="$HOME/Library/Logs/claude-overwrite-watcher.log"
 LOCK_DIR="${TMPDIR:-/tmp}/claude-overwrite-watcher.lock"
 EXT_ROOT="$HOME/.vscode/extensions"
@@ -60,6 +62,12 @@ if [ "$VERSION" = "$LAST_SEEN" ]; then
 fi
 log "Detected Claude Code v$VERSION (last handled: ${LAST_SEEN:-none})."
 
+ATTEMPTS=0
+RECORDED="$(cat "$ATTEMPTS_FILE" 2>/dev/null || true)"
+if [ "${RECORDED%%:*}" = "$VERSION" ]; then
+	ATTEMPTS="${RECORDED##*:}"
+fi
+
 # --- Deterministic health check: is anything actually broken? -------------
 if [ -z "$NODE_BIN" ]; then
 	log "ERROR: node not found on PATH; cannot run health check."
@@ -75,6 +83,7 @@ printf '%s\n' "$HEALTH_OUT" >>"$LOG_FILE"
 if [ "$HEALTH_RC" -eq 0 ]; then
 	log "All patches healthy for v$VERSION; the extension will re-apply them. No action needed."
 	echo "$VERSION" >"$STATE_FILE"
+	rm -f "$ATTEMPTS_FILE"
 	exit 0
 elif [ "$HEALTH_RC" -ne 2 ]; then
 	log "Health check errored (rc=$HEALTH_RC). Leaving state unchanged for retry."
@@ -83,6 +92,15 @@ elif [ "$HEALTH_RC" -ne 2 ]; then
 fi
 
 # --- Patches are broken: prepare an auto-fix branch -----------------------
+# A failed run leaves the state file alone so the next fs event retries it;
+# this cap is what stops that from becoming a relaunch loop. It sits after the
+# health check so a version that later comes back healthy still clears itself.
+if [ "$ATTEMPTS" -ge "$MAX_ATTEMPTS" ]; then
+	log "Auto-fix already failed $ATTEMPTS times for v$VERSION. Giving up; fix manually."
+	notify "Claude patch watcher" "Auto-fix for v$VERSION failed $ATTEMPTS times — fix manually."
+	exit 1
+fi
+
 log "Patches broken on v$VERSION — launching headless Claude to auto-fix."
 
 if [ -z "$CLAUDE_BIN" ]; then
@@ -128,14 +146,19 @@ log "Running: claude -p (branch $FIX_BRANCH)"
 	>>"$LOG_FILE" 2>&1
 CLAUDE_RC=$?
 
-# Record that we have handled this version (success or fail) to avoid re-running on every fs event.
-echo "$VERSION" >"$STATE_FILE"
-
 if [ "$CLAUDE_RC" -ne 0 ] || ! git -C "$REPO" rev-parse --verify "$FIX_BRANCH" >/dev/null 2>&1; then
-	log "Auto-fix did not complete cleanly (claude rc=$CLAUDE_RC). See log."
-	notify "Claude patch watcher" "Auto-fix for v$VERSION needs attention — see log."
+	# Leave the state file alone so a transient failure (expired OAuth, no
+	# network) is retried on the next fs event, up to MAX_ATTEMPTS.
+	ATTEMPTS=$((ATTEMPTS + 1))
+	echo "$VERSION:$ATTEMPTS" >"$ATTEMPTS_FILE"
+	log "Auto-fix did not complete cleanly (claude rc=$CLAUDE_RC), attempt $ATTEMPTS of $MAX_ATTEMPTS. See log."
+	notify "Claude patch watcher" "Auto-fix for v$VERSION failed (attempt $ATTEMPTS/$MAX_ATTEMPTS) — see log."
 	exit 1
 fi
+
+# Record that we have handled this version so we do not re-run on every fs event.
+echo "$VERSION" >"$STATE_FILE"
+rm -f "$ATTEMPTS_FILE"
 
 # --- Package the .vsix here, not inside Claude -----------------------------
 # claude -p runs under a sandbox with no network and no way to answer a
