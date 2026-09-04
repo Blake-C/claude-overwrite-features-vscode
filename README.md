@@ -83,7 +83,7 @@ npm run package
 npm run vsix
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.6.51.vsix
+code --install-extension claude-overwrite-features-0.6.52.vsix
 ```
 
 Then **reload VS Code** — the extension activates on startup and applies patches automatically.
@@ -120,7 +120,7 @@ Notes:
 
 - **Security** — the headless run uses a scoped `--allowedTools` allowlist (Read/Edit/Write plus Bash limited to git/npm/npx/node/python3/code) confined to this repo via `--add-dir`, not `--dangerously-skip-permissions`. Automated commits land on a throwaway branch, so a wrong patch is caught at review.
 - **Prerequisites** — `node` must be resolvable for a bare-PATH launchd job (the script initializes fnm); the Claude CLI is expected at `~/.local/bin/claude`. The headless run must be authenticated, and because it is automated/programmatic access it should use an **Anthropic API key** (`ANTHROPIC_API_KEY`) rather than subscription login — see the Legal note above.
-- **Logs** — `~/Library/Logs/claude-overwrite-watcher.log`. The last-handled version is tracked in `~/.claude/claude-overwrite-watcher.state`.
+- **Logs** — `~/Library/Logs/claude-overwrite-watcher.log`. The last-handled version is tracked in `~/.claude/claude-overwrite-watcher.state`, which is written only after a successful run. A failed run leaves it alone and counts the attempt in `~/.claude/claude-overwrite-watcher.attempts` instead, so the next filesystem event retries. After 3 failed attempts on the same version the watcher stops and tells you to fix it by hand.
 - **macOS only** (launchd). On other platforms, run `npm run check-patches` manually or wire the same script into cron/systemd.
 
 ## Troubleshooting

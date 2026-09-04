@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.52] — 2026-09-04
+
+Updated the Feature 1, 2, 3, and 4 patch strings for Claude Code v2.1.260, and changed the watcher so a failed auto-fix run is retried instead of being recorded as handled.
+
+v2.1.260 keeps the minifier from v2.1.245. Feature 3 moved for the first time since v2.1.245: the compact button's `onCompact` prop was renamed, and the identifier appears twice in that patch, so both the `onClick:` match and the dialog's confirm branch had to change.
+
+- Feature 1: the main chat view is `$G0`, the `useRef` alias stays `H1`, and the `useState` alias changed `Y1`→`$1`. The leading `useRef` local is `P` (was `j`). The includeSelection state pair is `[w,N]` (was `[M,_]`) and the pair that follows it is `[M,O]`. The site is now `P=H1(!0),[w,N]=$1(!0),[M,O]=$1(!1)`
+- Feature 2: the submit handler is `_7` (via `H0`/useCallback) and still uses its callback argument `a` for the command text. isSlashCommand is `O1` (was `R1`), effective includeSelection is `l1=w&&!O1`, the scroll function was renamed `fy`→`Ph`, the scroll ref is `Q` (was `Z`), and the includeSelection reset setter is `N` (was `_`). Attached files `B` with setter `W` are unchanged. The site is now `await $.send(a,B,l1,{kind:"human"}),W([]),Ph(Q,!0)`
+- Feature 3: the compact button component is `HQ0` and its `onCompact` prop is `Z` (was `Y`, which is now `buttonClassName`). The site is `click to compact\`,onClick:Z,onMouseEnter:` and the dialog's confirm branch now calls `Z()`
+- Feature 4: the Chrome-MCP early-return guard and the `sendRequest` argument order are unchanged, but the result local was renamed `K`→`W` and the stats helper `Q_$`→`K_$`. Vars: `$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `z`=abortSignal. The function now ends `return K_$(Q,W),W.result}`
+
+The watcher change fixes a gap this update exposed. `scripts/on-claude-update.sh` wrote the version to `~/.claude/claude-overwrite-watcher.state` before checking the `claude -p` exit code, so when the v2.1.260 run died on an expired OAuth session it still recorded the version as handled and would never have retried. The state file is now written only after a successful run. A failure increments a per-version counter in `~/.claude/claude-overwrite-watcher.attempts` and leaves the state file alone, so the next filesystem event retries. After three failed attempts on the same version the watcher logs, notifies, and stops trying.
+
 ## [0.6.51] — 2026-09-03
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.259. Features 3 and 5 were unaffected this time.
