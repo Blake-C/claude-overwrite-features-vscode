@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.53] — 2026-09-07
+
+Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.263. Features 3 and 5 were unaffected this time.
+
+v2.1.263 keeps the minifier from v2.1.245, but the webview's identifier pool shifted back toward short lowercase names and the extension's `requestToolPermission` was restructured.
+
+- Feature 1: the main chat view is `$z0`, the `useRef` alias is `G1`, and the `useState` alias is `s`. The includeSelection state pair is `[L,b]` and the pair that follows it is `[k,h]`. Other hooks now sit between the leading `useRef` call and the state pairs, so the anchor is the `useRef` local `_` that immediately precedes them. The site is now `_=G1(void 0),[L,b]=s(!0),[k,h]=s(!1)`
+- Feature 2: the submit handler is `o5` (via `U0`/useCallback) and uses its callback argument `W1` for the command text. isSlashCommand is `W0`, effective includeSelection is `j0=L&&!W0`, attached files are `W` with setter `B`, the includeSelection reset setter is `b`, and the scroll function is `bh` with ref `Q`. The site is now `await $.send(W1,W,j0,{kind:"human"}),B([]),bh(Q,!0)`
+- Feature 4: the Chrome-MCP early-return guard and the `sendRequest` argument order are unchanged. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `z`=abortSignal, `W`=response, stats helper `_S$`. The function no longer ends at the stats call. It now reads `_S$(J,W);let K=W.result;...` and continues into an updatedPermissions block, so the `from` string ends at `_S$(J,W);` instead of at the closing brace
+
 ## [0.6.52] — 2026-09-04
 
 Updated the Feature 1, 2, 3, and 4 patch strings for Claude Code v2.1.260, and changed the watcher so a failed auto-fix run is retried instead of being recorded as handled.
