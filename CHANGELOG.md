@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.54] — 2026-09-09
+
+Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.266. Features 3 and 5 were unaffected this time.
+
+v2.1.266 keeps the minifier from v2.1.245. In the webview the `useState` alias changed and two locals in the submit handler were renamed. In the extension the `requestToolPermission` parameters shifted position again.
+
+- Feature 1: the main chat view is `Hz0`, the `useRef` alias stays `G1`, and the `useState` alias changed `s`→`n`. The leading `useRef` local stays `_`. The includeSelection state pair stays `[L,b]` and the pair that follows it is `[f,h]` (was `[k,h]`). The site is now `_=G1(void 0),[L,b]=n(!0),[f,h]=n(!1)`
+- Feature 2: the submit handler is `t5` (via `U0`/useCallback) and still uses its callback argument `W1` for the command text. isSlashCommand stays `W0`, effective includeSelection is `M0=L&&!W0` (was `j0`), and the scroll function was renamed `bh`→`Ih`. Attached files `W` with setter `B`, includeSelection reset setter `b`, and scroll ref `Q` are unchanged. The site is now `await $.send(W1,W,M0,{kind:"human"}),B([]),Ih(Q,!0)`
+- Feature 4: the Chrome-MCP early-return guard and the restructured tail from v2.1.263 are unchanged, but toolName and inputs swapped names again, abortSignal was renamed `z`→`Y`, and the stats helper was renamed `_S$`→`$b$`. Vars: `$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=response. The `from` string still ends at the stats call, now `$b$(Q,W);`
+
 ## [0.6.53] — 2026-09-07
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.263. Features 3 and 5 were unaffected this time.

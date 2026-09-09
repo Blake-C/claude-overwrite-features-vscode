@@ -16,13 +16,13 @@ export interface Patch {
 export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 1: Default include-file toggle to OFF',
-		from: '_=G1(void 0),[L,b]=s(!0),[k,h]=s(!1)',
-		to: '_=G1(void 0),[L,b]=s(!1),[k,h]=s(!1)',
+		from: '_=G1(void 0),[L,b]=n(!0),[f,h]=n(!1)',
+		to: '_=G1(void 0),[L,b]=n(!1),[f,h]=n(!1)',
 	},
 	{
 		name: 'Feature 2: Skip attachments + reset toggle on slash commands',
-		from: 'await $.send(W1,W,j0,{kind:"human"}),B([]),bh(Q,!0)',
-		to: 'await $.send(W1,W0?[]:W,j0,{kind:"human"}),B([]),b(!1),bh(Q,!0)',
+		from: 'await $.send(W1,W,M0,{kind:"human"}),B([]),Ih(Q,!0)',
+		to: 'await $.send(W1,W0?[]:W,M0,{kind:"human"}),B([]),b(!1),Ih(Q,!0)',
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',
@@ -32,8 +32,8 @@ export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 4: Respect ~/.claude/settings.json permissions in plan mode',
 		targetFile: 'extension',
-		from: 'return{behavior:"allow",updatedInput:Q};let W=await this.sendRequest($,{type:"tool_permission_request",toolName:J,inputs:Q,suggestions:X},z);_S$(J,W);',
-		to: 'return{behavior:"allow",updatedInput:Q};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===J;if(_m[1]!==J)return!1;const c=typeof Q==="object"&&Q!==null?Q.command??Q.cmd??Q.input??JSON.stringify(Q):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:Q}}catch(_e){}let W=await this.sendRequest($,{type:"tool_permission_request",toolName:J,inputs:Q,suggestions:X},z);_S$(J,W);',
+		from: 'return{behavior:"allow",updatedInput:J};let W=await this.sendRequest($,{type:"tool_permission_request",toolName:Q,inputs:J,suggestions:X},Y);$b$(Q,W);',
+		to: 'return{behavior:"allow",updatedInput:J};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===Q;if(_m[1]!==Q)return!1;const c=typeof J==="object"&&J!==null?J.command??J.cmd??J.input??JSON.stringify(J):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:J}}catch(_e){}let W=await this.sendRequest($,{type:"tool_permission_request",toolName:Q,inputs:J,suggestions:X},Y);$b$(Q,W);',
 	},
 	{
 		name: 'Feature 5: Label panel as patched (activitybar container)',
