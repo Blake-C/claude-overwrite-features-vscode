@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.55] — 2026-09-11
+
+Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.268. Features 3 and 5 were unaffected this time.
+
+v2.1.268 keeps the minifier from v2.1.245. In the webview the `useRef` alias changed and the submit handler renamed every local it uses. In the extension `requestToolPermission` gained a sixth parameter that is spread into the `sendRequest` payload.
+
+- Feature 1: the main chat view is `JU0`, the `useRef` alias changed `G1`→`X1`, and the `useState` alias stays `n`. The leading `useRef` local stays `_`. The includeSelection state pair is `[L,E]` (the setter was `b`) and the pair that follows it is `[k,h]` (was `[f,h]`). The site is now `_=X1(void 0),[L,E]=n(!0),[k,h]=n(!1)`
+- Feature 2: the submit handler is `T8` (via `q0`/useCallback) and uses its callback argument `D1` for the command text (was `W1`). isSlashCommand is `Y0` (was `W0`), effective includeSelection is `R0=L&&!Y0` (was `M0`), the scroll function was renamed `Ih`→`oh`, and the includeSelection reset setter is `E` (was `b`). Attached files `W` with setter `B` and scroll ref `Q` are unchanged. The site is now `await $.send(D1,W,R0,{kind:"human"}),B([]),oh(Q,!0)`
+- Feature 4: the Chrome-MCP early-return guard and the restructured tail from v2.1.263 are unchanged, but `requestToolPermission` now takes a sixth parameter `z` that is spread into the `sendRequest` payload as `suggestions:X,...z`. The response local was renamed `W`→`K` and the stats helper `$b$`→`Tg$`. Vars: `$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `Y`=abortSignal, `K`=response. `Tg$` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
 ## [0.6.54] — 2026-09-09
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.266. Features 3 and 5 were unaffected this time.
