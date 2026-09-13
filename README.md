@@ -6,7 +6,7 @@
 > - **The optional auto-update watcher runs `claude -p` (the Agent SDK) from a script.** Anthropic's Consumer Terms permit automated/programmatic access **only via an Anthropic API key**, not subscription (Pro/Max) login. If you enable the watcher, authenticate it with `ANTHROPIC_API_KEY`. Note that Agent SDK / `claude -p` usage also draws on usage limits (and, from June 15 2026, a separate Agent SDK credit on subscription plans).
 > - This project distributes only your own wrapper code. The short minified fragments used as patch anchors remain Anthropic's; the MIT license here does not grant any rights to Anthropic's code.
 
-A companion VS Code extension that patches six UX behaviors in the [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) extension and adds commands for running Claude Code against a local [Ollama](https://ollama.com) model.
+A companion VS Code extension that patches five UX behaviors in the [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) extension and adds commands for running Claude Code against a local [Ollama](https://ollama.com) model.
 
 ## What it changes
 
