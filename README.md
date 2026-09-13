@@ -10,11 +10,11 @@ A companion VS Code extension that patches six UX behaviors in the [Claude Code]
 
 ## What it changes
 
-1. **Include-file toggle defaults to OFF** — The "include current file/selection" button in the chat footer starts disabled. You can still toggle it on manually per message.
+1. **Include-file toggle defaults to OFF.** **Not working on Claude Code v2.1.270 and later.** Claude Code v2.1.270 removed the "include current file/selection" toggle button from the chat footer and replaced it with a chip showing the current file, which you dismiss with an X. There is no longer a toggle whose default this patch can flip, so the patch reports "pattern not found" and the current file is sent with every non-slash message until you dismiss the chip. See the v0.6.56 entry in [CHANGELOG.md](CHANGELOG.md) for the replacement options.
 
 2. **Attachments are not sent with slash commands** — When you have files attached and trigger `/compact` (or any slash command), those attachments are withheld from the command. Files remain attached and are sent with your next regular message.
 
-   The include-file toggle also resets to OFF automatically after every sent message, so it never carries over to the next one.
+   Claude Code v2.1.270 also removed the reset half of this patch. The toggle it used to reset no longer exists, and Claude Code now skips a selection it already sent on the previous message, so nothing carries over.
 
 3. **Compact button requires confirmation** — Clicking the context-usage button now shows a styled VS Code dialog before compacting, preventing accidental context loss.
 
@@ -83,7 +83,7 @@ npm run package
 npm run vsix
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.6.55.vsix
+code --install-extension claude-overwrite-features-0.6.56.vsix
 ```
 
 Then **reload VS Code** — the extension activates on startup and applies patches automatically.

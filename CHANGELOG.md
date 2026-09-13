@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.6.56] — 2026-09-13
+
+Updated the Feature 2 and 4 patch strings for Claude Code v2.1.270. Features 3 and 5 were unaffected this time. Feature 1 has no patch site in this release, so its v2.1.268 strings are left in place and the health check keeps reporting it as broken.
+
+v2.1.270 keeps the minifier from v2.1.245, but the webview change is not a rename. Claude Code removed the include-selection toggle button from the chat footer and replaced it with a chip that shows the current file and has an X to dismiss it, so the state Feature 1 flipped and the setter Feature 2 called are both gone.
+
+- Feature 1: the main chat view is `pH0`, with `U1` as the `useRef` alias and `l` as the `useState` alias, and it no longer holds an includeSelection state. The footer component `QH0` takes `currentSelection` and `onRemoveSelection` in place of the toggle, and renders the chip component `a75`, whose title reads `Showing Claude your current file selection (...)` and whose X button calls `session.dismissSelection()`. The submit handler computes the selection flag as `let n=!t`, where `t` is the isSlashCommand local, so the current file is sent with every message that is not a slash command. There is no `useState(!0)` left to flip to `!1`. Three ways to restore the behavior are listed below
+- Feature 2: the submit handler is `W5` (via `H0`/useCallback) and uses its callback argument `q1` for the command text. isSlashCommand is `t`, the selection flag is `n=!t`, attached files are `W` with setter `B`, and the scroll function is `my` with ref `Q`. The site is now `await $.send(q1,W,n,{kind:"human"}),B([]),my(Q,!0)`. The reset half of the patch is dropped, because there is no toggle setter left to call and `send()` already skips a selection that matches `lastSentSelection` from the previous message
+- Feature 4: the Chrome-MCP early-return guard and the restructured tail from v2.1.263 are unchanged, but toolName, inputs, and suggestions shifted position. Vars: `$`=channelId, `Q`=toolName, `X`=inputs, `J`=suggestions, `Y`=abortSignal, `z`=the sixth options parameter, `K`=response, stats helper `pu$`. The `from` string ends at `pu$(Q,K);`. `pu$` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+### Feature 1 options for v2.1.270
+
+Each option below was checked against the installed `webview/index.js`, and each anchor string appears exactly once. None of them reproduce the old behavior, which was a toggle that started off and could be switched back on for a single message.
+
+1. Send nothing. Change `let n=!t` to `let n=!1`. The chip still renders and its title still says Claude is being shown the current file, while nothing is sent.
+2. Send nothing and remove the chip. Do option 1, and also drop `Y&&F(a75,{currentSelection:Y,onRemove:G})` from the footer. The footer then matches what is sent, and there is no way to include the current file in a message.
+3. Send only a real selection. Change the tail of `applySelectionUpdate` from `this.dismissedSelection=void 0,this.selection.value=$` to `this.dismissedSelection=void 0,this.selection.value=$?.selectedText?$:void 0`. Having a file open attaches nothing and shows no chip, selecting text in the editor shows the chip and sends it, and the X button still dismisses it.
+
 ## [0.6.55] — 2026-09-11
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.268. Features 3 and 5 were unaffected this time.

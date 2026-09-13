@@ -20,9 +20,9 @@ export const PATCHES: Patch[] = [
 		to: '_=X1(void 0),[L,E]=n(!1),[k,h]=n(!1)',
 	},
 	{
-		name: 'Feature 2: Skip attachments + reset toggle on slash commands',
-		from: 'await $.send(D1,W,R0,{kind:"human"}),B([]),oh(Q,!0)',
-		to: 'await $.send(D1,Y0?[]:W,R0,{kind:"human"}),B([]),E(!1),oh(Q,!0)',
+		name: 'Feature 2: Skip attachments on slash commands',
+		from: 'await $.send(q1,W,n,{kind:"human"}),B([]),my(Q,!0)',
+		to: 'await $.send(q1,t?[]:W,n,{kind:"human"}),B([]),my(Q,!0)',
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',
@@ -32,8 +32,8 @@ export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 4: Respect ~/.claude/settings.json permissions in plan mode',
 		targetFile: 'extension',
-		from: 'return{behavior:"allow",updatedInput:J};let K=await this.sendRequest($,{type:"tool_permission_request",toolName:Q,inputs:J,suggestions:X,...z},Y);Tg$(Q,K);',
-		to: 'return{behavior:"allow",updatedInput:J};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===Q;if(_m[1]!==Q)return!1;const c=typeof J==="object"&&J!==null?J.command??J.cmd??J.input??JSON.stringify(J):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:J}}catch(_e){}let K=await this.sendRequest($,{type:"tool_permission_request",toolName:Q,inputs:J,suggestions:X,...z},Y);Tg$(Q,K);',
+		from: 'return{behavior:"allow",updatedInput:X};let K=await this.sendRequest($,{type:"tool_permission_request",toolName:Q,inputs:X,suggestions:J,...z},Y);pu$(Q,K);',
+		to: 'return{behavior:"allow",updatedInput:X};try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===Q;if(_m[1]!==Q)return!1;const c=typeof X==="object"&&X!==null?X.command??X.cmd??X.input??JSON.stringify(X):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:X}}catch(_e){}let K=await this.sendRequest($,{type:"tool_permission_request",toolName:Q,inputs:X,suggestions:J,...z},Y);pu$(Q,K);',
 	},
 	{
 		name: 'Feature 5: Label panel as patched (activitybar container)',
