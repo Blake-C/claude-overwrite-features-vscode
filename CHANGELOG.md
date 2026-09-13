@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7.0] — 2026-09-13
+
+Feature 1 works again on Claude Code v2.1.270. Option 3 of the three replacements listed in the v0.6.56 entry was chosen, so the patch now sends a selection only when there is one.
+
+The patch moved out of the chat view and into the session class. It appends `?.selectedText?$:void 0` to the assignment at the tail of `applySelectionUpdate`, so the session stores a selection only when that selection carries `selectedText`:
+
+- `from`: `this.dismissedSelection=void 0,this.selection.value=$`
+- `to`: `this.dismissedSelection=void 0,this.selection.value=$?.selectedText?$:void 0`
+
+Having a file open attaches nothing and shows no chip. Selecting text in the editor shows the chip and sends the selection. The chip's X still calls `dismissSelection()`.
+
+The patch name changed from "Feature 1: Default include-file toggle to OFF" to "Feature 1: Send only a real selection, not the open file", which is what the output channel and `npm run check-patches` now print.
+
+Two things about the new strings were checked against `src/patch-defs.ts`:
+
+- The `from` string is a prefix of the `to` string, so a patched file contains both. `applyPatch` tests `content.includes(patch.to)` before it tests `from` and returns `alreadyPatched` without rewriting, and `revertPatch` looks for `to` only, so neither one double-applies. This patch reports "pattern not found" when the anchor text changes, which covers both a restructured `applySelectionUpdate` and a renamed parameter.
+- `applyPatch` calls `content.replace`, which rewrites the first occurrence only. The anchor occurs once in v2.1.270's `webview/index.js`.
+
+This release also drops the "Not working on Claude Code v2.1.270 and later" warning from `README.md`.
+
 ## [0.6.56] — 2026-09-13
 
 Updated the Feature 2 and 4 patch strings for Claude Code v2.1.270. Features 3 and 5 were unaffected this time. Feature 1 has no patch site in this release, so its v2.1.268 strings are left in place and the health check keeps reporting it as broken.

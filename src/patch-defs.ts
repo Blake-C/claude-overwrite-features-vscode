@@ -15,9 +15,9 @@ export interface Patch {
 
 export const PATCHES: Patch[] = [
 	{
-		name: 'Feature 1: Default include-file toggle to OFF',
-		from: '_=X1(void 0),[L,E]=n(!0),[k,h]=n(!1)',
-		to: '_=X1(void 0),[L,E]=n(!1),[k,h]=n(!1)',
+		name: 'Feature 1: Send only a real selection, not the open file',
+		from: 'this.dismissedSelection=void 0,this.selection.value=$',
+		to: 'this.dismissedSelection=void 0,this.selection.value=$?.selectedText?$:void 0',
 	},
 	{
 		name: 'Feature 2: Skip attachments on slash commands',
