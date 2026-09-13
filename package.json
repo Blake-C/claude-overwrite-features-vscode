@@ -5,6 +5,10 @@
 	"version": "0.6.56",
 	"publisher": "Blake-C",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Blake-C/claude-overwrite-features-vscode.git"
+	},
 	"engines": {
 		"vscode": "^1.94.0"
 	},
@@ -37,7 +41,7 @@
 				"command": "claudeOverwrite.ollamaRecommend",
 				"title": "Claude Code Patch: Recommend Ollama Model"
 			},
-{
+			{
 				"command": "claudeOverwrite.configureOllama",
 				"title": "Claude Code Patch: Use Local Ollama Model"
 			},

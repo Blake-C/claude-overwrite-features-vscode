@@ -18,6 +18,15 @@ Each option below was checked against the installed `webview/index.js`, and each
 2. Send nothing and remove the chip. Do option 1, and also drop `Y&&F(a75,{currentSelection:Y,onRemove:G})` from the footer. The footer then matches what is sent, and there is no way to include the current file in a message.
 3. Send only a real selection. Change the tail of `applySelectionUpdate` from `this.dismissedSelection=void 0,this.selection.value=$` to `this.dismissedSelection=void 0,this.selection.value=$?.selectedText?$:void 0`. Having a file open attaches nothing and shows no chip, selecting text in the editor shows the chip and sends it, and the X button still dismisses it.
 
+### Packaging and watcher notifications
+
+The v0.6.56 patch-string update above added the first relative link to `README.md`, a link to this file, and `vsce` rewrites relative links into absolute URLs using the `repository` field in `package.json`. That field had never been set, so `npm run vsix` failed with "Couldn't detect the repository where this extension is published". `package.json` now sets `repository` to the `origin` remote in https form, and the packaged README links to `https://github.com/Blake-C/claude-overwrite-features-vscode/blob/HEAD/CHANGELOG.md`.
+
+The watcher runs `npm run vsix` itself, so it hit the same failure and reported only "the .vsix failed to build". Two changes to `scripts/on-claude-update.sh` fix what the notification says and what clicking it does:
+
+- The packaging step captures the output of `npm run vsix` instead of appending it straight to the log, and the failure notification now carries the first line of that output containing "error", trimmed to 150 characters. The full output still goes to the log.
+- `notify()` posts through `terminal-notifier` when it is installed, passing `-execute "open -R '$LOG_FILE'"` so clicking the notification reveals `~/Library/Logs/claude-overwrite-watcher.log` in Finder. The old `osascript` call is the fallback, and clicking one of its notifications opens Script Editor.
+
 ## [0.6.55] — 2026-09-11
 
 Updated the Feature 1, 2, and 4 patch strings for Claude Code v2.1.268. Features 3 and 5 were unaffected this time.

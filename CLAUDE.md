@@ -15,6 +15,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `vsce` is a devDependency, so `npm run vsix` runs the local binary and needs no network. Do not use `npx @vscode/vsce package` — npx resolves the unpinned spec against the registry, which fails under the Bash sandbox.
 
+`vsce` rewrites every relative link in `README.md` into an absolute URL, and it reads the base URL from the `repository` field in `package.json`. If that field is removed while the README still has a relative link, `npm run vsix` fails with "Couldn't detect the repository where this extension is published".
+
 There are no tests.
 
 ## Versioning
@@ -76,7 +78,7 @@ An optional macOS launchd agent self-heals patches when Claude Code updates. It 
 | File | Role |
 |---|---|
 | `scripts/check-patches.ts` | Deterministic health check. Run with Node 24+ native TS: `node scripts/check-patches.ts [installDir]`. Reuses `applyPatch`/`getPatchesByTarget` from `patch-defs.ts`. A patch is **broken** when neither its `from` nor `to` is present. Exit 0 = healthy, 2 = broken, 1 = error. Auto-detects the newest `~/.vscode/extensions/anthropic.claude-code-*` if no dir given. |
-| `scripts/on-claude-update.sh` | launchd entry point. Sets up node via fnm (launchd has a bare PATH), single-run lock, diffs the newest installed version against `~/.claude/claude-overwrite-watcher.state`, runs the health check, and **only if broken** launches `claude -p` on branch `auto/patch-update-<version>` with a scoped `--allowedTools` allowlist. Guards on a clean `main`. Never touches `main`, never installs. Notifies via `osascript`. Logs to `~/Library/Logs/claude-overwrite-watcher.log`. The state file is written only after a successful run; a failed run instead increments a per-version counter in `~/.claude/claude-overwrite-watcher.attempts` so the next filesystem event retries, and stops after 3 attempts on the same version. |
+| `scripts/on-claude-update.sh` | launchd entry point. Sets up node via fnm (launchd has a bare PATH), single-run lock, diffs the newest installed version against `~/.claude/claude-overwrite-watcher.state`, runs the health check, and **only if broken** launches `claude -p` on branch `auto/patch-update-<version>` with a scoped `--allowedTools` allowlist. Guards on a clean `main`. Never touches `main`, never installs. Notifies through `terminal-notifier` when it is installed, so clicking the notification reveals the log in Finder, and through `osascript` when it is not installed. Logs to `~/Library/Logs/claude-overwrite-watcher.log`. The state file is written only after a successful run; a failed run instead increments a per-version counter in `~/.claude/claude-overwrite-watcher.attempts` so the next filesystem event retries, and stops after 3 attempts on the same version. |
 | `scripts/install-watcher.sh` / `uninstall-watcher.sh` | Render `launchd/com.Blake-C.claude-overwrite-watcher.plist` (substituting `__REPO__`/`__HOME__`) into `~/Library/LaunchAgents/` and `launchctl bootstrap`/`bootout` it. |
 | `launchd/…​.plist` | Template. `WatchPaths` = `~/.vscode/extensions` (fires on any extension install; the script no-ops unless the Claude Code version actually changed). |
 

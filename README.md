@@ -105,7 +105,7 @@ How it works:
 1. A launchd agent watches `~/.vscode/extensions` and fires when VS Code installs a new `anthropic.claude-code-*` version.
 2. `scripts/on-claude-update.sh` runs a **deterministic** health check (`scripts/check-patches.ts`) that tests whether every patch's `from`/`to` literal still appears in the new files. No AI is involved here — it's a string match reusing the same `PATCHES`/`applyPatch` the extension uses.
 3. If all patches still match, it does nothing (the extension re-applies them on activation).
-4. **Only if a patch has actually broken**, it launches headless Claude Code (`claude -p`) with a scoped permission allowlist to rewrite the broken strings on a new branch `auto/patch-update-<version>`, bump the version, update docs, and compile. It commits to the branch, and the shell script then runs `npm run vsix` to build the `.vsix` and notifies you. Packaging runs in the script rather than in the headless Claude run, which has no network access and no way to answer a permission prompt. It never touches `main` and never installs the `.vsix` — you review and merge.
+4. **Only if a patch has actually broken**, it launches headless Claude Code (`claude -p`) with a scoped permission allowlist to rewrite the broken strings on a new branch `auto/patch-update-<version>`, bump the version, update docs, and compile. It commits to the branch, and the shell script then runs `npm run vsix` to build the `.vsix` and notifies you. Packaging runs in the script rather than in the headless Claude run, which has no network access and no way to answer a permission prompt. It never touches `main` and never installs the `.vsix` — you review and merge. Clicking the notification reveals `~/Library/Logs/claude-overwrite-watcher.log` in Finder when [terminal-notifier](https://github.com/julienXX/terminal-notifier) is installed (`brew install terminal-notifier`). Without `terminal-notifier` the watcher falls back to an `osascript` notification, and clicking that one opens Script Editor.
 
 Install / manage:
 
@@ -143,7 +143,7 @@ Do not reload between steps 1 and 2 — the extension re-activates on startup an
 
 ## Caveats
 
-- **Missing repository warning** — `vsce` will warn that no `repository` field is set in `package.json`. This is safe to ignore for local installs. It only matters when publishing to the VS Code Marketplace.
+- **The `repository` field is required** — this README contains relative links, and `vsce` turns each one into an absolute URL using the `repository` field in `package.json`, so `npm run vsix` fails when that field is missing.
 - **Patches break on Claude Code updates** — Because patches are applied directly to the installed extension files, a Claude Code version update will overwrite them. The extension detects this on next startup and re-applies automatically, prompting you to reload.
 - **Reload required** — VS Code must be reloaded after patches are applied for changes to take effect (the extension will prompt you).
 - **Revert at any time** — Run the command `Claude Code: Revert Feature Patches` from the Command Palette to restore the original files from the backup created on first patch.

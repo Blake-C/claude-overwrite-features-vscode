@@ -26,7 +26,14 @@ EXT_ROOT="$HOME/.vscode/extensions"
 log() { printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" | tee -a "$LOG_FILE" >&2; }
 
 notify() {
-	# $1 = title, $2 = message
+	# $1 = title, $2 = message. terminal-notifier makes the notification reveal
+	# the log in Finder on click; osascript notifications open Script Editor
+	# instead, so they are only the fallback.
+	if command -v terminal-notifier >/dev/null 2>&1 &&
+		terminal-notifier -title "$1" -message "$2" \
+			-execute "open -R '$LOG_FILE'" >/dev/null 2>&1; then
+		return
+	fi
 	osascript -e "display notification \"${2//\"/\\\"}\" with title \"${1//\"/\\\"}\"" >/dev/null 2>&1 || true
 }
 
@@ -165,14 +172,17 @@ rm -f "$ATTEMPTS_FILE"
 # permission prompt, so packaging from there fails whenever npm needs the
 # registry. This shell runs outside that sandbox.
 log "Packaging .vsix for $FIX_BRANCH."
-npm --prefix "$REPO" run vsix >>"$LOG_FILE" 2>&1
+PACK_OUT="$(npm --prefix "$REPO" run vsix 2>&1)"
 PACK_RC=$?
+printf '%s\n' "$PACK_OUT" >>"$LOG_FILE"
 
 if [ "$PACK_RC" -eq 0 ]; then
 	log "Auto-fix complete on branch $FIX_BRANCH; .vsix packaged."
 	notify "Claude patch watcher" "Auto-fixed patches for v$VERSION on branch $FIX_BRANCH. Review and merge."
 else
-	log "Patches fixed on $FIX_BRANCH but packaging failed (rc=$PACK_RC). See log."
-	notify "Claude patch watcher" "Patches fixed for v$VERSION but the .vsix failed to build — see log."
+	PACK_ERR="$(printf '%s\n' "$PACK_OUT" | grep -m1 -i 'error' | tr -s '[:space:]' ' ' | cut -c1-150)"
+	[ -n "$PACK_ERR" ] || PACK_ERR="rc=$PACK_RC"
+	log "Patches fixed on $FIX_BRANCH but packaging failed (rc=$PACK_RC): $PACK_ERR"
+	notify "Claude patch watcher" "Patches fixed for v$VERSION but the .vsix failed to build: $PACK_ERR"
 	exit 1
 fi
