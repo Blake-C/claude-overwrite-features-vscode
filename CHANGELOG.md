@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.1] - 2026-09-15
+
+Updated the Feature 2, 3, and 4 patch strings for Claude Code v2.1.272. Features 1 and 5 were unaffected this time.
+
+v2.1.272 keeps the minifier from v2.1.245, and every change in this release is a rename. Feature 3 moved for the second time since v2.1.245, because the compact button's `onCompact` and `buttonClassName` props swapped names.
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the submit handler is `V5` (via `Q0`/useCallback) and uses its callback argument `z1` for the command text (was `q1`). isSlashCommand is `i` (was `t`), the selection flag is `r=!i` (was `n=!t`), and the scroll function was renamed `my`→`hy`. Attached files `W` with setter `B` and scroll ref `Q` are unchanged. The site is now `await $.send(z1,W,r,{kind:"human"}),B([]),hy(Q,!0)`. `z1`, `i`, and `r` are each reused several times in this component, so the `from` string matches the full send call
+- Feature 3: the compact button component is `b25` and its props are `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is `J` and `Z` is now `buttonClassName`. Both halves of the `to` string changed: the `onClick:` value and the dialog's confirm branch, which calls `J()`. Leaving the confirm branch on `Z` would have compiled and produced a dialog whose Compact button does nothing
+- Feature 4: the Chrome-MCP early-return guard and the restructured tail from v2.1.263 are unchanged, and `requestToolPermission` still takes the sixth parameter `z` added in v2.1.268. toolName and inputs swapped names back, suggestions shifted, and the stats helper was renamed `pu$`→`fh$`. Vars: `$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `Y`=abortSignal, `K`=response. The injected allow/deny check reads `J` for the tool inputs, where v2.1.270 read `X`. `fh$` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+Each of the four code `from` strings was checked against the installed files and appears exactly once.
+
 ## [0.7.0] — 2026-09-13
 
 Feature 1 works again on Claude Code v2.1.270. Option 3 of the three replacements listed in the v0.6.56 entry was chosen, so the patch now sends a selection only when there is one.
