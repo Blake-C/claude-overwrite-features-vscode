@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.2] - 2026-09-16
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.273. Features 1, 3, and 5 were unaffected.
+
+The output channel reported Features 2, 3, and 4 as "pattern not found" on v2.1.273. Feature 3 was reported broken because the installed build of this extension was 0.7.0, whose compact-button string targets v2.1.270, so installing 0.7.1 fixed Feature 3 with no string change.
+
+v2.1.273 keeps the minifier from v2.1.245, and every change in this release is a rename. The main chat view is `Nq0` (was `pH0`), the compact button component is `f25` (was `b25`) inside the wrapper `uz0`, and the selection chip is `x25` (was `a75`) with its label helper `y25`.
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the submit handler is `V5` (via `z0`/useCallback) and still uses its callback argument `z1` for the command text. isSlashCommand is `r` (was `i`) and the selection flag is `w1=!r` (was `r=!i`). Attached files `W` with setter `B` and the scroll function `hy` with ref `Q` are unchanged. The site is now `await $.send(z1,W,w1,{kind:"human"}),B([]),hy(Q,!0)`. The handler's `catch(r)` shadows `r`, and `z1`, `r`, and `w1` are each reused elsewhere in the component, so the `from` string matches the full send call
+- Feature 3: the compact button component was renamed `b25`→`f25`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: the Chrome-MCP early-return guard, the restructured tail from v2.1.263, and the sixth parameter `z` added in v2.1.268 are all unchanged. The `sendRequest` response local was renamed `K`→`G` and the stats helper `fh$`→`dh$`. Vars: `$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `Y`=abortSignal, `G`=response. The injected allow/deny check still reads `J` for the tool inputs. `dh$` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+Each of the four code `from` strings was checked against the installed files and appears exactly once. They were also checked against the pristine `.backup` copies, because the live `webview/index.js` already had Features 1 and 3 applied when the check ran.
+
 ## [0.7.1] - 2026-09-15
 
 Updated the Feature 2, 3, and 4 patch strings for Claude Code v2.1.272. Features 1 and 5 were unaffected this time.
