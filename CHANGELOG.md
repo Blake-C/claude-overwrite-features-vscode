@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.3] - 2026-09-17
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.274. Features 1, 3, and 5 were unaffected.
+
+v2.1.274 keeps the minifier from v2.1.245, and every change in this release is a rename. The main chat view is `YU0` (was `Nq0`), the compact button component is `N45` (was `f25`) inside the wrapper `Mq0` (was `uz0`), and the selection chip is `R45` (was `x25`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the submit handler is `Z0` (via `q0`/useCallback) and uses its callback argument `Z1` for the command text (was `z1`). isSlashCommand is `I1` (was `r`) and the selection flag is `u1=!I1` (was `w1=!r`). The scroll function is `$x` (was `hy`). Attached files `W` with setter `B` and the scroll ref `Q` are unchanged. The site is now `await $.send(Z1,W,u1,{kind:"human"}),B([]),$x(Q,!0)`. The handler's `catch(I1)` shadows `I1`, and `Z1`, `I1`, and `u1` are each reused elsewhere in the component, so the `from` string matches the full send call
+- Feature 3: the compact button component was renamed `f25`→`N45`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: only the stats helper was renamed, `dh$`→`mc$`. The Chrome-MCP early-return guard, the restructured tail from v2.1.263, the sixth parameter `z` from v2.1.268, and every variable position are unchanged. Vars: `$`=channelId, `Q`=toolName, `J`=inputs, `X`=suggestions, `Y`=abortSignal, `z`=the sixth options parameter, `G`=response. The injected allow/deny check still reads `J` for the tool inputs. `mc$` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The install directory held no `.backup` files, so the installed files were pristine. Each of the four code `from` strings was checked against them and appears exactly once.
+
 ## [0.7.2] - 2026-09-16
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.273. Features 1, 3, and 5 were unaffected.
