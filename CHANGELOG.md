@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.4] - 2026-09-19
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.278. Features 1, 3, and 5 were unaffected.
+
+v2.1.278 keeps the minifier from v2.1.245. Most of the release is renames, but Feature 2 also changed shape. The main chat view is `HW0` (was `YU0`), the compact button component is `P95` (was `N45`) inside the wrapper `HH0` (was `Mq0`), and the selection chip is `w95` (was `R45`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the statement order changed. `B([])` now runs before the send instead of after, the scroll call is the useCallback `T2()` instead of `$x(Q,!0)`, and a new telemetry call `lQ0($.selection.value,O0,...)` sits ahead of both. The command text is the callback argument `z1` (was `Z1`), isSlashCommand is `e1` (was `I1`), and the selection flag is `O0=!e1` (was `u1=!I1`). Attached files `W` with setter `B` are unchanged. The site is now `B([]),await $.send(z1,W,O0,{kind:"human"}),T2()`. The handler's `catch(e1)` shadows `e1` and its body shadows `O0`, so the `from` string matches the full send call
+- Feature 3: the compact button component was renamed `N45`→`P95`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept its shape and its six parameters, but three of them rotated. inputs moved `J`→`X`, suggestions `X`→`Y`, and abortSignal `Y`→`J`. The stats helper was renamed `mc$`→`Qr$`. Vars: `$`=channelId, `Q`=toolName, `X`=inputs, `Y`=suggestions, `J`=abortSignal, `z`=the sixth options parameter, `G`=response. The injected allow/deny check now reads `X` for the tool inputs, where v2.1.274 read `J`. `Qr$` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The install directory held no `.backup` files, so the installed files were pristine. Each of the four code `from` strings was checked against them and appears exactly once.
+
 ## [0.7.3] - 2026-09-17
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.274. Features 1, 3, and 5 were unaffected.
