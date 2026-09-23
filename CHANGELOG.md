@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.5] - 2026-09-23
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.280. Features 1, 3, and 5 were unaffected.
+
+v2.1.280 keeps the minifier from v2.1.245. Every component in the map was renamed, and `send()` gained a fifth argument. The main chat view is `OK0` (was `HW0`), the compact button component is `FJ5` (was `P95`) inside the wrapper `MB0` (was `HH0`), and the selection chip is `PJ5` (was `w95`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: `send()` now takes a fifth argument `{inlinePastes:K4}`. `K4=pb1(q1,Z0)` is computed between the attachment clear and the send, so `B([])` is no longer adjacent to the send call and the `from` string is the send call alone. The submit handler is `V1` (via `$0`/useCallback), the command text is the callback argument `q1` (was `z1`), isSlashCommand is `T0` (was `e1`), the selection flag is `Z5=!T0` (was `O0=!e1`), the scroll callback is `$1()` (was `T2()`), and the telemetry call is `LG0` (was `lQ0`). Attached files `W` with setter `B` are unchanged. The site is now `await $.send(q1,W,Z5,{kind:"human"},{inlinePastes:K4}),$1()`. The handler's `catch(T0)` shadows `T0` and its body shadows `Z5`, so the `from` string matches the full send call
+- Feature 3: the compact button component was renamed `P95`→`FJ5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is. Its wrapper `MB0` now takes `{usedTokens:$,contextWindow:J,onCompact:Z,buttonClassName:X}` and computes the percentage itself, so reading `onCompact` off the wrapper would give the wrong letter
+- Feature 4: `requestToolPermission` kept its shape and its six parameters, but four of them rotated. toolName moved `Q`→`J`, inputs `X`→`Q`, suggestions `Y`→`X`, and abortSignal `J`→`Y`. The response local was renamed `G`→`K` and the stats helper `Qr$`→`hr$`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `z`=the sixth options parameter, `K`=response. The injected allow/deny check now reads `Q` for the tool inputs and `J` for the tool name, where v2.1.278 read `X` and `Q`. `hr$` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The inline-pastes helper `pb1($,J)` filters the paste list and already drops a paste when the message starts with a slash command. It does not touch attachments, so Feature 2 is still doing work.
+
+The install directory held no `.backup` files, so the installed files were pristine. Each of the four code `from` strings was checked against them and appears exactly once.
+
 ## [0.7.4] - 2026-09-19
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.278. Features 1, 3, and 5 were unaffected.
