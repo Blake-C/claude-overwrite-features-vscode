@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.7] - 2026-09-26
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.283. Features 1, 3, and 5 were unaffected.
+
+v2.1.283 keeps the minifier from v2.1.245, and every change in this release is a rename. No structure moved. The main chat view is `GF0` (was `$F0`), the compact button component is `NZ5` (was `KZ5`) inside the wrapper `ZK0` (was `nB0`), and the selection chip is `RZ5` (was `AZ5`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the submit handler is `V1` (via `$0`/useCallback), but the command text is now its callback argument `G1` (was `q1`). isSlashCommand is still `R0`, the selection flag is `X5=!R0` (was `Z5=!R0`), and the inline-pastes local is `I4` (was `b4`), built by `zI1(G1,$0)` (was `YI1`). The telemetry call is `tG0` (was `iG0`). Attached files `W` with setter `B` and the scroll callback `$1()` are unchanged. `send()` still takes five arguments and the clear `B([])` still sits ahead of the inline-pastes call, so the `from` string remains the send call alone: `await $.send(G1,W,X5,{kind:"human"},{inlinePastes:I4}),$1()`. The handler's `catch(R0)` shadows `R0` and its body shadows `X5`, so the `from` string matches the full send call
+- Feature 3: the compact button component was renamed `KZ5`→`NZ5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is. Its wrapper `ZK0` still takes `{usedTokens:$,contextWindow:J,onCompact:Z,buttonClassName:X}`, so reading `onCompact` off the wrapper would give the wrong letter
+- Feature 4: `requestToolPermission` kept its shape and all six parameter positions, but the sixth options parameter moved `z`→`W`, so the payload spread reads `...W`. The stats helper was renamed `jw$`→`ew$`. The response local `G` is unchanged. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `G`=response. The injected allow/deny check still reads `Q` for the tool inputs and `J` for the tool name. `ew$` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The install directory held no `.backup` files, so the installed files were pristine. Each of the four code `from` strings was checked against them and appears exactly once.
+
 ## [0.7.6] - 2026-09-25
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.282. Features 1, 3, and 5 were unaffected.
