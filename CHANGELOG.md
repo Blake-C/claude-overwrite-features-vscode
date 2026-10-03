@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.9] - 2026-10-03
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.288. Features 1, 3, and 5 were unaffected.
+
+v2.1.288 keeps the minifier from v2.1.245, and every change that affects a patch is a rename. The main chat view is `jw0` (was `mD0`), the compact button component is `MW5` (was `yY5`) inside the wrapper `Ij0` (was `OF0`), the selection chip is `wW5` (was `CY5`), and the footer that renders the chip is `fj0` (was `RF0`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the submit handler is `b1` (via `q0`/useCallback) and the command text is its callback argument `G1` (was `V1`). isSlashCommand is `T0` (was `A0`), the selection flag is `o0=!T0` (was `r0=!A0`), attached files are `B` with setter `K` (was `W`/`B`), the scroll callback is `q1()` (was `Z1()`), and the inline-pastes local is `y4` (was `g4`), built by `tC1(G1,$0)` (was `eI1`). The telemetry call is `lB0` (was `VU0`). `send()` still takes five arguments, so the `from` string remains the send call alone: `await $.send(G1,B,o0,{kind:"human"},{inlinePastes:y4}),q1()`. The handler's `catch(T0)` shadows `T0`, so the `from` string matches the full send call. The `"/rc"` literal that served as the anchor is gone, and slash commands now go through a parser whose result the handler switches on by `kind`
+- Feature 3: the compact button component was renamed `yY5`→`MW5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions and every parameter letter. The stats helper was renamed `zP1`→`im1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `G`=response. The Chrome-MCP guard now stores the channel in a local `z` and also checks `z.chromeToolsAutoAllowed`, but it sits ahead of the `from` string. `im1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The extension had already applied Features 1, 3, and 5 to the install directory, so the `.backup` files held the pristine originals. Each of the four code `from` strings was checked against those backups and appears exactly once.
+
 ## [0.7.8] - 2026-09-29
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.284. Features 1, 3, and 5 were unaffected.
