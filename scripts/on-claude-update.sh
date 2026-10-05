@@ -148,17 +148,21 @@ cd "$REPO" || exit 1
 log "Running: claude -p (branch $FIX_BRANCH)"
 "$CLAUDE_BIN" -p "$PROMPT" \
 	--add-dir "$REPO" \
+	--add-dir "$NEWEST_DIR" \
 	--permission-mode acceptEdits \
 	--allowedTools "Read Edit Write Bash(git:*) Bash(npm:*) Bash(npx:*) Bash(node:*) Bash(python3:*) Bash(code:*)" \
 	>>"$LOG_FILE" 2>&1
 CLAUDE_RC=$?
 
-if [ "$CLAUDE_RC" -ne 0 ] || ! git -C "$REPO" rev-parse --verify "$FIX_BRANCH" >/dev/null 2>&1; then
+# claude -p exits 0 when it stops to ask a question, so a branch with no new
+# commits is a failure too.
+FIX_COMMITS="$(git -C "$REPO" rev-list --count main.."$FIX_BRANCH" 2>/dev/null || echo 0)"
+if [ "$CLAUDE_RC" -ne 0 ] || [ "$FIX_COMMITS" -eq 0 ]; then
 	# Leave the state file alone so a transient failure (expired OAuth, no
 	# network) is retried on the next fs event, up to MAX_ATTEMPTS.
 	ATTEMPTS=$((ATTEMPTS + 1))
 	echo "$VERSION:$ATTEMPTS" >"$ATTEMPTS_FILE"
-	log "Auto-fix did not complete cleanly (claude rc=$CLAUDE_RC), attempt $ATTEMPTS of $MAX_ATTEMPTS. See log."
+	log "Auto-fix did not complete cleanly (claude rc=$CLAUDE_RC, commits=$FIX_COMMITS), attempt $ATTEMPTS of $MAX_ATTEMPTS. See log."
 	notify "Claude patch watcher" "Auto-fix for v$VERSION failed (attempt $ATTEMPTS/$MAX_ATTEMPTS) — see log."
 	exit 1
 fi
