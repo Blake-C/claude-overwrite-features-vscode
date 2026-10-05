@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.10] - 2026-10-05
+
+Updated the Feature 4 patch strings for Claude Code v2.1.289. Features 1, 2, 3, and 5 were unaffected. Also fixed the watcher, which reported a successful auto-fix for v2.1.289 even though the headless run made no changes.
+
+v2.1.289 keeps the minifier from v2.1.245, and every change that affects a patch is a rename. The main chat view is still `jw0` with the wrapper `Ij0` and the footer `fj0`, the compact button component is `PW5` (was `MW5`), and the selection chip is `NW5` (was `wW5`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the submit handler is unchanged, so the v2.1.288 `from` string `await $.send(G1,B,o0,{kind:"human"},{inlinePastes:y4}),q1()` matches as-is
+- Feature 3: the compact button component was renamed `MW5`→`PW5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, but the sixth options parameter moved `W`→`z`, so the payload spread reads `...z`. The Chrome-MCP guard's channel local moved from `z` to `W`. The stats helper was renamed `im1`→`am1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `z`=the sixth options parameter, `G`=response. `am1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The extension had already applied Features 1, 2, 3, and 5 to the install directory, and Feature 4 had failed, so `extension.js` was still pristine. The new Feature 4 `from` string appears exactly once in it.
+
+The watcher passed only the repo to `claude -p` with `--add-dir`, so the headless run could not read the Claude Code install directory. It stopped to ask for access and exited 0 without committing. The script counted that as success because the fix branch existed, so it wrote the state file and sent the "Auto-fixed" notification. The script now also passes the install directory with `--add-dir`, and it counts a run as successful only when the fix branch has at least one commit ahead of `main`.
+
 ## [0.7.9] - 2026-10-03
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.288. Features 1, 3, and 5 were unaffected.
