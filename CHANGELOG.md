@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.11] - 2026-10-07
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.292. Features 1, 3, and 5 were unaffected.
+
+v2.1.292 keeps the minifier from v2.1.245, and every change that affects a patch is a rename. The main chat view is `MO0` (was `jw0`), the compact button component is `IB5` (was `PW5`), and the selection chip is `vB5` (was `NW5`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the submit handler's command text argument is `z1` (was `G1`), isSlashCommand is `R0` (was `T0`), the selection flag is `g0=!R0` (was `o0=!T0`), the attached-files state is still `B`, the scroll callback is still `q1()`, and the inline-pastes local is `x4` (was `y4`), built by a helper call that reads the same shape as before. The `from` string is the send call alone: `await $.send(z1,B,g0,{kind:"human"},{inlinePastes:x4}),q1()`. The handler's `catch(R0)` shadows `R0`, so the `from` string matches the full send call
+- Feature 3: the compact button component was renamed `PW5`→`IB5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, but the sixth options parameter moved `z`→`W`, so the payload spread reads `...W`. The Chrome-MCP guard's channel local moved `W`→`z` and reads `let z=this.channels.get($);if(z?.chromeMcpState.status==="connected"&&z.chromeToolsAutoAllowed&&J.startsWith(...))`, which sits ahead of the `from` string. The stats helper was renamed `am1`→`mc1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `G`=response. `mc1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The install directory held no `.backup` files, so the installed files were pristine. Each of the two changed `from` strings was checked against them directly and appears exactly once.
+
 ## [0.7.10] - 2026-10-05
 
 Updated the Feature 4 patch strings for Claude Code v2.1.289. Features 1, 2, 3, and 5 were unaffected. Also fixed the watcher, which reported a successful auto-fix for v2.1.289 even though the headless run made no changes.
