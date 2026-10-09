@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.12] - 2026-10-09
+
+Updated the Feature 4 patch strings for Claude Code v2.1.295. Features 1, 2, 3, and 5 were unaffected.
+
+v2.1.295 keeps the minifier from v2.1.245. `requestToolPermission` kept all six parameter positions and every parameter letter. The only change is the stats helper, renamed `mc1`→`Zl1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `G`=response. `Zl1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness.
+
+The install directory held `.backup` files for `extension.js` and `package.json`, so the pristine originals were checked directly. The new `from` string appears exactly once in `extension.js.backup`.
+
 ## [0.7.11] - 2026-10-07
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.292. Features 1, 3, and 5 were unaffected.
