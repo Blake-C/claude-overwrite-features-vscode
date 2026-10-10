@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.13] - 2026-10-10
+
+Updated the Feature 4 patch strings for Claude Code v2.1.296. Features 1, 2, 3, and 5 were unaffected.
+
+v2.1.296 keeps the minifier from v2.1.245, but restructured `requestToolPermission`'s opening guard: the Chrome-MCP early return is now wrapped in `if(this.experimentGates.tengu_staged_ladybug===!1){...}`, and the inner `if` that does the early return has no block braces, so the `from` string's leading `}}` is the return object's close followed by that outer experiment-gate block's close, not two separate ifs. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `z`=response (was `G`), stats helper renamed `Zl1`→`_l1`. `_l1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness.
+
+The install directory held no `.backup` files, so the installed `extension.js` was pristine. The new `from` string appears exactly once in it.
+
 ## [0.7.12] - 2026-10-09
 
 Updated the Feature 4 patch strings for Claude Code v2.1.295. Features 1, 2, 3, and 5 were unaffected.
