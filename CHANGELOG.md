@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.14] - 2026-10-14
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.299. Features 1, 3, and 5 were unaffected.
+
+v2.1.299 keeps the minifier from v2.1.245. The main chat view is `vT0` (was `MO0`), the compact button component is `MM5` (was `IB5`) inside the wrapper `_L0` (was `DN0`), the selection chip is `wM5` (was `vB5`), and the footer that renders the chip is `RL0` (was `PN0`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the chat view no longer holds attachments in a `useState` pair. It reads the signal directly as `B=$.composerAttachments.value`, and the handler clears it with `$.composerAttachments.value=[]` instead of calling a setter. `send()` still receives `B`, the value captured at render, so the patch shape is unchanged. The submit handler is `v1` and the command text is its callback argument `Y1` (was `z1`), isSlashCommand is `O0` (was `R0`), the selection flag is `Q5=!O0` (was `g0=!R0`), the scroll callback is still `q1()`, and the inline-pastes local is `Y6` (was `x4`), built by `jS1(Y1,X0)`. The `from` string is the send call alone: `await $.send(Y1,B,Q5,{kind:"human"},{inlinePastes:Y6}),q1()`. The handler's `catch(O0)` shadows `O0`, so the `from` string matches the full send call
+- Feature 3: the compact button component was renamed `IB5`→`MM5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, every parameter letter, and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard that v2.1.296 introduced. The only change is the stats helper, renamed `_l1`→`Wi1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `z`=response. `Wi1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The install directory held no `.backup` files, so the installed files were pristine. Each of the two changed `from` strings was checked against them directly and appears exactly once.
+
 ## [0.7.13] - 2026-10-10
 
 Updated the Feature 4 patch strings for Claude Code v2.1.296. Features 1, 2, 3, and 5 were unaffected.
