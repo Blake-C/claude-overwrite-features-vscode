@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.15] - 2026-10-15
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.300. Features 1, 3, and 5 were unaffected.
+
+v2.1.300 keeps the minifier from v2.1.245, and every change that affects a patch is a rename. The main chat view is `DE0` (was `vT0`), the compact button component is `RN5` (was `MM5`) inside the wrapper `qR0` (was `_L0`), the selection chip is `bN5` (was `wM5`), and the footer that renders the chip is `UR0` (was `RL0`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the attachments local is still bound at the top of the chat view as `B=$.composerAttachments.value`, and the handler still clears the signal by assigning `[]`, so the patch shape is unchanged. The submit handler is `C1` (was `v1`) and the command text is its callback argument `Y1`, isSlashCommand is `O0`, the selection flag is `X5=!O0` (was `Q5`), the scroll callback is still `q1()`, and the inline-pastes local is `Q6` (was `Y6`), built by `tS1(Y1,$0)`. The `from` string is the send call alone: `await $.send(Y1,B,X5,{kind:"human"},{inlinePastes:Q6}),q1()`. The handler's `catch(O0)` shadows `O0`, so the `from` string matches the full send call
+- Feature 3: the compact button component was renamed `MM5`→`RN5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, every parameter letter, and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard. The only change is the stats helper, renamed `Wi1`→`Bo1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `z`=response. `Bo1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness
+
+The install directory held no `.backup` files, so the installed files were pristine. Each of the two changed `from` strings was checked against them directly and appears exactly once.
+
 ## [0.7.14] - 2026-10-14
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.299. Features 1, 3, and 5 were unaffected.
