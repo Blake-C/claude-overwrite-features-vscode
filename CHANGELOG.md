@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.18] - 2026-10-21
+
+Updated the Feature 4 patch string for Claude Code v2.1.306. Features 1, 2, 3, and 5 were unaffected.
+
+v2.1.306 keeps the minifier from v2.1.245. `webview/index.js` is still 5.73 MB. The webview components were renamed, but none of those names appear in a patch string: the main chat view is `ax0` (was `cx0`), the compact button component is `dC5` (was `SC5`) inside the wrapper `Sv0` (was `yv0`), the selection chip is `iC5` (was `uC5`), and the footer that renders the chip is `pv0` (was `hv0`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: every identifier in the send call is unchanged. The submit handler is still `c1` and the command text is still its callback argument `Y1`, isSlashCommand is still `K0`, the selection flag is still `P0=!K0`, the scroll callback is still `M1()`, and the inline-pastes local is still `G1`, now built by `Al1(Y1,y1)` (was `Fl1(Y1,y1)`). The helper name is not in the patch string, so the `from` string `await $.send(Y1,B,P0,{kind:"human"},{inlinePastes:G1}),M1()` matches as-is
+- Feature 3: the compact button component was renamed `SC5`→`dC5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, every parameter letter, and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard. The only change is the stats helper, renamed `so1`→`ho1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `z`=response. `ho1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness. `so1`, `xo1`, and `Bo1`, the helper names from the three previous releases, are all still present in the file as unrelated helpers, which is a second reason the `from` string cannot rely on the helper name alone
+
+The install directory held no `.backup` files, so the installed files were pristine. The changed `from` string was checked against them directly and appears exactly once.
+
 ## [0.7.17] - 2026-10-20
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.304. Features 1, 3, and 5 were unaffected.
