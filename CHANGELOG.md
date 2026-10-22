@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.19] - 2026-10-22
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.307. Features 1, 3, and 5 were unaffected.
+
+v2.1.307 keeps the minifier from v2.1.245, and every change that affects a patch is a rename. `webview/index.js` is still 5.73 MB. The main chat view is `tx0` (was `ax0`), the compact button component is `$v5` (was `dC5`) inside the wrapper `lv0` (was `Sv0`), the selection chip is `Xv5` (was `iC5`), and the footer that renders the chip is `av0` (was `pv0`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: the attachments local is still bound at the top of the chat view as `B=$.composerAttachments.value`, and the handler still clears the signal by assigning `[]`, so the patch shape is unchanged. The submit handler is still `c1`, but every identifier inside it was renamed. The command text is its callback argument `K1` (was `Y1`), isSlashCommand is `V1` (was `K0`), the selection flag is `k1=!V1` (was `P0=!K0`), the scroll callback is `N1()` (was `M1()`), and the inline-pastes local is `Y1` (was `G1`), built by `Ml1(K1,U0)` (was `Al1(Y1,y1)`). The new `from` string is `await $.send(K1,B,k1,{kind:"human"},{inlinePastes:Y1}),N1()`. The handler's `catch(V1)` shadows `V1`, so the `from` string matches the full send call. Note that `Y1` moved roles this release: it named the command text in v2.1.306 and names the inline-pastes local in v2.1.307, so a `from` string carried over unchanged would not match
+- Feature 3: the compact button component was renamed `dC5`→`$v5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, every parameter letter, and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard. The guard's inner channel local is `q` (was `H`), which sits outside the `from` string. The only change inside the `from` string is the stats helper, renamed `ho1`→`sa1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `z`=response. `sa1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness. `ho1` is also still present in the file as an unrelated helper, which is a second reason the `from` string cannot rely on the helper name alone
+
+The install directory held no `.backup` files, so the installed files were pristine. Each of the two changed `from` strings was checked against them directly and appears exactly once.
+
 ## [0.7.18] - 2026-10-21
 
 Updated the Feature 4 patch string for Claude Code v2.1.306. Features 1, 2, 3, and 5 were unaffected.
