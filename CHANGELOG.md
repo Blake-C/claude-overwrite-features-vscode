@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.21] - 2026-10-24
+
+Updated the Feature 4 patch string for Claude Code v2.1.310. Features 1, 2, 3, and 5 were unaffected, including both halves of the Feature 2 and Feature 3 replacement strings.
+
+v2.1.310 keeps the minifier from v2.1.245, and every change that affects a patch is a rename. `webview/index.js` is still 5.74 MB. The main chat view is `Yh0` (was `Zh0`), the compact button component is `Gv5` (was `zv5`) inside the wrapper `sv0` (was `iv0`), the selection chip is `Uv5` (was `Vv5`), and the footer that renders the chip is `tv0` (was `sv0`). The footer's v2.1.309 name is the compact wrapper's v2.1.310 name, so both were re-derived from their parameter lists rather than from the previous map.
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: both strings match unchanged, and every identifier in them was confirmed to have kept its role. The attachments local is still bound at the top of the chat view as `B=$.composerAttachments.value`, the submit handler is still `c1`, the command text is still its callback argument `K1`, isSlashCommand is still `q1` from `let q1=K1.trim().startsWith("/")`, the selection flag is still `k1=!q1` immediately before the send, the scroll callback is still `N1()`, and the inline-pastes local is still `Y1`, now built by `wl1(K1,U0)` (was `Rl1(K1,U0)`). The helper name is in neither string. isSlashCommand appears in the `to` string alone, so the health check cannot report it stale; it was read off the handler by hand, as it must be on every release
+- Feature 3: the compact button component was renamed `zv5`→`Gv5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, every parameter letter, and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard. The guard's inner channel local is still `q`, which sits outside the `from` string. The only change inside the `from` string is the stats helper, renamed `wr1`→`br1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `z`=response. `br1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness. `wr1` is also still present, and this release reassigned it to the list of edit-tool names that `br1` tests its first argument against, so a `from` string carried over on the helper name alone would have matched the wrong site. `sa1`, the helper's name two releases back, remains bound to `require("readline")`
+
+The install directory held no `.backup` files, so the installed files were pristine. The changed Feature 4 `from` string was checked against them directly and appears exactly once, as do the unchanged `from` strings for Features 1, 2, and 3.
+
 ## [0.7.20] - 2026-10-23
 
 Updated the Feature 4 patch string and the Feature 2 replacement string for Claude Code v2.1.309. Features 1, 3, and 5 were unaffected.
