@@ -13,6 +13,8 @@ v2.1.311 keeps the minifier from v2.1.245, and every change that affects a patch
 
 The first auto-fix run for v2.1.311 was cut off by a system restart before it created its branch, and it left a scratch `chk.py` in the repo root. The watcher's retry then found the tree dirty and stopped. This update was made by hand. The new Feature 4 `from` string was checked against the clean `extension.js.backup` and appears exactly once.
 
+The watcher no longer writes the state file when it aborts on a dirty tree. Before this change, the abort marked v2.1.311 as handled, so the watcher would not have retried after `chk.py` was removed. The headless prompt also tells Claude to keep scratch scripts under `$TMPDIR`.
+
 ## [0.7.21] - 2026-10-24
 
 Updated the Feature 4 patch string for Claude Code v2.1.310. Features 1, 2, 3, and 5 were unaffected, including both halves of the Feature 2 and Feature 3 replacement strings.

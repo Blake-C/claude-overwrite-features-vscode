@@ -121,7 +121,6 @@ BRANCH="$(git -C "$REPO" symbolic-ref --short HEAD 2>/dev/null || true)"
 if [ "$BRANCH" != "main" ] || [ -n "$(git -C "$REPO" status --porcelain 2>/dev/null)" ]; then
 	log "Working tree not clean on main (branch=$BRANCH). Aborting auto-fix; please handle manually."
 	notify "Claude patch watcher" "Patches broke on v$VERSION. Repo not clean on main — fix manually."
-	echo "$VERSION" >"$STATE_FILE"
 	exit 1
 fi
 
@@ -140,6 +139,8 @@ Fix them by following the repository's own documented workflow:
 4. Bump the version in package.json (patch bump), and update README.md, CHANGELOG.md, and CLAUDE.md per the conventions already used in those files.
 5. Run 'npm run compile' and confirm it succeeds, then 'npm run check-patches' and confirm it reports HEALTHY. Do NOT package the .vsix — this script does that after you finish.
 6. Commit the source/doc changes to the $FIX_BRANCH branch with a message in the repo's style (past-tense verb, no AI attribution).
+
+Write any scratch scripts under \$TMPDIR, never inside the repo, so an interrupted run cannot leave the working tree dirty.
 
 Hard constraints: do NOT switch back to or commit on main. Do NOT package or install the .vsix. Do NOT push. If you cannot confidently locate a patch site, stop and explain rather than guessing.
 EOF
