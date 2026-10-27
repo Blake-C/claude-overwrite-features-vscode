@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.22] - 2026-10-27
+
+Updated the Feature 4 patch string for Claude Code v2.1.311. Features 1, 2, 3, and 5 were unaffected, including both halves of the Feature 2 and Feature 3 replacement strings.
+
+v2.1.311 keeps the minifier from v2.1.245, and every change that affects a patch is a rename. `webview/index.js` is 6.02 MB. The main chat view is `yh0` (was `Yh0`), the compact button component is `sv5` (was `Gv5`) inside the wrapper `Ty0` (was `sv0`), the selection chip is `ev5` (was `Uv5`), and the footer that renders the chip is `by0` (was `tv0`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: both strings match unchanged, and every identifier in them was confirmed to have kept its role. The attachments local is still `B=$.composerAttachments.value`, the command text is still `K1`, isSlashCommand is still `q1` from `let q1=K1.trim().startsWith("/")`, the selection flag is still `k1=!q1` just before the send, the scroll callback is still `N1()`, and the inline-pastes local is still `Y1`, now built by `ml1(K1,U0)` (was `wl1(K1,U0)`). The helper name is in neither string
+- Feature 3: the compact button component was renamed `Gv5`→`sv5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, every parameter letter, and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard. The guard's inner channel local is `H` (was `q`), which sits outside the `from` string. The only change inside the `from` string is the stats helper, renamed `br1`→`Rs1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `W`=the sixth options parameter, `z`=response. `Rs1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness. `Rs1` tests its first argument against the edit-tool list `Os1=["Edit","Write"]`. `br1` and `wr1` are both still in the file as unrelated helpers
+
+The first auto-fix run for v2.1.311 was cut off by a system restart before it created its branch, and it left a scratch `chk.py` in the repo root. The watcher's retry then found the tree dirty and stopped. This update was made by hand. The new Feature 4 `from` string was checked against the clean `extension.js.backup` and appears exactly once.
+
 ## [0.7.21] - 2026-10-24
 
 Updated the Feature 4 patch string for Claude Code v2.1.310. Features 1, 2, 3, and 5 were unaffected, including both halves of the Feature 2 and Feature 3 replacement strings.
