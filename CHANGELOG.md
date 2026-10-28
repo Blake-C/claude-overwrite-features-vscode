@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.23] - 2026-10-28
+
+Updated the Feature 4 patch string for Claude Code v2.1.312. Features 1, 2, 3, and 5 were unaffected, including both halves of the Feature 2 and Feature 3 replacement strings.
+
+v2.1.312 keeps the minifier from v2.1.245, and every change that affects a patch is a rename. `webview/index.js` is 5.75 MB. The main chat view is `mh0` (was `yh0`), the compact button component is `zy5` (was `sv5`) inside the wrapper `vy0` (was `Ty0`), the selection chip is `Vy5` (was `ev5`), and the footer that renders the chip is `xy0` (was `by0`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `$`, so the v0.7.0 strings match as-is
+- Feature 2: both strings match unchanged, and every identifier in them was confirmed to have kept its role. The attachments local is still `B=$.composerAttachments.value`, the command text is still `K1`, isSlashCommand is still `q1` from `let q1=K1.trim().startsWith("/")`, the scroll callback is still `N1()`, and the inline-pastes local is still `Y1`, now built by `Wd1(K1,U0)` (was `ml1(K1,U0)`). The helper name is in neither string. The selection flag is still `k1`, but Claude Code changed how it is computed: it now reads `let k1=!q1||cT0($.drawnClaudeConfig.value?.commands,K1)` instead of `let k1=!q1`, so a custom slash command can carry the selection. That is a Claude Code behavior change and it does not affect the patch, because Feature 2 wraps the attachments argument and leaves the selection flag alone. It does mean the old check of reading `!q1` immediately before the send no longer confirms isSlashCommand is in scope, so confirm it from the `||` left operand instead
+- Feature 3: the compact button component was renamed `sv5`→`zy5`, but its props are still `{percentageUsed:$,onCompact:J,buttonClassName:Z}`, so `onCompact` is still `J` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard, but two things inside the `from` string changed. The fifth and sixth letters swapped roles, so `z` is now the sixth options parameter and `W` is now the `sendRequest` response, the reverse of v2.1.311. The stats helper was renamed `Rs1`→`Ss1`. Vars: `$`=channelId, `J`=toolName, `Q`=inputs, `X`=suggestions, `Y`=abortSignal, `z`=the sixth options parameter, `W`=response. The guard's inner channel local is `q` (was `H`), which sits outside the `from` string. `Ss1` appears twice in `extension.js`, so the `from` string keeps the `sendRequest` call for uniqueness. `Ss1` tests its first argument against the edit-tool list `ws1` (was `Os1`). `Rs1` is still in the file in three places as unrelated bindings, so a `from` string carried over on the helper name alone would have matched the wrong site
+
+The swap of `W` and `z` is the first time two parameter letters of `requestToolPermission` traded roles rather than one being renamed. Reading only the stats-helper name would have produced a `from` string that still looks correct and matches nothing, so both the parameter list and the response local were read off the method body.
+
+The install directory held no `.backup` files, so the installed files were pristine. The changed Feature 4 `from` string was checked against them directly and appears exactly once, as do the unchanged `from` strings for Features 1, 2, and 3.
+
 ## [0.7.22] - 2026-10-27
 
 Updated the Feature 4 patch string for Claude Code v2.1.311. Features 1, 2, 3, and 5 were unaffected, including both halves of the Feature 2 and Feature 3 replacement strings.
