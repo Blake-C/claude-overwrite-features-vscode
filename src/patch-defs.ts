@@ -16,24 +16,24 @@ export interface Patch {
 export const PATCHES: Patch[] = [
 	{
 		name: 'Feature 1: Send only a real selection, not the open file',
-		from: 'this.dismissedSelection=void 0,this.selection.value=$',
-		to: 'this.dismissedSelection=void 0,this.selection.value=$?.selectedText?$:void 0',
+		from: 'this.dismissedSelection=void 0,this.selection.value=e',
+		to: 'this.dismissedSelection=void 0,this.selection.value=e?.selectedText?e:void 0',
 	},
 	{
 		name: 'Feature 2: Skip attachments on slash commands',
-		from: 'await $.send(K1,B,k1,{kind:"human"},{inlinePastes:Y1}),N1()',
-		to: 'await $.send(K1,q1?[]:B,k1,{kind:"human"},{inlinePastes:Y1}),N1()',
+		from: 'await e.send(me,p,Ae,{kind:"human"},{inlinePastes:oe}),we()',
+		to: 'await e.send(me,ce?[]:p,Ae,{kind:"human"},{inlinePastes:oe}),we()',
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',
-		from: 'click to compact`,onClick:J,onMouseEnter:',
-		to: 'click to compact`,onClick:()=>{const d=document.createElement("dialog");d.style.cssText="background:var(--vscode-editor-background);color:var(--vscode-editor-foreground);border:1px solid var(--vscode-widget-border,#454545);border-radius:6px;padding:20px;min-width:260px;box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:var(--vscode-font-family);font-size:var(--vscode-font-size,13px)";d.innerHTML=\'<form method="dialog" style="margin:0"><p style="margin:0 0 16px;line-height:1.5">Compact conversation now?<br>This cannot be undone.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel" style="padding:4px 14px;background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground);border:none;border-radius:3px;cursor:pointer;font:inherit">Cancel</button><button value="ok" autofocus style="padding:4px 14px;background:var(--vscode-button-background);color:var(--vscode-button-foreground);border:none;border-radius:3px;cursor:pointer;font:inherit">Compact</button></div></form>\';document.body.appendChild(d);d.showModal();d.addEventListener("close",()=>{if(d.returnValue==="ok")J();d.remove()})},onMouseEnter:',
+		from: 'click to compact`,onClick:t,onMouseEnter:',
+		to: 'click to compact`,onClick:()=>{const d=document.createElement("dialog");d.style.cssText="background:var(--vscode-editor-background);color:var(--vscode-editor-foreground);border:1px solid var(--vscode-widget-border,#454545);border-radius:6px;padding:20px;min-width:260px;box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:var(--vscode-font-family);font-size:var(--vscode-font-size,13px)";d.innerHTML=\'<form method="dialog" style="margin:0"><p style="margin:0 0 16px;line-height:1.5">Compact conversation now?<br>This cannot be undone.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button value="cancel" style="padding:4px 14px;background:var(--vscode-button-secondaryBackground);color:var(--vscode-button-secondaryForeground);border:none;border-radius:3px;cursor:pointer;font:inherit">Cancel</button><button value="ok" autofocus style="padding:4px 14px;background:var(--vscode-button-background);color:var(--vscode-button-foreground);border:none;border-radius:3px;cursor:pointer;font:inherit">Compact</button></div></form>\';document.body.appendChild(d);d.showModal();d.addEventListener("close",()=>{if(d.returnValue==="ok")t();d.remove()})},onMouseEnter:',
 	},
 	{
 		name: 'Feature 4: Respect ~/.claude/settings.json permissions in plan mode',
 		targetFile: 'extension',
-		from: 'return{behavior:"allow",updatedInput:Q}}let W=await this.sendRequest($,{type:"tool_permission_request",toolName:J,inputs:Q,suggestions:X,...z},Y);Ss1(J,W);',
-		to: 'return{behavior:"allow",updatedInput:Q}}try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===J;if(_m[1]!==J)return!1;const c=typeof Q==="object"&&Q!==null?Q.command??Q.cmd??Q.input??JSON.stringify(Q):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:Q}}catch(_e){}let W=await this.sendRequest($,{type:"tool_permission_request",toolName:J,inputs:Q,suggestions:X,...z},Y);Ss1(J,W);',
+		from: 'return{behavior:"allow",updatedInput:n}}let s=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:n,suggestions:r,...i},o);Y6e(t,s);',
+		to: 'return{behavior:"allow",updatedInput:n}}try{const _fs=require("fs"),_cs=JSON.parse(_fs.readFileSync(require("path").join(require("os").homedir(),".claude","settings.json"),"utf8")),_al=_cs?.permissions?.allow??[],_dl=_cs?.permissions?.deny??[],_mn=(p)=>{const _m=p.match(/^(\\w+)\\((.+)\\)$/);if(!_m)return p===t;if(_m[1]!==t)return!1;const c=typeof n==="object"&&n!==null?n.command??n.cmd??n.input??JSON.stringify(n):"";return new RegExp("^"+_m[2].replace(/\\*/g,".*")+"$").test(c)};if(!_dl.some(_mn)&&_al.some(_mn))return{behavior:"allow",updatedInput:n}}catch(_e){}let s=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:n,suggestions:r,...i},o);Y6e(t,s);',
 	},
 	{
 		name: 'Feature 5: Label panel as patched (activitybar container)',

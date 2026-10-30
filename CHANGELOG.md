@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.24] - 2026-10-30
+
+Updated the Feature 1, 2, 3, and 4 patch strings for Claude Code v2.1.314. Feature 5 was unaffected.
+
+v2.1.314 switched minifiers. Identifiers are now short single letters assigned in sequence per scope, `e`, `t`, `n`, `r`, `o`, `i`, `s`, instead of the `$`, `J`, `X`, `Y`, `Q`, `Z`, `W` style used since v2.1.245. Every webview and extension patch site changed as a result, so no name carries over from the v2.1.312 map. `webview/index.js` is 6.02 MB, `extension.js` is 3.38 MB, and the install directory held no `.backup` files, so every new string below was checked against the pristine installed files directly and appears exactly once.
+
+- Feature 1: the main chat view component is `oFt`. `applySelectionUpdate`'s parameter is now `e`, so the tail reads `this.dismissedSelection=void 0,this.selection.value=e}dismissSelection(){`, and the patch appends `?.selectedText?e:void 0` to that assignment
+- Feature 2: the attachments local is bound at the top of the chat view as `p=e.composerAttachments.value`. The submit handler's command-text argument is `me`, isSlashCommand is `ce` from `let ce=me.trim().startsWith("/")`, the selection flag is `Ae` from `let Ae=!ce||uIt(e.drawnClaudeConfig.value?.commands,me)`, the inline-pastes local is `oe`, and the scroll callback is `we()`. The site is now `await e.send(me,p,Ae,{kind:"human"},{inlinePastes:oe}),we()`
+- Feature 3: the compact button component is `cMn` (wrapper `QMt`), and its `onCompact` prop is `t`, so the site is `click to compact\`,onClick:t,onMouseEnter:`. The dialog's confirm branch calls `t()`
+- Feature 4: `requestToolPermission(e,t,n,r,o,i)` kept all six parameter positions. `e`=channelId, `t`=toolName, `n`=inputs, `r`=suggestions, `o`=abortSignal, `i`=the sixth options parameter, `s`=the `sendRequest` response, and the stats helper is `Y6e`. The `tool_permission_request` string itself now appears only once in `extension.js`, but the `from` string still ends at the `sendRequest`/stats-helper call rather than the function's close, matching the shape used since v2.1.263. The function reads `return{behavior:"allow",updatedInput:n}}let s=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:n,suggestions:r,...i},o);Y6e(t,s);`
+
+The selection chip is `hMn` (was `Vy5`) and the footer that renders it and passes through `onRemoveSelection` is `JMt` (was `xy0`). Neither name appears in a patch string.
+
 ## [0.7.23] - 2026-10-28
 
 Updated the Feature 4 patch string for Claude Code v2.1.312. Features 1, 2, 3, and 5 were unaffected, including both halves of the Feature 2 and Feature 3 replacement strings.
