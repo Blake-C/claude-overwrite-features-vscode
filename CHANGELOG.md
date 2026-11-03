@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.25] - 2026-11-03
+
+Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.317. Features 1, 3, and 5 were unaffected, including both halves of the Feature 1 and Feature 3 replacement strings.
+
+v2.1.317 keeps the single-letter-per-scope minifier introduced in v2.1.314, and every change that affects a patch is a rename. `webview/index.js` is 6.03 MB and `extension.js` is 3.46 MB. The main chat view is `_Ft` (was `oFt`), the compact button component is `NMn` (was `cMn`) inside the wrapper `pPt` (was `QMt`), the selection chip is `OMn` (was `hMn`), and the footer that renders the chip is `fPt` (was `JMt`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `e`, so the v0.7.24 strings match as-is
+- Feature 2: the attachments local is still bound at the top of the chat view as `p=e.composerAttachments.value`, and the handler still clears the signal by assigning `[]`, so the patch shape is unchanged. Every identifier inside the handler was renamed. The command text is its callback argument `ie` (was `me`), isSlashCommand is `ft` (was `ce`) from `let ft=ie.trim().startsWith("/")`, the selection flag is `vt` (was `Ae`) from `let vt=!ft||LIt(e.drawnClaudeConfig.value?.commands,ie)`, the inline-pastes local is `le` (was `oe`), built by `eje(ie,Ne)`, and the scroll callback is `xe()` (was `we()`). The new `from` string is `await e.send(ie,p,vt,{kind:"human"},{inlinePastes:le}),xe()`. The handler's `catch(ft)` shadows `ft`, so the `from` string matches the full send call. `kind:"human"` appears three times in the bundle; the other two hits are the `/effort` retry loop and the `/fast` action
+- Feature 3: the compact button component was renamed `cMn`→`NMn`, but its props are still `{percentageUsed:e,onCompact:t,buttonClassName:n}`, so `onCompact` is still `t` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission` kept all six parameter positions, every parameter letter, and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard. The guard's inner channel local is `p` (was a differently named local in v2.1.314), which sits outside the `from` string. The only change inside the `from` string is the stats helper, renamed `Y6e`→`Zqe`. Vars: `e`=channelId, `t`=toolName, `n`=inputs, `r`=suggestions, `o`=abortSignal, `i`=the sixth options parameter, `s`=response. The function reads `return{behavior:"allow",updatedInput:n}}let s=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:n,suggestions:r,...i},o);Zqe(t,s);`
+
+The install directory held no `.backup` files, so the installed files were pristine. The changed Feature 2 and Feature 4 `from` strings were checked against them directly and each appears exactly once, as do the unchanged `from` strings for Features 1 and 3. The Feature 2 `to` string was confirmed not to appear, so the new isSlashCommand name was not already in the send call.
+
 ## [0.7.24] - 2026-10-30
 
 Updated the Feature 1, 2, 3, and 4 patch strings for Claude Code v2.1.314. Feature 5 was unaffected.
