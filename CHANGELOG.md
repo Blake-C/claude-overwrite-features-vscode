@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.26] - 2026-11-04
+
+Updated the Feature 4 patch string and the Feature 2 replacement string for Claude Code v2.1.318. Features 1, 3, and 5 were unaffected, including both halves of the Feature 1 and Feature 3 replacement strings.
+
+v2.1.318 keeps the single-letter-per-scope minifier introduced in v2.1.314, and every change that affects a patch is a rename. `webview/index.js` is 5.74 MB and `extension.js` is 3.33 MB. The main chat view is `wFt` (was `_Ft`), the compact button component is `FMn` (was `NMn`) inside the wrapper `gPt` (was `pPt`), and the selection chip is `HMn` (was `OMn`).
+
+The health check reported Feature 2 as matching, because only its `to` string went stale. isSlashCommand was renamed `ft`→`mt`, and `ft` is declared nowhere in the v2.1.318 submit handler, so applying the carried-over `to` string would have injected a reference to an undeclared identifier into the send call. This is the failure mode recorded for v2.1.309, and it is why the isSlashCommand name is re-derived by hand on every release instead of being trusted when the health check passes.
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `e`, so the v0.7.24 strings match as-is
+- Feature 2: the attachments local is still bound at the top of the chat view as `p=e.composerAttachments.value`, the command text is still its callback argument `ie`, the selection flag is still `vt`, the inline-pastes local is still `le`, and the scroll callback is still `xe()`, so the `from` string matches unchanged. isSlashCommand is `mt` (was `ft`) from `let mt=ie.trim().startsWith("/")`, which the selection flag `let vt=!mt||AIt(e.drawnClaudeConfig.value?.commands,ie)` negates just before the send, proving `mt` is in scope at the patch site. The new `to` string is `await e.send(ie,mt?[]:p,vt,{kind:"human"},{inlinePastes:le}),xe()`. The selection-flag helper is `AIt` (was `LIt`) and the inline-pastes helper is `ije(ie,Fe)` (was `eje(ie,Ne)`), and neither name appears in a patch string. The handler's `catch(mt)` shadows `mt`, so the `from` string matches the full send call. `kind:"human"` appears three times in the bundle; the other two hits are the `/effort` retry loop and the `/fast` action
+- Feature 3: the compact button component was renamed `NMn`→`FMn`, but its props are still `{percentageUsed:e,onCompact:t,buttonClassName:n}`, so `onCompact` is still `t` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission(e,t,n,r,o,s)` kept all six parameter positions and the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard, and two things inside the `from` string changed. The sixth options parameter and the response local swapped letters, so `s` is now the sixth options parameter and `i` is now the `sendRequest` response, the reverse of v2.1.317. The stats helper was renamed `Zqe`→`z8e`. Vars: `e`=channelId, `t`=toolName, `n`=inputs, `r`=suggestions, `o`=abortSignal, `s`=the sixth options parameter, `i`=response. The guard's inner channel local is `p`, which sits outside the `from` string. The function reads `return{behavior:"allow",updatedInput:n}}let i=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:n,suggestions:r,...s},o);z8e(t,i);`. `z8e(` appears twice in `extension.js`, once as the function definition and once as this call, and `z8e` tests its first argument against the edit-tool list `B8e`
+
+The swap of `s` and `i` is the second time two letters of `requestToolPermission` traded roles rather than one being renamed, after `W` and `z` in v2.1.312. Reading only the stats-helper name would again have produced a `from` string that looks correct and matches nothing, so the parameter list and the response local were both read off the method body.
+
+The install directory held no `.backup` files, so the installed files were pristine. Every `from` string was checked against them directly and each appears exactly once, and every `to` string was confirmed absent. All nine patches were then applied to copies of the pristine files outside the repo, and both patched bundles were parsed with `vm.Script` to confirm the injected code is syntactically valid.
+
 ## [0.7.25] - 2026-11-03
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.317. Features 1, 3, and 5 were unaffected, including both halves of the Feature 1 and Feature 3 replacement strings.
