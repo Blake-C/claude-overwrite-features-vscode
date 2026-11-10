@@ -1,8 +1,8 @@
-# Claude Code — Overwrite Features
+# Claude Code Overwrite Features
 
-> **Use at your own risk.** This extension works by directly modifying the installed Claude Code extension's minified files. It is inherently fragile — any Claude Code update can rename internal variables, restructure the bundle, or move patch sites, silently breaking one or more features. Rapid or back-to-back Claude Code updates are especially likely to leave patches in a partial or failed state. Always check the Claude Code Patches output channel after VS Code restarts and be prepared to revert if something looks wrong.
+> **Use at your own risk.** This extension works by directly modifying the installed Claude Code extension's minified files. It is fragile, because any Claude Code update can rename internal variables, restructure the bundle, or move patch sites, silently breaking one or more features. Rapid or back-to-back Claude Code updates are especially likely to leave patches in a partial or failed state. Always check the Claude Code Patches output channel after VS Code restarts and be prepared to revert if something looks wrong.
 >
-> **Legal and terms.** This is an unofficial, independent project. It is not affiliated with, endorsed by, or supported by Anthropic. Claude Code is proprietary software (© Anthropic PBC, all rights reserved); your use of it is governed by Anthropic's [Consumer Terms](https://www.anthropic.com/legal/consumer-terms), [Commercial Terms](https://www.anthropic.com/legal/commercial-terms), [Usage Policy](https://www.anthropic.com/legal/aup), and the [Claude Code legal terms](https://code.claude.com/docs/en/legal-and-compliance). Modifying Claude Code's files may conflict with those terms (which restrict, among other things, reverse engineering) — review them and decide for yourself before using this. Two specific points:
+> **Legal and terms.** This is an unofficial, independent project. It is not affiliated with, endorsed by, or supported by Anthropic. Claude Code is proprietary software (© Anthropic PBC, all rights reserved); your use of it is governed by Anthropic's [Consumer Terms](https://www.anthropic.com/legal/consumer-terms), [Commercial Terms](https://www.anthropic.com/legal/commercial-terms), [Usage Policy](https://www.anthropic.com/legal/aup), and the [Claude Code legal terms](https://code.claude.com/docs/en/legal-and-compliance). Modifying Claude Code's files may conflict with those terms (which restrict, among other things, reverse engineering), so review them and decide for yourself before using this. Two specific points:
 > - **The optional auto-update watcher runs `claude -p` (the Agent SDK) from a script.** Anthropic's Consumer Terms permit automated/programmatic access **only via an Anthropic API key**, not subscription (Pro/Max) login. If you enable the watcher, authenticate it with `ANTHROPIC_API_KEY`. Note that Agent SDK / `claude -p` usage also draws on usage limits (and, from June 15 2026, a separate Agent SDK credit on subscription plans).
 > - This project distributes only your own wrapper code. The short minified fragments used as patch anchors remain Anthropic's; the MIT license here does not grant any rights to Anthropic's code.
 
@@ -10,25 +10,25 @@ A companion VS Code extension that patches five UX behaviors in the [Claude Code
 
 ## What it changes
 
-1. **Only text you select is sent** — Having a file open attaches nothing and shows no chip in the footer. Selecting text in the editor shows the chip and sends that selection with your next message, and the chip's X still dismisses it.
+1. **Only text you select is sent.** Having a file open attaches nothing and shows no chip in the footer. Selecting text in the editor shows the chip and sends that selection with your next message, and the chip's X still dismisses it.
 
    Until v0.7.0 this patch flipped the default of the footer's include-file toggle to off. Claude Code v2.1.270 removed that toggle and replaced it with the chip, and it now sends the open file with every message that is not a slash command, so the patch works on the session's selection handler instead. The v0.6.56 entry in [CHANGELOG.md](CHANGELOG.md) lists the three replacements that were considered.
 
-2. **Attachments are not sent with slash commands** — When you have files attached and trigger `/compact` (or any slash command), those attachments are withheld from the command. Files remain attached and are sent with your next regular message.
+2. **Attachments are not sent with slash commands.** When you have files attached and trigger `/compact` (or any slash command), those attachments are withheld from the command. Files remain attached and are sent with your next regular message.
 
    Claude Code v2.1.270 also removed the reset half of this patch. The toggle it used to reset no longer exists, and Claude Code now skips a selection it already sent on the previous message, so nothing carries over.
 
-3. **Compact button requires confirmation** — Clicking the context-usage button now shows a styled VS Code dialog before compacting, preventing accidental context loss.
+3. **Compact button requires confirmation.** Clicking the context-usage button now shows a styled VS Code dialog before compacting, preventing accidental context loss.
 
-4. **Plan-mode permissions respect `~/.claude/settings.json`** — When Claude Code prompts for tool permission during plan mode, the extension checks your `~/.claude/settings.json` allow/deny lists and auto-approves matching tools without showing a dialog.
+4. **Plan-mode permissions respect `~/.claude/settings.json`.** When Claude Code prompts for tool permission during plan mode, the extension checks your `~/.claude/settings.json` allow/deny lists and auto-approves matching tools without showing a dialog.
 
-5. **Panel title shows "Claude Code - Patched"** — The activity bar and sidebar containers are renamed so you can tell at a glance that patches are active.
+5. **Panel title shows "Claude Code - Patched".** The activity bar and sidebar containers are renamed so you can tell at a glance that patches are active.
 
 ## Ollama local model integration
 
 In addition to the five patches above, the extension provides commands to route Claude Code to a local [Ollama](https://ollama.com) model instead of the Anthropic API.
 
-Ollama v0.14.0+ exposes a native Anthropic Messages API, so Claude Code connects directly — no proxy needed. To use it:
+Ollama v0.14.0+ exposes a native Anthropic Messages API, so Claude Code connects directly with no proxy. To use it:
 
 1. Install and start Ollama, then pull at least one chat model:
    ```bash
@@ -36,14 +36,14 @@ Ollama v0.14.0+ exposes a native Anthropic Messages API, so Claude Code connects
    ollama serve
    ```
 2. Run **Claude Code Patch: Use Local Ollama Model** from the Command Palette.
-3. Select a model from the list — each entry shows Speed / Coding / Planning scores.
+3. Select a model from the list. Each entry shows Speed / Coding / Planning scores.
 4. Restart Claude Code (the command prompts you).
 
 To go back, run **Claude Code Patch: Revert to Anthropic API (Ollama)** and reload VS Code.
 
 ### Model scoring
 
-The picker and recommendation command score each installed model across three categories (0–10) using a static lookup table and size-based heuristics:
+The picker and recommendation command score each installed model across three categories (0 to 10) using a static lookup table and size-based heuristics:
 
 | Category | Best for |
 |---|---|
@@ -55,7 +55,7 @@ Models structurally incompatible with Claude Code (embedding models, audio/image
 
 ### Caveats
 
-- Ollama models are generally slower than Anthropic-hosted Claude models for equivalent tasks. This is expected — local inference runs on your hardware.
+- Ollama models are generally slower than Anthropic-hosted Claude models for equivalent tasks, because local inference runs on your hardware.
 - The token-counting endpoint (`/v1/messages/count_tokens`) may return errors with some Ollama versions. Claude Code handles this gracefully.
 - Only chat/instruction-tuned models work. Embedding and specialty models are marked incompatible but remain selectable.
 
@@ -88,15 +88,15 @@ npm run vsix
 code --install-extension claude-overwrite-features-0.7.28.vsix
 ```
 
-Then **reload VS Code** — the extension activates on startup and applies patches automatically.
+Then **reload VS Code**. The extension activates on startup and applies patches automatically.
 
 ## Output
 
 Patch results are written to the **Claude Code Patches** output channel (View → Output → Claude Code Patches). Each patch reports one of three statuses:
 
-- `✓` — applied this run
-- `—` — already applied (no change needed)
-- `✗` — pattern not found (Claude Code may have updated)
+- `✓`: applied this run
+- `—`: already applied (no change needed)
+- `✗`: pattern not found (Claude Code may have updated)
 
 ## Auto-update watcher (optional)
 
@@ -105,9 +105,9 @@ Claude Code updates often, and an update can rename the minified identifiers the
 How it works:
 
 1. A launchd agent watches `~/.vscode/extensions` and fires when VS Code installs a new `anthropic.claude-code-*` version.
-2. `scripts/on-claude-update.sh` runs a **deterministic** health check (`scripts/check-patches.ts`) that tests whether every patch's `from`/`to` literal still appears in the new files. No AI is involved here — it's a string match reusing the same `PATCHES`/`applyPatch` the extension uses.
+2. `scripts/on-claude-update.sh` runs a **deterministic** health check (`scripts/check-patches.ts`) that tests whether every patch's `from`/`to` literal still appears in the new files. The check is a string match that reuses the same `PATCHES`/`applyPatch` the extension uses, so no AI is involved.
 3. If all patches still match, it does nothing (the extension re-applies them on activation).
-4. **Only if a patch has actually broken**, it launches headless Claude Code (`claude -p`) with a scoped permission allowlist to rewrite the broken strings on a new branch `auto/patch-update-<version>`, bump the version, update docs, and compile. It commits to the branch, and the shell script then runs `npm run vsix` to build the `.vsix` and notifies you. Packaging runs in the script rather than in the headless Claude run, which has no network access and no way to answer a permission prompt. It never touches `main` and never installs the `.vsix` — you review and merge. Clicking the notification reveals `~/Library/Logs/claude-overwrite-watcher.log` in Finder when [terminal-notifier](https://github.com/julienXX/terminal-notifier) is installed (`brew install terminal-notifier`). Without `terminal-notifier` the watcher falls back to an `osascript` notification, and clicking that one opens Script Editor.
+4. **Only if a patch has actually broken**, it launches headless Claude Code (`claude -p`) with a scoped permission allowlist to rewrite the broken strings on a new branch `auto/patch-update-<version>`, bump the version, update docs, and compile. It commits to the branch, and the shell script then runs `npm run vsix` to build the `.vsix` and notifies you. Packaging runs in the script rather than in the headless Claude run, which has no network access and no way to answer a permission prompt. It never touches `main`, never installs the `.vsix`, and leaves the branch for you to review and merge. Clicking the notification reveals `~/Library/Logs/claude-overwrite-watcher.log` in Finder when [terminal-notifier](https://github.com/julienXX/terminal-notifier) is installed (`brew install terminal-notifier`). Without `terminal-notifier` the watcher falls back to an `osascript` notification, and clicking that one opens Script Editor.
 
 Install / manage:
 
@@ -120,9 +120,9 @@ npm run watcher:run         # run the watcher logic once by hand
 
 Notes:
 
-- **Security** — the headless run uses a scoped `--allowedTools` allowlist (Read/Edit/Write plus Bash limited to git/npm/npx/node/python3/code) confined to this repo via `--add-dir`, not `--dangerously-skip-permissions`. Automated commits land on a throwaway branch, so a wrong patch is caught at review.
-- **Prerequisites** — `node` must be resolvable for a bare-PATH launchd job (the script initializes fnm); the Claude CLI is expected at `~/.local/bin/claude`. The headless run must be authenticated, and because it is automated/programmatic access it should use an **Anthropic API key** (`ANTHROPIC_API_KEY`) rather than subscription login — see the Legal note above.
-- **Logs** — `~/Library/Logs/claude-overwrite-watcher.log`. The last-handled version is tracked in `~/.claude/claude-overwrite-watcher.state`, which is written only after a successful run. A failed run leaves it alone and counts the attempt in `~/.claude/claude-overwrite-watcher.attempts` instead, so the next filesystem event retries. After 3 failed attempts on the same version the watcher stops and tells you to fix it by hand.
+- **Security.** The headless run uses a scoped `--allowedTools` allowlist (Read/Edit/Write plus Bash limited to git/npm/npx/node/python3/code) confined to this repo and the Claude Code install directory via `--add-dir`, not `--dangerously-skip-permissions`. Automated commits land on a throwaway branch, so a wrong patch is caught at review.
+- **Prerequisites.** `node` must be resolvable for a bare-PATH launchd job (the script initializes fnm); the Claude CLI is expected at `~/.local/bin/claude`. The headless run must be authenticated, and because it is automated/programmatic access it should use an **Anthropic API key** (`ANTHROPIC_API_KEY`) rather than subscription login. See the Legal note above.
+- **Logs.** The watcher logs to `~/Library/Logs/claude-overwrite-watcher.log`. The last-handled version is tracked in `~/.claude/claude-overwrite-watcher.state`, which is written only after a successful run. A failed run leaves it alone and counts the attempt in `~/.claude/claude-overwrite-watcher.attempts` instead, so the next filesystem event retries. After 3 failed attempts on the same version the watcher stops and tells you to fix it by hand.
 - **macOS only** (launchd). On other platforms, run `npm run check-patches` manually or wire the same script into cron/systemd.
 
 ## Troubleshooting
@@ -141,14 +141,14 @@ Correct uninstall order:
 2. Disable or uninstall this extension
 3. Reload VS Code
 
-Do not reload between steps 1 and 2 — the extension re-activates on startup and will immediately re-apply all patches.
+Do not reload between steps 1 and 2, because the extension re-activates on startup and will immediately re-apply all patches.
 
 ## Caveats
 
-- **The `repository` field is required** — this README contains relative links, and `vsce` turns each one into an absolute URL using the `repository` field in `package.json`, so `npm run vsix` fails when that field is missing.
-- **Patches break on Claude Code updates** — Because patches are applied directly to the installed extension files, a Claude Code version update will overwrite them. The extension detects this on next startup and re-applies automatically, prompting you to reload.
-- **Reload required** — VS Code must be reloaded after patches are applied for changes to take effect (the extension will prompt you).
-- **Revert at any time** — Run the command `Claude Code: Revert Feature Patches` from the Command Palette to restore the original files from the backup created on first patch.
+- **The `repository` field is required.** This README contains relative links, and `vsce` turns each one into an absolute URL using the `repository` field in `package.json`, so `npm run vsix` fails when that field is missing.
+- **Patches break on Claude Code updates.** Because patches are applied directly to the installed extension files, a Claude Code version update will overwrite them. The extension detects this on next startup and re-applies automatically, prompting you to reload.
+- **Reload required.** VS Code must be reloaded after patches are applied for changes to take effect (the extension will prompt you).
+- **Revert at any time.** Run the command `Claude Code: Revert Feature Patches` from the Command Palette to restore the original files from the backup created on first patch.
 
 ## Commands
 

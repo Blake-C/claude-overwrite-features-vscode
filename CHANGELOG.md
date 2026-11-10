@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 - Fixed the watcher writing every log line twice. `log()` in `scripts/on-claude-update.sh` appended each line to the log file and also sent it to stderr, and the launchd plist points stderr at the same log file. `log()` now writes to stderr only when stderr is a terminal, so a manual `npm run watcher:run` still prints each line
+- Changed the README to remove every em and en dash except the `—` status marker, which is the literal symbol the output channel prints for an already-applied patch
+- Fixed the README security note, which said the headless run is confined to this repo. The watcher passes `--add-dir` for both this repo and the Claude Code install directory
 
 ## [0.7.28] - 2026-11-10
 
