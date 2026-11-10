@@ -23,7 +23,13 @@ LOG_FILE="$HOME/Library/Logs/claude-overwrite-watcher.log"
 LOCK_DIR="${TMPDIR:-/tmp}/claude-overwrite-watcher.lock"
 EXT_ROOT="$HOME/.vscode/extensions"
 
-log() { printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" | tee -a "$LOG_FILE" >&2; }
+# Under launchd, stderr is already LOG_FILE (see the plist), so only echo to a terminal.
+log() {
+	local line
+	line="$(date '+%Y-%m-%d %H:%M:%S') $*"
+	printf '%s\n' "$line" >>"$LOG_FILE"
+	if [ -t 2 ]; then printf '%s\n' "$line" >&2; fi
+}
 
 notify() {
 	# $1 = title, $2 = message. terminal-notifier makes the notification reveal

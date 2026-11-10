@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Fixed the watcher writing every log line twice. `log()` in `scripts/on-claude-update.sh` appended each line to the log file and also sent it to stderr, and the launchd plist points stderr at the same log file. `log()` now writes to stderr only when stderr is a terminal, so a manual `npm run watcher:run` still prints each line
+
 ## [0.7.28] - 2026-11-10
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.322. Features 1, 3, and 5 were unaffected, including both halves of the Feature 1 and Feature 3 replacement strings.
