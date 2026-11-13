@@ -85,7 +85,7 @@ npm run package
 npm run vsix
 
 # Install into VS Code
-code --install-extension claude-overwrite-features-0.7.28.vsix
+code --install-extension claude-overwrite-features-0.7.29.vsix
 ```
 
 Then **reload VS Code**. The extension activates on startup and applies patches automatically.
@@ -120,7 +120,7 @@ npm run watcher:run         # run the watcher logic once by hand
 
 Notes:
 
-- **Security.** The headless run uses a scoped `--allowedTools` allowlist (Read/Edit/Write plus Bash limited to git/npm/npx/node/python3/code) confined to this repo and the Claude Code install directory via `--add-dir`, not `--dangerously-skip-permissions`. Automated commits land on a throwaway branch, so a wrong patch is caught at review.
+- **Security.** The headless run uses a scoped `--allowedTools` allowlist (Read/Edit/Write plus Bash limited to git/npm/npx/node/python3/code). It passes `--add-dir` for this repo and the Claude Code install directory, so those are the only directories it can read. It never passes `--dangerously-skip-permissions`. Automated commits land on a throwaway branch, so a wrong patch is caught at review.
 - **Prerequisites.** `node` must be resolvable for a bare-PATH launchd job (the script initializes fnm); the Claude CLI is expected at `~/.local/bin/claude`. The headless run must be authenticated, and because it is automated/programmatic access it should use an **Anthropic API key** (`ANTHROPIC_API_KEY`) rather than subscription login. See the Legal note above.
 - **Logs.** The watcher logs to `~/Library/Logs/claude-overwrite-watcher.log`. The last-handled version is tracked in `~/.claude/claude-overwrite-watcher.state`, which is written only after a successful run. A failed run leaves it alone and counts the attempt in `~/.claude/claude-overwrite-watcher.attempts` instead, so the next filesystem event retries. After 3 failed attempts on the same version the watcher stops and tells you to fix it by hand.
 - **macOS only** (launchd). On other platforms, run `npm run check-patches` manually or wire the same script into cron/systemd.
