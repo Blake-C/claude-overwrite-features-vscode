@@ -7,6 +7,23 @@
 - Fixed the README security note, which said the headless run is confined to this repo. The watcher passes `--add-dir` for both this repo and the Claude Code install directory
 - Changed the README security note to state the `--add-dir` scope and the absence of `--dangerously-skip-permissions` as separate facts, instead of contrasting the two flags in one clause
 
+## [0.7.30] - 2026-11-14
+
+Updated the Feature 4 patch string for Claude Code v2.1.325. Features 1, 2, 3, and 5 were unaffected, including both halves of every replacement string.
+
+v2.1.325 keeps the single-letter-per-scope minifier introduced in v2.1.314. `webview/index.js` is 6051176 bytes and `extension.js` is 3585827 bytes. Three component names moved and none of them appears in a patch string: the main chat view is `VBt` (was `BBt`), the compact button component is `KFn` (was `SOn`) inside the wrapper `vFt` (was `COt`), and the selection chip is `YFn` (was `IOn`) with its label helper `ZFn` (was `EOn`).
+
+- Feature 1: `applySelectionUpdate` is unchanged and its parameter is still `e`, so the v0.7.24 strings match as-is
+- Feature 2: every identifier in the send call kept the letter it held in v2.1.323. The command text is still the handler's callback argument `te`, the selection flag is still `Ct`, the inline-pastes local is still `yn`, the scroll callback is still `we()`, and the attachments local is still bound at the top of the chat view as `p=e.composerAttachments.value`. isSlashCommand is still `et` from `let et=te.trim().startsWith("/")`, declared 2050 bytes before the send inside the handler `Ue=dt(async(te,ke=[])=>{try{`, and the selection flag negates that same name in `let Ct=!et||WLt(e.drawnClaudeConfig.value?.commands,te)`, which proves `et` is in scope at the patch site. The helpers around the site did move, `zLt`→`WLt` for the selection flag and `Qje`→`tqe` for the inline pastes, but neither appears in a patch string. `kind:"human"` appears three times in the bundle; the other two hits are the `/effort` retry loop and the `/fast` action
+- Feature 3: the compact button component was renamed `SOn`→`KFn`, but its props are still `{percentageUsed:e,onCompact:t,buttonClassName:n}`, so `onCompact` is still `t` and both halves of the `to` string match as-is
+- Feature 4: `requestToolPermission(e,t,n,r,o,s)` kept all six parameter positions, the `experimentGates.tengu_staged_ladybug` wrapper around the Chrome-MCP guard, and the v2.1.323 arrangement of the sixth options parameter and the response local, so `s` is the sixth options parameter and `i` is the `sendRequest` response. The only change inside the `from` string is the stats helper, renamed `m7e`→`kYe`. Vars: `e`=channelId, `t`=toolName, `n`=inputs, `r`=suggestions, `o`=abortSignal, `s`=the sixth options parameter, `i`=response. The guard's inner channel local is `p`, which sits outside the `from` string. The function reads `return{behavior:"allow",updatedInput:n}}let i=await this.sendRequest(e,{type:"tool_permission_request",toolName:t,inputs:n,suggestions:r,...s},o);kYe(t,i);`. `kYe` appears twice in `extension.js`, once as the function definition and once as this call, and it tests its first argument against the edit-tool list `xYe` (was `p7e`)
+
+This is the second release since v2.1.314 where the Feature 4 parameter map is unchanged and only the stats-helper name moved, after v2.1.322. The parameter list and the response local were still read off the method body rather than carried over, because the helper name is the one thing in the `from` string the parameter list does not pin down.
+
+Feature 2 went unchanged for the first time since v2.1.317. The isSlashCommand name was still derived from its `let` assignment rather than assumed, because it appears only in the `to` string and the health check cannot catch it going stale. `et` held this role in v2.1.319 and again in v2.1.323, and a name coming back after a gap is why the current name is matched against the current bundle instead of a map.
+
+The install directory held no `.backup` files, so the installed files were pristine. Every `from` string was checked against them directly and each appears exactly once, and every `to` string was confirmed absent. All nine patches were then applied to copies of the pristine files outside the repo, both patched bundles were parsed with `vm.Script` to confirm the injected code is syntactically valid, and the patched `package.json` was parsed as JSON.
+
 ## [0.7.29] - 2026-11-13
 
 Updated the Feature 2 and Feature 4 patch strings for Claude Code v2.1.323. Features 1, 3, and 5 were unaffected, including both halves of the Feature 1 and Feature 3 replacement strings.
