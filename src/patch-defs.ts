@@ -21,8 +21,8 @@ export const PATCHES: Patch[] = [
 	},
 	{
 		name: 'Feature 2: Skip attachments on slash commands',
-		from: 'await e.send(ne,p,yt,{kind:"human"},{inlinePastes:Zn}),we()',
-		to: 'await e.send(ne,ht?[]:p,yt,{kind:"human"},{inlinePastes:Zn}),we()',
+		from: 'await e.send(re,p,Nt,{kind:"human"},{inlinePastes:no}),Ge()',
+		to: 'await e.send(re,it?[]:p,Nt,{kind:"human"},{inlinePastes:no}),Ge()',
 	},
 	{
 		name: 'Feature 3: Confirm before compacting',
