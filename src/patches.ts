@@ -17,7 +17,10 @@ import {
 export { STATE_KEY_PATCHED_VERSION, PATCHES }
 export type { Patch }
 
-export function applyPatchesToFile(filePath: string, patches: Patch[]): { resultMap: Map<string, string>; anyApplied: boolean } {
+export function applyPatchesToFile(
+	filePath: string,
+	patches: Patch[]
+): { resultMap: Map<string, string>; anyApplied: boolean } {
 	const resultMap = new Map<string, string>()
 	let anyApplied = false
 
@@ -75,7 +78,9 @@ function buildOrderedResults(resultMap: Map<string, string>): string[] {
 		if (patch.name.startsWith('Feature 5:')) {
 			if (!feature5Emitted) {
 				feature5Emitted = true
-				const f5Lines = PATCHES.filter(p => p.name.startsWith('Feature 5:')).map(p => resultMap.get(p.name) ?? `✗ ${p.name} (result missing)`)
+				const f5Lines = PATCHES.filter(p => p.name.startsWith('Feature 5:')).map(
+					p => resultMap.get(p.name) ?? `✗ ${p.name} (result missing)`
+				)
 				const symbol = worstSymbol(f5Lines)
 				orderedResults.push(`${symbol} Feature 5: Label panel as patched${symbolSuffix(symbol)}`)
 			}
@@ -102,7 +107,10 @@ export async function patchWebview(
 	const { resultMap: webviewMap, anyApplied: webviewApplied } = applyPatchesToFile(webviewPath, webviewPatches)
 
 	const extensionJsPath = path.join(extensionPath, EXTENSION_FILE)
-	const { resultMap: extensionMap, anyApplied: extensionApplied } = applyPatchesToFile(extensionJsPath, extensionPatches)
+	const { resultMap: extensionMap, anyApplied: extensionApplied } = applyPatchesToFile(
+		extensionJsPath,
+		extensionPatches
+	)
 
 	const packageJsonPath = path.join(extensionPath, PACKAGE_JSON_FILE)
 	const { resultMap: pkgMap, anyApplied: pkgApplied } = applyPatchesToFile(packageJsonPath, packageJsonPatches)
@@ -127,24 +135,25 @@ export async function patchWebview(
 		const total = orderedResults.length
 
 		if (anyApplied) {
-			vscode.window.showInformationMessage(
-				`Claude Code Patches: ${applied}/${total} applied. Reload VS Code to take effect.`,
-				'Reload Window',
-				'Show Log'
-			).then(action => {
-				if (action === 'Reload Window') {
-					vscode.commands.executeCommand('workbench.action.reloadWindow')
-				} else if (action === 'Show Log') {
-					outputChannel.show()
-				}
-			})
+			vscode.window
+				.showInformationMessage(
+					`Claude Code Patches: ${applied}/${total} applied. Reload VS Code to take effect.`,
+					'Reload Window',
+					'Show Log'
+				)
+				.then(action => {
+					if (action === 'Reload Window') {
+						vscode.commands.executeCommand('workbench.action.reloadWindow')
+					} else if (action === 'Show Log') {
+						outputChannel.show()
+					}
+				})
 		} else if (!silent) {
-			vscode.window.showInformationMessage(
-				`Claude Code Patches: all ${total} already applied.`,
-				'Show Log'
-			).then(action => {
-				if (action === 'Show Log') outputChannel.show()
-			})
+			vscode.window
+				.showInformationMessage(`Claude Code Patches: all ${total} already applied.`, 'Show Log')
+				.then(action => {
+					if (action === 'Show Log') outputChannel.show()
+				})
 		}
 	}
 }
@@ -218,17 +227,19 @@ export async function revertWebview(extensionPath: string, outputChannel: vscode
 	}
 
 	if (anyReverted) {
-		vscode.window.showInformationMessage(
-			'Claude Code Patches reverted. Reload VS Code to take effect.',
-			'Reload Window',
-			'Show Log'
-		).then(action => {
-			if (action === 'Reload Window') {
-				vscode.commands.executeCommand('workbench.action.reloadWindow')
-			} else if (action === 'Show Log') {
-				outputChannel.show()
-			}
-		})
+		vscode.window
+			.showInformationMessage(
+				'Claude Code Patches reverted. Reload VS Code to take effect.',
+				'Reload Window',
+				'Show Log'
+			)
+			.then(action => {
+				if (action === 'Reload Window') {
+					vscode.commands.executeCommand('workbench.action.reloadWindow')
+				} else if (action === 'Show Log') {
+					outputChannel.show()
+				}
+			})
 	} else {
 		vscode.window.showInformationMessage('Claude Code Patches: no patches to revert.', 'Show Log').then(action => {
 			if (action === 'Show Log') outputChannel.show()

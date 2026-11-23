@@ -67,7 +67,10 @@ export const PATCHES: Patch[] = [
 	},
 ]
 
-export function applyPatch(content: string, patch: Patch): { content: string; applied: boolean; alreadyPatched: boolean } {
+export function applyPatch(
+	content: string,
+	patch: Patch
+): { content: string; applied: boolean; alreadyPatched: boolean } {
 	if (content.includes(patch.to)) {
 		return { content, applied: false, alreadyPatched: true }
 	}

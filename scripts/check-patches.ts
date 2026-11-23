@@ -17,13 +17,7 @@
 import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
-import {
-	applyPatch,
-	getPatchesByTarget,
-	WEBVIEW_FILE,
-	EXTENSION_FILE,
-	PACKAGE_JSON_FILE,
-} from '../src/patch-defs.ts'
+import { applyPatch, getPatchesByTarget, WEBVIEW_FILE, EXTENSION_FILE, PACKAGE_JSON_FILE } from '../src/patch-defs.ts'
 
 type Target = 'webview' | 'extension' | 'packageJson'
 

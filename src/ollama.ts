@@ -25,13 +25,22 @@ function ollamaGet(endpoint: string): Promise<unknown> {
 	return new Promise((resolve, reject) => {
 		const req = http.get(`http://localhost:11434${endpoint}`, res => {
 			let data = ''
-			res.on('data', chunk => { data += chunk })
+			res.on('data', chunk => {
+				data += chunk
+			})
 			res.on('end', () => {
-				try { resolve(JSON.parse(data)) } catch { reject(new Error('Failed to parse Ollama response')) }
+				try {
+					resolve(JSON.parse(data))
+				} catch {
+					reject(new Error('Failed to parse Ollama response'))
+				}
 			})
 		})
 		req.on('error', reject)
-		req.setTimeout(3000, () => { req.destroy(); reject(new Error('Ollama connection timed out')) })
+		req.setTimeout(3000, () => {
+			req.destroy()
+			reject(new Error('Ollama connection timed out'))
+		})
 	})
 }
 
@@ -42,24 +51,28 @@ function fetchOllamaModels(): Promise<string[]> {
 	})
 }
 
-interface ModelScores { speed: number; coding: number; planning: number }
+interface ModelScores {
+	speed: number
+	coding: number
+	planning: number
+}
 
 const MODEL_SCORES: Array<{ pattern: RegExp; scores: ModelScores }> = [
-	{ pattern: /phi[34][-:]?mini|phi3:mini/i,               scores: { speed: 9, coding: 6, planning: 5 } },
-	{ pattern: /phi4/i,                                      scores: { speed: 8, coding: 7, planning: 6 } },
+	{ pattern: /phi[34][-:]?mini|phi3:mini/i, scores: { speed: 9, coding: 6, planning: 5 } },
+	{ pattern: /phi4/i, scores: { speed: 8, coding: 7, planning: 6 } },
 	{ pattern: /gemma[23]?:[12]b|gemma[23]?:4b|gemma2:2b/i, scores: { speed: 9, coding: 6, planning: 5 } },
-	{ pattern: /gemma/i,                                     scores: { speed: 7, coding: 7, planning: 6 } },
-	{ pattern: /llama3\.[23]:[13]b/i,                        scores: { speed: 9, coding: 6, planning: 5 } },
-	{ pattern: /llama[^/]*(70b|72b)/i,                       scores: { speed: 2, coding: 8, planning: 9 } },
-	{ pattern: /qwen[23][^/]*coder/i,                        scores: { speed: 6, coding: 10, planning: 6 } },
-	{ pattern: /qwen[23]?:[38]b/i,                           scores: { speed: 7, coding: 7, planning: 6 } },
-	{ pattern: /qwen/i,                                      scores: { speed: 6, coding: 7, planning: 6 } },
+	{ pattern: /gemma/i, scores: { speed: 7, coding: 7, planning: 6 } },
+	{ pattern: /llama3\.[23]:[13]b/i, scores: { speed: 9, coding: 6, planning: 5 } },
+	{ pattern: /llama[^/]*(70b|72b)/i, scores: { speed: 2, coding: 8, planning: 9 } },
+	{ pattern: /qwen[23][^/]*coder/i, scores: { speed: 6, coding: 10, planning: 6 } },
+	{ pattern: /qwen[23]?:[38]b/i, scores: { speed: 7, coding: 7, planning: 6 } },
+	{ pattern: /qwen/i, scores: { speed: 6, coding: 7, planning: 6 } },
 	{ pattern: /codellama|deepseek-coder|starcoder|codegemma/i, scores: { speed: 6, coding: 9, planning: 5 } },
-	{ pattern: /deepseek-r1|qwq|think/i,                     scores: { speed: 4, coding: 8, planning: 10 } },
-	{ pattern: /deepseek/i,                                  scores: { speed: 5, coding: 8, planning: 7 } },
-	{ pattern: /mistral-large|mixtral/i,                     scores: { speed: 4, coding: 7, planning: 8 } },
-	{ pattern: /mistral/i,                                   scores: { speed: 7, coding: 7, planning: 6 } },
-	{ pattern: /llama/i,                                     scores: { speed: 7, coding: 7, planning: 6 } },
+	{ pattern: /deepseek-r1|qwq|think/i, scores: { speed: 4, coding: 8, planning: 10 } },
+	{ pattern: /deepseek/i, scores: { speed: 5, coding: 8, planning: 7 } },
+	{ pattern: /mistral-large|mixtral/i, scores: { speed: 4, coding: 7, planning: 8 } },
+	{ pattern: /mistral/i, scores: { speed: 7, coding: 7, planning: 6 } },
+	{ pattern: /llama/i, scores: { speed: 7, coding: 7, planning: 6 } },
 ]
 
 function scoreModel(name: string): ModelScores {
@@ -68,7 +81,7 @@ function scoreModel(name: string): ModelScores {
 	}
 	const sizeMatch = name.match(/:(\d+)b/i)
 	const n = sizeMatch ? parseInt(sizeMatch[1], 10) : 7
-	if (n <= 4)  return { speed: 9, coding: 6, planning: 5 }
+	if (n <= 4) return { speed: 9, coding: 6, planning: 5 }
 	if (n <= 14) return { speed: 7, coding: 7, planning: 6 }
 	if (n <= 34) return { speed: 5, coding: 7, planning: 7 }
 	return { speed: 2, coding: 8, planning: 9 }
@@ -85,12 +98,12 @@ function showOutput(channel: vscode.OutputChannel, lines: string[]): void {
 }
 
 const INCOMPATIBLE_PATTERNS: Array<{ pattern: RegExp; reason: string }> = [
-	{ pattern: /embed|embedding/i,                              reason: 'embedding model — no chat support' },
-	{ pattern: /rerank|reranker/i,                              reason: 'reranking model — no chat support' },
-	{ pattern: /nomic-embed|mxbai-embed|all-minilm|bge-/i,     reason: 'embedding model — no chat support' },
-	{ pattern: /whisper|bark/i,                                 reason: 'audio model — no chat support' },
-	{ pattern: /stable-diffusion|sdxl/i,                        reason: 'image generation model — no chat support' },
-	{ pattern: /^clip/i,                                        reason: 'vision encoder — no chat support' },
+	{ pattern: /embed|embedding/i, reason: 'embedding model — no chat support' },
+	{ pattern: /rerank|reranker/i, reason: 'reranking model — no chat support' },
+	{ pattern: /nomic-embed|mxbai-embed|all-minilm|bge-/i, reason: 'embedding model — no chat support' },
+	{ pattern: /whisper|bark/i, reason: 'audio model — no chat support' },
+	{ pattern: /stable-diffusion|sdxl/i, reason: 'image generation model — no chat support' },
+	{ pattern: /^clip/i, reason: 'vision encoder — no chat support' },
 ]
 
 function isStaticallyIncompatible(name: string): string | null {
@@ -112,7 +125,9 @@ export async function configureOllama(): Promise<void> {
 	}
 
 	if (models.length === 0) {
-		vscode.window.showErrorMessage('Ollama is running but has no models installed. Run `ollama pull <model>` first.')
+		vscode.window.showErrorMessage(
+			'Ollama is running but has no models installed. Run `ollama pull <model>` first.'
+		)
 		return
 	}
 
@@ -122,7 +137,11 @@ export async function configureOllama(): Promise<void> {
 		const scoreStr = `Speed:${scores.speed}  Coding:${scores.coding}  Planning:${scores.planning}`
 
 		if (staticReason) {
-			return { label: `⚠ ${name}`, description: `incompatible — ${staticReason}`, detail: '(selectable, but likely broken with Claude Code)' }
+			return {
+				label: `⚠ ${name}`,
+				description: `incompatible — ${staticReason}`,
+				detail: '(selectable, but likely broken with Claude Code)',
+			}
 		}
 		return { label: name, description: scoreStr }
 	})
@@ -136,19 +155,21 @@ export async function configureOllama(): Promise<void> {
 	const modelName = picked.label.replace(/^⚠ /, '')
 
 	const settings = readClaudeSettings()
-	const env = ((settings.env ?? {}) as Record<string, string>)
+	const env = (settings.env ?? {}) as Record<string, string>
 	env['ANTHROPIC_BASE_URL'] = 'http://localhost:11434'
 	env['ANTHROPIC_AUTH_TOKEN'] = 'ollama'
 	env['ANTHROPIC_MODEL'] = modelName
 	settings.env = env
 	writeClaudeSettings(settings)
 
-	vscode.window.showInformationMessage(
-		`Claude Code configured to use local Ollama model "${modelName}". Restart Claude Code to apply.`,
-		'Revert to Anthropic API'
-	).then(action => {
-		if (action === 'Revert to Anthropic API') revertOllama()
-	})
+	vscode.window
+		.showInformationMessage(
+			`Claude Code configured to use local Ollama model "${modelName}". Restart Claude Code to apply.`,
+			'Revert to Anthropic API'
+		)
+		.then(action => {
+			if (action === 'Revert to Anthropic API') revertOllama()
+		})
 }
 
 export async function ollamaStatus(outputChannel: vscode.OutputChannel): Promise<void> {
@@ -159,15 +180,16 @@ export async function ollamaStatus(outputChannel: vscode.OutputChannel): Promise
 	const isConfigured = configuredUrl?.includes('11434')
 
 	const lines: string[] = ['Ollama Status']
-	lines.push(`Claude Code config: ${isConfigured ? `✓ ANTHROPIC_BASE_URL = ${configuredUrl}` : '✗ Not pointing at Ollama'}`)
+	lines.push(
+		`Claude Code config: ${isConfigured ? `✓ ANTHROPIC_BASE_URL = ${configuredUrl}` : '✗ Not pointing at Ollama'}`
+	)
 	if (configuredModel) lines.push(`  ANTHROPIC_MODEL = ${configuredModel}`)
 
-	let installedModels: string[] = []
 	let loadedModels: { name: string; size_vram: number }[] = []
 	let ollamaReachable = false
 
 	try {
-		installedModels = await fetchOllamaModels()
+		const installedModels = await fetchOllamaModels()
 		ollamaReachable = true
 		lines.push(`Ollama: ✓ reachable — ${installedModels.length} model(s) installed`)
 		for (const m of installedModels) lines.push(`  • ${m}`)
@@ -177,10 +199,12 @@ export async function ollamaStatus(outputChannel: vscode.OutputChannel): Promise
 
 	if (ollamaReachable) {
 		try {
-			const ps = await ollamaGet('/api/ps') as { models?: { name: string; size_vram: number }[] }
+			const ps = (await ollamaGet('/api/ps')) as { models?: { name: string; size_vram: number }[] }
 			loadedModels = ps.models ?? []
 			if (loadedModels.length > 0) {
-				lines.push(`Loaded in VRAM: ${loadedModels.map(m => `${m.name} (${Math.round(m.size_vram / 1024 / 1024)} MB)`).join(', ')}`)
+				lines.push(
+					`Loaded in VRAM: ${loadedModels.map(m => `${m.name} (${Math.round(m.size_vram / 1024 / 1024)} MB)`).join(', ')}`
+				)
 			} else {
 				lines.push('Loaded in VRAM: none (model will load on first request)')
 			}
@@ -247,17 +271,24 @@ export async function ollamaRecommend(outputChannel: vscode.OutputChannel): Prom
 	}
 
 	if (scored.length > 0) {
-		const bestSpeed    = scored.reduce((a, b) => b.speed > a.speed ? b : a)
-		const bestCoding   = scored.reduce((a, b) => b.coding > a.coding ? b : a)
-		const bestPlanning = scored.reduce((a, b) => b.planning > a.planning ? b : a)
+		const bestSpeed = scored.reduce((a, b) => (b.speed > a.speed ? b : a))
+		const bestCoding = scored.reduce((a, b) => (b.coding > a.coding ? b : a))
+		const bestPlanning = scored.reduce((a, b) => (b.planning > a.planning ? b : a))
 		lines.push('')
 		lines.push('  ✓ Compatible models ranked:')
-		lines.push(`  Quick responses:  ${pad(bestSpeed.name, maxLen)}  [Speed ${bar(bestSpeed.speed)} ${bestSpeed.speed}  Coding ${bar(bestSpeed.coding)} ${bestSpeed.coding}  Planning ${bar(bestSpeed.planning)} ${bestSpeed.planning}]`)
-		lines.push(`  Coding:           ${pad(bestCoding.name, maxLen)}  [Speed ${bar(bestCoding.speed)} ${bestCoding.speed}  Coding ${bar(bestCoding.coding)} ${bestCoding.coding}  Planning ${bar(bestCoding.planning)} ${bestCoding.planning}]`)
-		lines.push(`  Planning:         ${pad(bestPlanning.name, maxLen)}  [Speed ${bar(bestPlanning.speed)} ${bestPlanning.speed}  Coding ${bar(bestPlanning.coding)} ${bestPlanning.coding}  Planning ${bar(bestPlanning.planning)} ${bestPlanning.planning}]`)
+		lines.push(
+			`  Quick responses:  ${pad(bestSpeed.name, maxLen)}  [Speed ${bar(bestSpeed.speed)} ${bestSpeed.speed}  Coding ${bar(bestSpeed.coding)} ${bestSpeed.coding}  Planning ${bar(bestSpeed.planning)} ${bestSpeed.planning}]`
+		)
+		lines.push(
+			`  Coding:           ${pad(bestCoding.name, maxLen)}  [Speed ${bar(bestCoding.speed)} ${bestCoding.speed}  Coding ${bar(bestCoding.coding)} ${bestCoding.coding}  Planning ${bar(bestCoding.planning)} ${bestCoding.planning}]`
+		)
+		lines.push(
+			`  Planning:         ${pad(bestPlanning.name, maxLen)}  [Speed ${bar(bestPlanning.speed)} ${bestPlanning.speed}  Coding ${bar(bestPlanning.coding)} ${bestPlanning.coding}  Planning ${bar(bestPlanning.planning)} ${bestPlanning.planning}]`
+		)
 		lines.push('')
 		lines.push('  All compatible models scored:')
-		for (const m of scored) lines.push(`  • ${pad(m.name, maxLen)}  Speed:${m.speed}  Coding:${m.coding}  Planning:${m.planning}`)
+		for (const m of scored)
+			lines.push(`  • ${pad(m.name, maxLen)}  Speed:${m.speed}  Coding:${m.coding}  Planning:${m.planning}`)
 
 		showOutput(outputChannel, lines)
 
@@ -286,12 +317,11 @@ export async function revertOllama(): Promise<void> {
 	if (Object.keys(env).length === 0) delete settings.env
 	writeClaudeSettings(settings)
 
-	vscode.window.showInformationMessage(
-		'Claude Code reverted to Anthropic API. Reload VS Code to apply.',
-		'Reload Window'
-	).then(action => {
-		if (action === 'Reload Window') {
-			vscode.commands.executeCommand('workbench.action.reloadWindow')
-		}
-	})
+	vscode.window
+		.showInformationMessage('Claude Code reverted to Anthropic API. Reload VS Code to apply.', 'Reload Window')
+		.then(action => {
+			if (action === 'Reload Window') {
+				vscode.commands.executeCommand('workbench.action.reloadWindow')
+			}
+		})
 }
