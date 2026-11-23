@@ -1,0 +1,7 @@
+*.md
+out/
+node_modules/
+package-lock.json
+docker/lint/package-lock.json
+launchd/
+*.vsix

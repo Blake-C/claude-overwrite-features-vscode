@@ -1,0 +1,32 @@
+name: claude-overwrite-features-lint
+
+x-hardening: &hardening
+    image: claude-overwrite-features/lint:${LINT_TAG:?run through scripts/lint.sh}
+    build:
+        context: .
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: [/tmp]
+    user: '${LINT_UID:?run through scripts/lint.sh}:${LINT_GID:?run through scripts/lint.sh}'
+    environment:
+        HOME: /tmp
+    mem_limit: 1g
+    pids_limit: 128
+
+services:
+    lint:
+        <<: *hardening
+        volumes:
+            - type: bind
+              source: ../..
+              target: /opt/lint/work
+              read_only: true
+
+    format:
+        <<: *hardening
+        volumes:
+            - type: bind
+              source: ../..
+              target: /opt/lint/work

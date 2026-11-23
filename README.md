@@ -78,6 +78,19 @@ npm install
 npm run package
 ```
 
+## Lint and format
+
+ESLint and Prettier run only inside a Docker container, so neither one is installed on the host. The first run builds the image `claude-overwrite-features/lint` from [docker/lint/](docker/lint/), and that build is the only step that uses the network. [docker/lint/compose.yml](docker/lint/compose.yml) runs the container with no network, a read-only root filesystem, and every Linux capability dropped, and with `npm run lint` the repo is mounted read-only.
+
+```bash
+npm run lint             # eslint + prettier --check
+npm run format           # prettier --write + eslint --fix
+npm run lint:check-base  # compare the pinned Node and Alpine versions against Docker Hub and alpinelinux.org
+npm run lint:clean       # remove every lint image this project built
+```
+
+Docker Desktop has to be running. The image is pinned to Node 26.13.1 on Alpine 3.24.4 by digest, and its build runs `apk upgrade` and then removes npm, npx, and apk from the image.
+
 ## Package and install
 
 ```bash

@@ -6,3 +6,8 @@ node_modules/**
 webpack.config.js
 tsconfig.json
 **/*.map
+docker/**
+eslint.config.mjs
+.prettierrc.json
+.prettierignore
+scripts/lint.sh

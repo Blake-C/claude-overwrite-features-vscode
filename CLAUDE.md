@@ -12,12 +12,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Watch mode | `npm run watch` |
 | Package `.vsix` | `npm run vsix` |
 | Install locally | `code --install-extension claude-overwrite-features-0.7.35.vsix` |
+| Lint (ESLint + Prettier check) | `npm run lint` |
+| Format (Prettier write + ESLint fix) | `npm run format` |
+| Check the lint image's base pins | `npm run lint:check-base` |
+| Remove the lint images | `npm run lint:clean` |
 
 `vsce` is a devDependency, so `npm run vsix` runs the local binary and needs no network. Do not use `npx @vscode/vsce package` — npx resolves the unpinned spec against the registry, which fails under the Bash sandbox.
 
 `vsce` rewrites every relative link in `README.md` into an absolute URL, and it reads the base URL from the `repository` field in `package.json`. If that field is removed while the README still has a relative link, `npm run vsix` fails with "Couldn't detect the repository where this extension is published".
 
 There are no tests.
+
+### Linting
+
+ESLint and Prettier are not installed on the host and are not in this project's `devDependencies`. They run only in the image `claude-overwrite-features/lint:<version>`, which is built from `docker/lint/`. The version comes from `docker/lint/package.json`, and that file and its lockfile pin every lint package. Bump that version whenever the Dockerfile or a pinned package changes, so the new image gets a new tag. `npm run lint:clean` removes the old images, which it finds by the label `com.digitalblake.project=claude-overwrite-features-vscode`.
+
+- The repo is mounted at `/opt/lint/work` and the packages live in `/opt/lint/node_modules`. Node looks for packages in parent directories, so `eslint.config.mjs` loads `typescript-eslint` from the image and not from the host's `node_modules`.
+- `docker/lint/compose.yml` sets `network_mode: none`, `read_only: true`, `cap_drop: [ALL]`, and `no-new-privileges`. A Dockerfile cannot carry these settings, so a `docker run` of the image outside `scripts/lint.sh` and that compose file runs without them.
+- The Bash sandbox blocks the Docker socket, so `npm run lint`, `npm run format`, and `npm run lint:clean` have to run outside the sandbox. `npm run lint:check-base` also reaches `hub.docker.com` and `alpinelinux.org`.
+- The Dockerfile pins the base image by version and digest and pins `ARG ALPINE_VERSION`. The build stops when `/etc/alpine-release` after `apk upgrade` does not match that pin. Run `npm run lint:check-base` before bumping the image and after any Alpine security advisory.
+- `.prettierignore` skips Markdown, because Prettier pads every row of the wide tables in this file and in CHANGELOG.md.
 
 ## Versioning
 
