@@ -124,9 +124,14 @@ fi
 
 # Guard: only auto-fix from a clean main, so we never commit over unrelated WIP.
 BRANCH="$(git -C "$REPO" symbolic-ref --short HEAD 2>/dev/null || true)"
-if [ "$BRANCH" != "main" ] || [ -n "$(git -C "$REPO" status --porcelain 2>/dev/null)" ]; then
-	log "Working tree not clean on main (branch=$BRANCH). Aborting auto-fix; please handle manually."
-	notify "Claude patch watcher" "Patches broke on v$VERSION. Repo not clean on main — fix manually."
+if [ "$BRANCH" != "main" ]; then
+	log "Repo is on branch $BRANCH, not main. Aborting auto-fix; merge or switch to main."
+	notify "Claude patch watcher" "Patches broke on v$VERSION. Repo is on branch $BRANCH, not main. Merge or switch to main."
+	exit 1
+fi
+if [ -n "$(git -C "$REPO" status --porcelain 2>/dev/null)" ]; then
+	log "Working tree has uncommitted changes on main. Aborting auto-fix; commit or stash first."
+	notify "Claude patch watcher" "Patches broke on v$VERSION. Main has uncommitted changes. Commit or stash first."
 	exit 1
 fi
 
