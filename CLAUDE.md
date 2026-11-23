@@ -25,13 +25,13 @@ There are no tests.
 
 ### Linting
 
-ESLint and Prettier are not installed on the host and are not in this project's `devDependencies`. They run only in the image `claude-overwrite-features/lint:<version>`, which is built from `docker/lint/`. The version comes from `docker/lint/package.json`, and that file and its lockfile pin every lint package. Bump that version whenever the Dockerfile or a pinned package changes, so the new image gets a new tag. `npm run lint:clean` removes the old images, which it finds by the label `com.digitalblake.project=claude-overwrite-features-vscode`.
+ESLint and Prettier are not installed on the host and are not in this project's `devDependencies`. They run only in the image `claude-overwrite-features/lint:<version>`, which is built from `docker/lint/`. The `<version>` tag comes from the `version` field in `docker/lint/package.json`, and that file and its lockfile pin every lint package. Bump that `version` field whenever the Dockerfile or a pinned package changes, so the new image gets a new tag. `npm run lint:clean` removes every lint image, including the current one, which it finds by the label `com.digitalblake.project=claude-overwrite-features-vscode`.
 
-- The repo is mounted at `/opt/lint/work` and the packages live in `/opt/lint/node_modules`. Node looks for packages in parent directories, so `eslint.config.mjs` loads `typescript-eslint` from the image and not from the host's `node_modules`.
+- The repo is mounted at `/opt/lint/work` and the packages live in `/opt/lint/node_modules`. Node checks `/opt/lint/work/node_modules`, which is the host's `node_modules`, before `/opt/lint/node_modules`. So `eslint.config.mjs` loads `typescript-eslint` and the other lint packages from the image only while the host has none of them, which holds as long as they stay out of the root `devDependencies`.
 - `docker/lint/compose.yml` sets `network_mode: none`, `read_only: true`, `cap_drop: [ALL]`, and `no-new-privileges`. A Dockerfile cannot carry these settings, so a `docker run` of the image outside `scripts/lint.sh` and that compose file runs without them.
-- The Bash sandbox blocks the Docker socket, so `npm run lint`, `npm run format`, and `npm run lint:clean` have to run outside the sandbox. `npm run lint:check-base` also reaches `hub.docker.com` and `alpinelinux.org`.
-- The Dockerfile pins the base image by version and digest and pins `ARG ALPINE_VERSION`. The build stops when `/etc/alpine-release` after `apk upgrade` does not match that pin. Run `npm run lint:check-base` before bumping the image and after any Alpine security advisory.
-- `.prettierignore` skips Markdown, because Prettier pads every row of the wide tables in this file and in CHANGELOG.md.
+- The Bash sandbox blocks the Docker socket, so `npm run lint`, `npm run format`, and `npm run lint:clean` have to run outside the sandbox. `npm run lint:check-base` does not use Docker, but it calls `curl` against `hub.docker.com` and `alpinelinux.org`, so the sandbox has to allow those hosts.
+- The Dockerfile pins the base image by version and digest and pins `ARG ALPINE_VERSION`. The build stops when `/etc/alpine-release` after `apk upgrade` does not match `ALPINE_VERSION`. Run `npm run lint:check-base` before bumping the image and after any Alpine security advisory.
+- `.prettierignore` skips Markdown, because Prettier pads every row of the wide tables in this file and in README.md.
 
 ## Versioning
 
