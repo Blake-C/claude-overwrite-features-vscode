@@ -5,8 +5,9 @@
 # Fires when ~/.vscode/extensions changes (a new anthropic.claude-code-* dir
 # appears). Detects the new version, runs the deterministic patch health check,
 # and — only when a patch has actually broken — launches headless Claude to
-# rewrite the broken patch strings on a NEW BRANCH. main is never touched and
-# nothing is auto-installed; the user reviews and merges.
+# rewrite the broken patch strings on a NEW BRANCH. The headless run never
+# touches main. After it exits, this script re-verifies the branch and
+# fast-forwards main to it. Nothing is pushed and nothing is installed.
 #
 # Safe to run by hand:  bash scripts/on-claude-update.sh
 #
@@ -153,8 +154,16 @@ Fix them by following the repository's own documented workflow:
 
 Write any scratch scripts under \$TMPDIR, never inside the repo, so an interrupted run cannot leave the working tree dirty.
 
-Hard constraints: do NOT switch back to or commit on main. Do NOT package or install the .vsix. Do NOT push. If you cannot confidently locate a patch site, stop and explain rather than guessing.
+Hard constraints: do NOT switch back to, merge into, or commit on main. This script re-verifies the $FIX_BRANCH branch after you exit and merges it into main itself. Do NOT package or install the .vsix. Do NOT push; git push is blocked. If you cannot confidently locate a patch site, stop and explain rather than guessing.
 EOF
+
+record_failure() {
+	ATTEMPTS=$((ATTEMPTS + 1))
+	echo "$VERSION:$ATTEMPTS" >"$ATTEMPTS_FILE"
+	log "$1 Attempt $ATTEMPTS of $MAX_ATTEMPTS. See log."
+	notify "Claude patch watcher" "$2 (attempt $ATTEMPTS/$MAX_ATTEMPTS) — see log."
+	exit 1
+}
 
 cd "$REPO" || exit 1
 log "Running: claude -p (branch $FIX_BRANCH)"
@@ -163,21 +172,49 @@ log "Running: claude -p (branch $FIX_BRANCH)"
 	--add-dir "$NEWEST_DIR" \
 	--permission-mode acceptEdits \
 	--allowedTools "Read Edit Write Bash(git:*) Bash(npm:*) Bash(npx:*) Bash(node:*) Bash(python3:*) Bash(code:*)" \
+	--disallowedTools "Bash(git push:*) Bash(git merge:*)" \
 	>>"$LOG_FILE" 2>&1
 CLAUDE_RC=$?
 
 # claude -p exits 0 when it stops to ask a question, so a branch with no new
 # commits is a failure too.
 FIX_COMMITS="$(git -C "$REPO" rev-list --count main.."$FIX_BRANCH" 2>/dev/null || echo 0)"
+# A failure leaves the state file alone so a transient problem (expired OAuth,
+# no network) is retried on the next fs event, up to MAX_ATTEMPTS.
 if [ "$CLAUDE_RC" -ne 0 ] || [ "$FIX_COMMITS" -eq 0 ]; then
-	# Leave the state file alone so a transient failure (expired OAuth, no
-	# network) is retried on the next fs event, up to MAX_ATTEMPTS.
-	ATTEMPTS=$((ATTEMPTS + 1))
-	echo "$VERSION:$ATTEMPTS" >"$ATTEMPTS_FILE"
-	log "Auto-fix did not complete cleanly (claude rc=$CLAUDE_RC, commits=$FIX_COMMITS), attempt $ATTEMPTS of $MAX_ATTEMPTS. See log."
-	notify "Claude patch watcher" "Auto-fix for v$VERSION failed (attempt $ATTEMPTS/$MAX_ATTEMPTS) — see log."
-	exit 1
+	record_failure "Auto-fix did not complete cleanly (claude rc=$CLAUDE_RC, commits=$FIX_COMMITS)." \
+		"Auto-fix for v$VERSION failed"
 fi
+
+# --- Merge gate: re-verify the branch, then fast-forward main to it --------
+HEAD_BRANCH="$(git -C "$REPO" symbolic-ref --short HEAD 2>/dev/null || true)"
+if [ "$HEAD_BRANCH" != "$FIX_BRANCH" ]; then
+	record_failure "Headless run left HEAD on '$HEAD_BRANCH', not $FIX_BRANCH. Not merging." \
+		"Fix for v$VERSION not merged: HEAD is not on $FIX_BRANCH"
+fi
+if [ -n "$(git -C "$REPO" status --porcelain 2>/dev/null)" ]; then
+	record_failure "$FIX_BRANCH has uncommitted changes. Not merging." \
+		"Fix for v$VERSION not merged: $FIX_BRANCH has uncommitted changes"
+fi
+GATE_OUT="$("$NODE_BIN" --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \
+	"$REPO/scripts/check-patches.ts" "$NEWEST_DIR" 2>&1)"
+GATE_RC=$?
+printf '%s\n' "$GATE_OUT" >>"$LOG_FILE"
+if [ "$GATE_RC" -ne 0 ]; then
+	record_failure "Health check on $FIX_BRANCH returned rc=$GATE_RC. Not merging." \
+		"Fix for v$VERSION not merged: health check still fails on $FIX_BRANCH"
+fi
+if ! COMPILE_OUT="$(npm --prefix "$REPO" run compile 2>&1)"; then
+	printf '%s\n' "$COMPILE_OUT" >>"$LOG_FILE"
+	record_failure "npm run compile failed on $FIX_BRANCH. Not merging." \
+		"Fix for v$VERSION not merged: compile failed on $FIX_BRANCH"
+fi
+if ! git -C "$REPO" checkout -q main || ! git -C "$REPO" merge -q --ff-only "$FIX_BRANCH"; then
+	record_failure "Could not fast-forward main to $FIX_BRANCH. Not merged." \
+		"Fix for v$VERSION not merged: main could not fast-forward to $FIX_BRANCH"
+fi
+git -C "$REPO" branch -q -d "$FIX_BRANCH"
+log "Merged $FIX_BRANCH into main and deleted the branch. Nothing was pushed."
 
 # Record that we have handled this version so we do not re-run on every fs event.
 echo "$VERSION" >"$STATE_FILE"
@@ -187,18 +224,19 @@ rm -f "$ATTEMPTS_FILE"
 # claude -p runs under a sandbox with no network and no way to answer a
 # permission prompt, so packaging from there fails whenever npm needs the
 # registry. This shell runs outside that sandbox.
-log "Packaging .vsix for $FIX_BRANCH."
+PKG_VERSION="$("$NODE_BIN" -p "require('$REPO/package.json').version" 2>/dev/null || echo '<version>')"
+log "Packaging .vsix $PKG_VERSION from main."
 PACK_OUT="$(npm --prefix "$REPO" run vsix 2>&1)"
 PACK_RC=$?
 printf '%s\n' "$PACK_OUT" >>"$LOG_FILE"
 
 if [ "$PACK_RC" -eq 0 ]; then
-	log "Auto-fix complete on branch $FIX_BRANCH; .vsix packaged."
-	notify "Claude patch watcher" "Auto-fixed patches for v$VERSION on branch $FIX_BRANCH. Review and merge."
+	log "Auto-fix for v$VERSION merged into main; claude-overwrite-features-$PKG_VERSION.vsix packaged."
+	notify "Claude patch watcher" "Auto-fixed patches for v$VERSION and merged into main (not pushed). Install claude-overwrite-features-$PKG_VERSION.vsix and push when ready."
 else
 	PACK_ERR="$(printf '%s\n' "$PACK_OUT" | grep -m1 -i 'error' | tr -s '[:space:]' ' ' | cut -c1-150)"
 	[ -n "$PACK_ERR" ] || PACK_ERR="rc=$PACK_RC"
-	log "Patches fixed on $FIX_BRANCH but packaging failed (rc=$PACK_RC): $PACK_ERR"
-	notify "Claude patch watcher" "Patches fixed for v$VERSION but the .vsix failed to build: $PACK_ERR"
+	log "Patches fixed and merged into main but packaging failed (rc=$PACK_RC): $PACK_ERR"
+	notify "Claude patch watcher" "Patches fixed and merged into main for v$VERSION but the .vsix failed to build: $PACK_ERR"
 	exit 1
 fi
